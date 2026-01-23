@@ -56,7 +56,20 @@ http://<服务器IP>:7200
 bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/install.sh)
 ```
 
-- **卸载**
+
+### 版本更新 0.18.4
+
+- 国内安装优化。
+
+### JSDelivr安装地址
+
+- 初始安装
+
+```
+bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/install.sh)
+```
+
+- 直接更新
 
 ```
 bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/update.sh)
