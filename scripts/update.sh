@@ -7,15 +7,15 @@ is64bit=`getconf LONG_BIT`
 startTime=`date +%s`
 
 if [ -f /www/server/mdserver-web/tools.py ];then
-    echo -e "存在旧版代码,不能安装!,已知风险的情况下" 
-    echo -e "rm -rf /www/server/mdserver-web"
-    echo -e "可安装!" 
+    echo -e "检测到旧版代码，为避免翻车先停一下～"
+    echo -e "如确认继续，请先执行: rm -rf /www/server/mdserver-web"
+    echo -e "处理完再回来更新吧！"
     exit 0
 fi
 
 
 _os=`uname`
-echo "use system: ${_os}"
+echo "检测到系统: ${_os}"
 
 if [ "$EUID" -ne 0 ]
   then echo "Please run as root!"
@@ -78,7 +78,7 @@ function ChooseProxyURL(){
     echo -e '|                                                   |'
     echo -e '|   =============================================   |'
     echo -e '|                                                   |'
-    echo -e '|     欢迎使用 Linux 一键安装mdserver-web面板源码   |'
+    echo -e '|     欢迎使用 Linux 一键更新面板源码，开冲！       |'
     echo -e '|                                                   |'
     echo -e '|   =============================================   |'
     echo -e '|                                                   |'
@@ -110,14 +110,14 @@ function ChooseProxyURL(){
         INPUT=1
         TMP_INPUT=`expr $INPUT - 1`
         INPUT_KEY=${SOURCE_LIST_KEY[$TMP_INPUT]}
-        echo -e "\n默认选择[${BLUE}${INPUT_KEY}${PLAIN}]安装！"
+        echo -e "\n默认选择[${BLUE}${INPUT_KEY}${PLAIN}]，马上开更～"
     fi
 
     if [ "$INPUT" -lt "0" ];then
         INPUT=1
         TMP_INPUT=`expr $INPUT - 1`
         INPUT_KEY=${SOURCE_LIST_KEY[$TMP_INPUT]}
-        echo -e "\n低于边界错误!选择[${BLUE}${INPUT_KEY}${PLAIN}]安装！"
+        echo -e "\n低于边界啦！已切回[${BLUE}${INPUT_KEY}${PLAIN}]继续更新～"
         sleep 2s
     fi
 
@@ -125,7 +125,7 @@ function ChooseProxyURL(){
         INPUT=${SOURCE_LIST_LEN}
         TMP_INPUT=`expr $INPUT - 1`
         INPUT_KEY=${SOURCE_LIST_KEY[$TMP_INPUT]}
-        echo -e "\n超出边界错误!选择[${BLUE}${INPUT_KEY}${PLAIN}]安装！"
+        echo -e "\n超出边界啦！已切回[${BLUE}${INPUT_KEY}${PLAIN}]继续更新～"
         sleep 2s
     fi
 
@@ -200,15 +200,16 @@ if [ -f /bin/cp ];then
         CP_CMD=/bin/cp
 fi
 
-echo "update mdserver-web code start"
+echo "开始更新面板源码，冲冲冲～"
 
-curl --insecure -sSLo /tmp/master.tar.gz ${HTTP_PREFIX}github.com/midoks/mdserver-web/archive/refs/heads/master.tar.gz
+curl --insecure -sSLo /tmp/master.tar.gz ${HTTP_PREFIX}github.com/PowerLinux/PowerLinux/archive/refs/heads/master.tar.gz
+TARBALL_DIR=$(tar -tf /tmp/master.tar.gz | head -1 | cut -d/ -f1)
 cd /tmp && tar -zxvf /tmp/master.tar.gz
-$CP_CMD -rf /tmp/mdserver-web-master/* /www/server/mdserver-web
+$CP_CMD -rf /tmp/${TARBALL_DIR}/* /www/server/mdserver-web
 rm -rf /tmp/master.tar.gz
-rm -rf /tmp/mdserver-web-master
+rm -rf /tmp/${TARBALL_DIR}
 
-echo "update mdserver-web code end"
+echo "源码更新完成，继续收尾～"
 
 
 #pip uninstall public
