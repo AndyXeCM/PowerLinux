@@ -12,8 +12,8 @@
 # 配置文件
 # ---------------------------------------------------------------------------------
 
-import eventlet
-eventlet.monkey_patch()
+from gevent import monkey
+monkey.patch_all()
 
 import time
 import sys
@@ -81,7 +81,7 @@ backlog = 512
 reload = False
 daemon = True
 # # worker_class = 'geventwebsocket.gunicorn.workers.GeventWebSocketWorker'
-worker_class = 'eventlet'
+worker_class = 'gevent'
 timeout = 600
 keepalive = 60
 preload_app = False
