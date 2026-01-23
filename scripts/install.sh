@@ -19,9 +19,9 @@ WORKING='[\033[34m*\033[0m]'
 is64bit=`getconf LONG_BIT`
 
 if [ -f /www/server/mdserver-web/tools.py ];then
-	echo -e "存在旧版代码,不能安装!,已知风险的情况下" 
-	echo -e "rm -rf /www/server/mdserver-web"
-	echo -e "可安装!" 
+	echo -e "检测到旧版代码，为避免翻车先停一下～"
+	echo -e "如确认继续，请先执行: rm -rf /www/server/mdserver-web"
+	echo -e "处理完再回来开装吧！"
 	exit 0
 fi
 
@@ -78,7 +78,7 @@ function ChooseProxyURL(){
     echo -e '|                                                   |'
     echo -e '|   =============================================   |'
     echo -e '|                                                   |'
-    echo -e '|     欢迎使用 Linux 一键安装mdserver-web面板源码   |'
+    echo -e '|     欢迎使用 Linux 一键安装面板源码，开冲！       |'
     echo -e '|                                                   |'
     echo -e '|   =============================================   |'
     echo -e '|                                                   |'
@@ -110,14 +110,14 @@ function ChooseProxyURL(){
         INPUT=1
         TMP_INPUT=`expr $INPUT - 1`
         INPUT_KEY=${SOURCE_LIST_KEY[$TMP_INPUT]}
-        echo -e "\n默认选择[${BLUE}${INPUT_KEY}${PLAIN}]安装！"
+        echo -e "\n默认选择[${BLUE}${INPUT_KEY}${PLAIN}]，马上开装～"
     fi
 
     if [ "$INPUT" -lt "0" ];then
 		INPUT=1
 		TMP_INPUT=`expr $INPUT - 1`
 		INPUT_KEY=${SOURCE_LIST_KEY[$TMP_INPUT]}
-		echo -e "\n低于边界错误!选择[${BLUE}${INPUT_KEY}${PLAIN}]安装！"
+		echo -e "\n低于边界啦！已切回[${BLUE}${INPUT_KEY}${PLAIN}]继续安装～"
 		sleep 2s
 	fi
 
@@ -125,7 +125,7 @@ function ChooseProxyURL(){
 		INPUT=${SOURCE_LIST_LEN}
 		TMP_INPUT=`expr $INPUT - 1`
 		INPUT_KEY=${SOURCE_LIST_KEY[$TMP_INPUT]}
-		echo -e "\n超出边界错误!选择[${BLUE}${INPUT_KEY}${PLAIN}]安装！"
+		echo -e "\n超出边界啦！已切回[${BLUE}${INPUT_KEY}${PLAIN}]继续安装～"
 		sleep 2s
 	fi
 
@@ -155,7 +155,7 @@ fi
 startTime=`date +%s`
 
 _os=`uname`
-echo "use system: ${_os}"
+echo "检测到系统: ${_os}"
 
 if [ ${_os} == "Darwin" ]; then
 	OSNAME='macos'
@@ -227,11 +227,12 @@ if [ $OSNAME != "macos" ];then
 	mkdir -p /www/backup/site
 
 	if [ ! -d /www/server/mdserver-web ];then
-		curl --insecure -sSLo /tmp/master.tar.gz ${HTTP_PREFIX}github.com/midoks/mdserver-web/archive/refs/heads/master.tar.gz
+		curl --insecure -sSLo /tmp/master.tar.gz ${HTTP_PREFIX}github.com/PowerLinux/PowerLinux/archive/refs/heads/master.tar.gz
+		TARBALL_DIR=$(tar -tf /tmp/master.tar.gz | head -1 | cut -d/ -f1)
 		cd /tmp && tar -zxvf /tmp/master.tar.gz
-		mv -f /tmp/mdserver-web-master /www/server/mdserver-web
+		mv -f /tmp/${TARBALL_DIR} /www/server/mdserver-web
 		rm -rf /tmp/master.tar.gz
-		rm -rf /tmp/mdserver-web-master
+		rm -rf /tmp/${TARBALL_DIR}
 	fi
 
 	# install acme.sh
@@ -249,7 +250,7 @@ fi
 
 echo "use system version: ${OSNAME}"
 if [ "${OSNAME}" == "macos" ];then
-	curl --insecure -fsSL ${HTTP_PREFIX}raw.githubusercontent.com/midoks/mdserver-web/refs/heads/dev/scripts/install/macos.sh | bash
+	curl --insecure -fsSL ${HTTP_PREFIX}raw.githubusercontent.com/PowerLinux/PowerLinux/refs/heads/dev/scripts/install/macos.sh | bash
 else
 	cd /www/server/mdserver-web && bash scripts/install/${OSNAME}.sh
 fi
@@ -290,5 +291,5 @@ echo -e "Time consumed:\033[32m $outTime \033[0mMinute!"
 
 } 1> >(tee $LOG_FILE) 2>&1
 
-echo -e "\nInstall completed. If error occurs, please contact us with the log file mw-install.log ."
-echo "安装完毕，如果出现错误，请带上同目录下的安装日志 mw-install.log 联系我们反馈."
+echo -e "\n安装完成啦！如有报错，请带上日志 mw-install.log 来找我们～"
+echo "搞定！如果出现问题，请携带安装日志 mw-install.log 反馈哦。"
