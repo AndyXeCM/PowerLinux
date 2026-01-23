@@ -53,18 +53,24 @@ http://<服务器IP>:7200
 - **更新**
 
 ```
-bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/update.sh)
+bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/install.sh)
 ```
 
 - **卸载**
 
 ```
-wget --no-check-certificate -O uninstall.sh https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/uninstall.sh && bash uninstall.sh
+bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/update.sh)
 ```
 
 ## 备用下载地址
 
-- **安装**
+```
+wget --no-check-certificate -O uninstall.sh https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/uninstall.sh && bash uninstall.sh
+```
+
+### 备用地址
+
+- 初始安装
 
 ```
 bash <(curl --insecure -fsSL https://raw.githubusercontent.com/AndyXeCM/PowerLinux/main/scripts/install.sh)
@@ -88,6 +94,4 @@ wget --no-check-certificate -O uninstall.sh https://raw.githubusercontent.com/An
 
 - 插件文档：https://github.com/midoks/mdserver-web/wiki/插件开发
 
-## 许可协议
-
-本项目采用 Apache 协议开源，完整说明见 [LICENSE](./LICENSE)。
+本项目采用 Apache 开源授权许可证，完整的授权说明已放置在 [LICENSE](https://github.com/midoks/mdserver-web/blob/master/LICENSE) 文件中。
