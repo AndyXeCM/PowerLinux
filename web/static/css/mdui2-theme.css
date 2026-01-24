@@ -72,9 +72,9 @@ a {
 }
 
 .mw-topbar-glass {
-    background: rgba(247, 248, 251, 0.6);
+    background: color-mix(in srgb, var(--mw-bg) 60%, transparent);
     backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+    border-bottom: 1px solid color-mix(in srgb, var(--mw-border) 40%, transparent);
 }
 
 .mw-topbar-card {
