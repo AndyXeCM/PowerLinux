@@ -74,15 +74,15 @@ a {
 .mw-topbar-card {
     width: 100%;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
     align-items: center;
     padding: 16px 28px;
     gap: 16px;
-    background: rgba(255, 255, 255, 0.5);
-    border: 1px solid var(--mw-border);
+    background: transparent;
+    border: none;
     border-radius: var(--mw-radius);
-    box-shadow: var(--mw-shadow);
-    backdrop-filter: blur(10px);
+    box-shadow: none;
+    backdrop-filter: none;
     overflow: hidden;
 }
 
@@ -120,6 +120,7 @@ a {
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
+    flex-wrap: nowrap;
 }
 
 .mw-topbar-item {
