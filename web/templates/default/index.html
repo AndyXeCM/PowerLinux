@@ -26,44 +26,28 @@
                 <ul class="mw-stat-grid" id="systemInfoList">
                     <li class="circle-box text-center mw-stat-item" id="LoadList">
                         <h3 class="c5 f15">负载状态<a href="https://github.com/midoks/mdserver-web/wiki#负载简述" target="_blank" class="bt-ico-ask" style="cursor: pointer;">?</a></h3>
-                        <div class="circle" style="cursor: pointer;">
-                            <div class="pie_left">
-                                <div class="left"></div>
-                            </div>
-                            <div class="pie_right">
-                                <div class="right"></div>
-                            </div>
-                            <div class="mask"><span id="Load">0</span>%</div>
+                        <div class="mw-stat-progress">
+                            <mdui-linear-progress id="LoadProgress" value="0"></mdui-linear-progress>
                         </div>
-                        <h4 id="LoadState" class="c5 f15">获取中...</h4>
+                        <div class="mw-stat-value mask"><span id="Load">0</span>%</div>
+                        <div id="LoadState" class="mw-stat-status c5 f15">获取中...</div>
                     </li>
                     <li class="circle-box text-center mw-stat-item" id="cpuChart">
                         <h3 class="c5 f15">CPU使用率</h3>
-                        <div class="circle">
-                            <div class="pie_left">
-                                <div class="left"></div>
-                            </div>
-                            <div class="pie_right">
-                                <div class="right"></div>
-                            </div>
-                            <div class="mask"><span id="state">0</span>%</div>
+                        <div class="mw-stat-progress">
+                            <mdui-linear-progress id="CpuProgress" value="0"></mdui-linear-progress>
                         </div>
-                        <h4 id="core" class="c5 f15">获取中...</h4>
+                        <div class="mw-stat-value mask"><span id="state">0</span>%</div>
+                        <div id="core" class="mw-stat-status c5 f15">获取中...</div>
                     </li>
-                    <li class="circle-box text-center mw-stat-item">
+                    <li class="circle-box text-center mw-stat-item mem-release" id="memChart">
                         <h3 class="c5 f15">内存使用率</h3>
-                        <div class="circle mem-release">
-                            <div class="pie_left">
-                                <div class="left"></div>
-                            </div>
-                            <div class="pie_right">
-                                <div class="right"></div>
-                            </div>
-                            <div class="mask"><span id="left">0</span>%</div>
-                            <div class="mem-re-min" style="display: none;"></div>
-                            <div class="mem-re-con" title=""></div>
+                        <div class="mw-stat-progress">
+                            <mdui-linear-progress id="MemProgress" value="0"></mdui-linear-progress>
                         </div>
-                        <h4 id="memory" class="c5 f15">获取中...</h4>
+                        <div class="mw-stat-value mask"><span id="left">0</span>%</div>
+                        <div id="memory" class="mw-stat-status c5 f15">获取中...</div>
+                        <mdui-button id="memReleaseBtn" variant="text" class="mw-mem-release-btn">释放内存</mdui-button>
                     </li>
                 </ul>
             </div>

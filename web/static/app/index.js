@@ -1,6 +1,6 @@
 //获取负载
 function getLoad(data) {
-    $("#LoadList .mask").html("<span id='Load' style='font-size:14px'>获取中..</span>");
+    $("#Load").text("获取中..");
     setCookie('one', data.one);
     setCookie('five', data.five);
     setCookie('fifteen', data.fifteen);
@@ -23,19 +23,17 @@ function getLoad(data) {
         LoadColor = '#dd2f00';
         AverageText = '运行堵塞';
     }
-    index.find('.circle').css("background", LoadColor);
     index.find('.mask').css({ "color": LoadColor });
-    $("#LoadList .mask").html("<span id='Load'></span>%");
+    $("#LoadProgress").attr('value', Occupy).css('--mdui-color-primary', LoadColor);
     $('#Load').html(Occupy);
     $('#LoadState').html('<span>' + AverageText + '</span>');
-    setImg();
 }
 
-$('#LoadList .circle').click(function() {
+$('#LoadList .mw-stat-progress').click(function() {
     // getNet();
 });
 
-$('#LoadList .mask').hover(function() {
+$('#LoadList .mw-stat-value').hover(function() {
     var one, five, fifteen;
     var that = this;
     one = getCookie('one');
@@ -79,31 +77,25 @@ function rocket(sum, m) {
 
 //释放内存
 function reMemory() {
-    setTimeout(function() {
-        $(".mem-release").find('.mask').css({ 'color': '#20a53a', 'font-size': '14px' }).html('<span style="display:none">1</span>' + lan.index.memre_ok_0 + ' <img src="/static/img/ings.gif">');
-        $.post('/system/rememory', '', function(rdata) {
-            var percent = getPercent(rdata.memRealUsed, rdata.memTotal);
-            var memText = Math.round(rdata.memRealUsed) + "/" + Math.round(rdata.memTotal) + " (MB)";
-            percent = Math.round(percent);
-            $(".mem-release").find('.mask').css({ 'color': '#20a53a', 'font-size': '14px' }).html("<span style='display:none'>" + percent + "</span>" + lan.index.memre_ok);
-            setCookie("mem-before", memText);
-            var memNull = Math.round(getCookie("memRealUsed") - rdata.memRealUsed);
-            setTimeout(function() {
-                if (memNull > 0) {
-                    $(".mem-release").find('.mask').css({ 'color': '#20a53a', 'font-size': '14px', 'line-height': '22px', 'padding-top': '22px' }).html("<span style='display:none'>" + percent + "</span>" + lan.index.memre_ok_1 + "<br>" + memNull + "MB");
-                } else {
-                    $(".mem-release").find('.mask').css({ 'color': '#20a53a', 'font-size': '14px' }).html("<span style='display:none'>" + percent + "</span>" + lan.index.memre_ok_2);
-                }
-                $(".mem-release").removeClass("mem-action");
-                $("#memory").text(memText);
-                setCookie("memRealUsed", rdata.memRealUsed);
-            }, 1000);
-            setTimeout(function() {
-                $(".mem-release").find('.mask').removeAttr("style").html("<span>" + percent + "</span>%");
-                $(".mem-release").find(".mem-re-min").show();
-            }, 2000)
-        },'json');
-    }, 2000);
+    $("#memory").text(lan.index.memre_ok_0);
+    $.post('/system/rememory', '', function(rdata) {
+        var percent = getPercent(rdata.memRealUsed, rdata.memTotal);
+        percent = Math.round(parseFloat(percent) || 0);
+        var memText = Math.round(rdata.memRealUsed) + "/" + Math.round(rdata.memTotal) + " (MB)";
+        var prevMemRealUsed = parseFloat(getCookie("memRealUsed")) || 0;
+        setCookie("mem-before", memText);
+        setCookie("memRealUsed", rdata.memRealUsed);
+        $("#left").text(percent);
+        setcolor(percent, "#left", 75, 90, 95);
+        $("#MemProgress").attr('value', percent);
+        var memNull = Math.round(prevMemRealUsed - rdata.memRealUsed);
+        if (memNull > 0) {
+            $("#memory").text(lan.index.memre_ok_1 + " " + memNull + "MB");
+        } else {
+            $("#memory").text(lan.index.memre_ok_2);
+        }
+        $(".mem-release").removeClass("mem-action");
+    },'json');
 }
 
 function getPercent(num, total) {
@@ -120,12 +112,13 @@ function getDiskInfo() {
         var rdata = rdata.data;
         var dBody;
         for (var i = 0; i < rdata.length; i++) {
-            var LoadColor = setcolor(parseInt(rdata[i].size[3].replace('%', '')), false, 75, 90, 95);
+            var usagePercent = parseInt(rdata[i].size[3].replace('%', ''));
+            var LoadColor = setcolor(usagePercent, false, 75, 90, 95);
 
             //判断inode信息是否存在
             var inodes = '';
             if ( typeof(rdata[i]['inodes']) !=='undefined' ){
-                inodes = '<div class="mask" style="color:' + LoadColor + '" data="Inode信息<br>总数：' + rdata[i].inodes[0] + '<br>已使用：' + rdata[i].inodes[1] + '<br>可用：' + rdata[i].inodes[2] + '<br>Inode使用率：' + rdata[i].inodes[3] + '"><span>' + rdata[i].size[3].replace('%', '') + '</span>%</div>';
+                inodes = ' data="Inode信息<br>总数：' + rdata[i].inodes[0] + '<br>已使用：' + rdata[i].inodes[1] + '<br>可用：' + rdata[i].inodes[2] + '<br>Inode使用率：' + rdata[i].inodes[3] + '"';
 
                 var ipre = parseInt(rdata[i].inodes[3].replace('%', ''));
                 if (ipre > 95) {
@@ -143,18 +136,15 @@ function getDiskInfo() {
            
             dBody = '<li class="col-xs-6 col-sm-3 col-md-3 col-lg-2 mtb20 circle-box text-center diskbox">' +
                 '<h3 class="c5 f15">' + rdata[i].path + '</h3>' +
-                '<div class="circle" style="background:' + LoadColor + '">' +
-                '<div class="pie_left">' +
-                '<div class="left"></div>' +
+                '<div class="mw-stat-progress mw-disk-progress">' +
+                '<mdui-linear-progress value="' + usagePercent + '" style="--mdui-color-primary: ' + LoadColor + ';"></mdui-linear-progress>' +
                 '</div>' +
-                '<div class="pie_right">' +
-                '<div class="right"></div>' +
-                '</div>'+ inodes +'</div>' +
+                '<div class="mw-stat-value mask" style="color:' + LoadColor + '"' + inodes + '><span>' + usagePercent + '</span>%</div>' +
                 '<h4 class="c5 f15">' + rdata[i].size[1] + '/' + rdata[i].size[0] + '</h4>' +
                 '</li>'
             $("#systemInfoList").append(dBody);
-            setImg();
         }
+        setImg();
     },'json');
 }
 
@@ -183,6 +173,7 @@ function setMemImg(info){
     var memPre = Math.floor(info.memRealUsed / (info.memTotal / 100));
     $("#left").html(memPre);
     setcolor(memPre, "#left", 75, 90, 95);
+    $("#MemProgress").attr('value', memPre);
 
     var memFree = info.memTotal - info.memRealUsed;
     if (memFree/(1024*1024) < 64) {
@@ -242,9 +233,10 @@ function setcolor(pre, s, s1, s2, s3) {
     if (s == false) {
         return LoadColor;
     }
-    var co = $(s).parent('.mask');
+    var co = $(s).closest('.mask');
     co.css("color", LoadColor);
-    co.parent('.circle').css("background", LoadColor);
+    var item = co.closest('.mw-stat-item');
+    item.find('mdui-linear-progress').attr('value', pre).css('--mdui-color-primary', LoadColor);
 }
 
 
@@ -890,34 +882,12 @@ function loadKeyDataCount(){
 }
 
 $(function() {
-    $(".mem-release").hover(function() {
-        $(this).addClass("shine_green");
-        if (!($(this).hasClass("mem-action"))) {
-            $(this).find(".mem-re-min").hide();
-            $(this).find(".mask").css({ "color": "#d2edd8" });
-            $(this).find(".mem-re-con").css({ "display": "block" });
-            $(this).find(".mem-re-con").animate({ "top": "0", opacity: 1 });
-            $("#memory").text('内存释放');
+    $("#memReleaseBtn").on("click", function() {
+        if ($(".mem-release").hasClass("mem-action")) {
+            return;
         }
-    }, function() {
-        $(this).removeClass("shine_green");
-        $(this).find(".mask").css({ "color": "#20a53a" });
-        $(this).find(".mem-re-con").css({ "top": "15px", opacity: 1, "display": "none" });
-        $("#memory").text(getCookie("mem-before"));
-        $(this).find(".mem-re-min").hide();
-    }).click(function() {
-        $(this).find(".mem-re-min").hide();
-        if (!($(this).hasClass("mem-action"))) {
-            reMemory();
-            var btlen = $(".mem-release").find(".mask span").text();
-            $(this).addClass("mem-action");
-            $(this).find(".mask").css({ "color": "#20a53a" });
-            $(this).find(".mem-re-con").animate({ "top": "-400px", opacity: 0 });
-            $(this).find(".pie_right .right").css({ "transform": "rotate(3deg)" });
-            for (var i = 0; i < btlen; i++) {
-                setTimeout("rocket(" + btlen + "," + i + ")", i * 30);
-            }
-        }
+        $(".mem-release").addClass("mem-action");
+        reMemory();
     });
 
     $("select[name='network-io'],select[name='disk-io']").change(function () {
