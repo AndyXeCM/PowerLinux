@@ -24,25 +24,6 @@ PowerLinux 希望把常见的运维任务做得更“省心”：
 - [兼容性测试报告](/compatibility.md)
 - [常用命令说明](/cmd.md)
 
-### JSDelivr安装链接
-
-- **初始安装**
-
-```
-bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/install.sh)
-```
-
-- **直接更新**
-
-```
-bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/update.sh)
-```
-
-- **卸载**
-
-```
-wget --no-check-certificate -O uninstall.sh https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/uninstall.sh && bash uninstall.sh
-```
 
 ### Github安装链接
 
