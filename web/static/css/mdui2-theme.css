@@ -610,6 +610,10 @@ mdui-card.mw-card {
     box-sizing: border-box;
 }
 
+.mw-monitor-chart {
+    height: 320px;
+}
+
 .tabs-nav .tab-list {
     display: flex;
     gap: 16px;
@@ -709,5 +713,9 @@ mdui-card.mw-card {
 
     .mw-chart {
         height: 260px;
+    }
+
+    .mw-monitor-chart {
+        height: 240px;
     }
 }
