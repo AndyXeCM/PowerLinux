@@ -13,6 +13,9 @@ COMPLETE='[\033[32mDONE\033[0m]'
 WARN='[\033[33mWARN\033[0m]'
 ERROR='[\033[31mERROR\033[0m]'
 WORKING='[\033[34m*\033[0m]'
+REPO_OWNER="AndyXeCM"
+REPO_NAME="PowerLinux"
+REPO_BRANCH="master"
 
 
 # LANG=en_US.UTF-8
@@ -21,7 +24,7 @@ is64bit=`getconf LONG_BIT`
 if [ -f /www/server/mdserver-web/tools.py ];then
 	echo -e "检测到旧版代码，为避免翻车先停一下～"
 	echo -e "如确认继续，请先执行: rm -rf /www/server/mdserver-web"
-	echo -e "处理完再回来开装吧！"
+	echo -e "处理完再回来开装吧！需要帮忙也可以随时再问我。"
 	exit 0
 fi
 
@@ -78,7 +81,7 @@ function ChooseProxyURL(){
     echo -e '|                                                   |'
     echo -e '|   =============================================   |'
     echo -e '|                                                   |'
-    echo -e '|     欢迎使用 Linux 一键安装面板源码，开冲！       |'
+    echo -e '|   欢迎使用 Linux 一键安装面板源码，马上开始吧！   |'
     echo -e '|                                                   |'
     echo -e '|   =============================================   |'
     echo -e '|                                                   |'
@@ -102,7 +105,7 @@ function ChooseProxyURL(){
     echo -e "        系统时间  ${BLUE}$(date "+%Y-%m-%d %H:%M:%S")${PLAIN}"
     echo -e ''
     echo -e '#####################################################'
-    CHOICE_A=$(echo -e "\n${BOLD}└─ 请选择并输入你想使用的代理地址 [ 1-${SOURCE_LIST_LEN} ]：${PLAIN}")
+    CHOICE_A=$(echo -e "\n${BOLD}└─ 请选择并输入你想使用的代理地址 [ 1-${SOURCE_LIST_LEN} ]（回车默认 1）：${PLAIN}")
 
     read -p "${CHOICE_A}" INPUT
     # echo $INPUT
@@ -110,7 +113,7 @@ function ChooseProxyURL(){
         INPUT=1
         TMP_INPUT=`expr $INPUT - 1`
         INPUT_KEY=${SOURCE_LIST_KEY[$TMP_INPUT]}
-        echo -e "\n默认选择[${BLUE}${INPUT_KEY}${PLAIN}]，马上开装～"
+        echo -e "\n默认选择[${BLUE}${INPUT_KEY}${PLAIN}]，准备开始安装～"
     fi
 
     if [ "$INPUT" -lt "0" ];then
@@ -205,7 +208,7 @@ else
 fi
 
 if [ "$EUID" -ne 0 ] && [ "$OSNAME" != "macos" ];then 
-	echo "Please run as root!"
+	echo "需要使用 root 权限运行安装脚本，请用 sudo 或切换到 root 后重试～"
  	exit
 fi
 
@@ -227,7 +230,8 @@ if [ $OSNAME != "macos" ];then
 	mkdir -p /www/backup/site
 
 	if [ ! -d /www/server/mdserver-web ];then
-		curl --insecure -sSLo /tmp/master.tar.gz ${HTTP_PREFIX}github.com/PowerLinux/PowerLinux/archive/refs/heads/master.tar.gz
+		echo "开始下载面板源码（${REPO_OWNER}/${REPO_NAME}，分支 ${REPO_BRANCH}）..."
+		curl --insecure -sSLo /tmp/master.tar.gz ${HTTP_PREFIX}github.com/${REPO_OWNER}/${REPO_NAME}/archive/refs/heads/${REPO_BRANCH}.tar.gz
 		TARBALL_DIR=$(tar -tf /tmp/master.tar.gz | head -1 | cut -d/ -f1)
 		cd /tmp && tar -zxvf /tmp/master.tar.gz
 		mv -f /tmp/${TARBALL_DIR} /www/server/mdserver-web
@@ -250,7 +254,7 @@ fi
 
 echo "use system version: ${OSNAME}"
 if [ "${OSNAME}" == "macos" ];then
-	curl --insecure -fsSL ${HTTP_PREFIX}raw.githubusercontent.com/PowerLinux/PowerLinux/refs/heads/dev/scripts/install/macos.sh | bash
+	curl --insecure -fsSL ${HTTP_PREFIX}raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/refs/heads/${REPO_BRANCH}/scripts/install/macos.sh | bash
 else
 	cd /www/server/mdserver-web && bash scripts/install/${OSNAME}.sh
 fi
