@@ -6,7 +6,7 @@
 <p></p>
 欢迎各位积极完善，提交pull request!
 <p></p>
-基于[MWPanel](https://github.com/midoks/mdserver-web/)构建，没有原作者的构建就没有这个面板，非常感谢！！！
+基于[MWPanel](https://github.com/midoks/mdserver-web/) 构建，没有原作者的构建就没有这个面板，非常感谢！！！
 <p></p>
 兼容MWPanel的应用生态
 
