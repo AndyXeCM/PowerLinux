@@ -439,6 +439,8 @@ textarea {
     border-radius: var(--mw-radius);
     box-shadow: var(--mw-shadow);
     display: block;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .mw-card-header {
@@ -463,12 +465,14 @@ textarea {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    width: 100%;
 }
 
 .mw-dashboard-body {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    width: 100%;
 }
 
 .mw-page-header {
@@ -546,10 +550,20 @@ textarea {
     border: 1px solid var(--mw-border);
 }
 
+.mw-overview-grid .sys-li-box {
+    margin: 0;
+    max-width: none;
+    width: 100%;
+    height: auto;
+    background: transparent;
+    border: none;
+}
+
 .mw-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 20px;
+    width: 100%;
 }
 
 .mw-grid-item {
