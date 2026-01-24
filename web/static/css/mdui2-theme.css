@@ -1140,7 +1140,7 @@ mdui-card.mw-card {
 }
 
 .mdui-dialog {
-    --mdui-color-surface: rgba(255, 255, 255, 0.55);
+    --mdui-color-surface: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(8px);
 }
 
@@ -1148,19 +1148,19 @@ mdui-card.mw-card {
     border-radius: 16px !important;
     box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18) !important;
     border: 1px solid var(--mw-border) !important;
-    background: rgba(255, 255, 255, 0.55) !important;
+    background: rgba(255, 255, 255, 0.5) !important;
     backdrop-filter: blur(6px);
 }
 
 .layui-layer-title {
-    background: rgba(248, 249, 252, 0.6) !important;
+    background: rgba(248, 249, 252, 0.5) !important;
     border-bottom: 1px solid var(--mw-border) !important;
     font-weight: 600 !important;
     padding: 0 16px !important;
 }
 
 .layui-layer-btn {
-    background: rgba(255, 255, 255, 0.55) !important;
+    background: rgba(255, 255, 255, 0.5) !important;
     border-top: 1px solid var(--mw-border) !important;
     padding: 12px 16px !important;
 }
