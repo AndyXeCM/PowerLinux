@@ -871,13 +871,15 @@ mdui-card.mw-card {
 
 .mw-file-card .mw-card-content {
     padding: 20px;
+    background: var(--mw-surface);
+    border-radius: 14px;
 }
 
 .mw-file-toolbar {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    background: color-mix(in srgb, var(--mw-surface) 70%, var(--mw-surface-container) 30%);
+    background: var(--mw-surface);
     border: 1px solid var(--mw-border);
     border-radius: 16px;
     padding: 18px;
@@ -1096,6 +1098,7 @@ mdui-card.mw-card {
     border-radius: 12px;
     border: 1px solid var(--mw-border);
     overflow: hidden;
+    background: var(--mw-surface);
 }
 
 .mw-file-table .table {
@@ -1121,6 +1124,25 @@ mdui-card.mw-card {
 
 .mw-file-pagination {
     margin-top: 12px;
+}
+
+.mw-file-card .fileList .file {
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: transparent;
+}
+
+.mw-file-card .fileList>div:hover,
+.mw-file-card .fileList div.ui-selecting {
+    background: var(--mw-surface-container);
+    border-color: var(--mw-border);
+}
+
+.mw-file-card .fileList div.active,
+.mw-file-card .fileList div.focus,
+.mw-file-card .fileList div.ui-selected {
+    background: color-mix(in srgb, var(--mw-primary) 12%, var(--mw-surface-container) 88%);
+    border-color: var(--mw-primary);
 }
 
 .mw-file-context-menu {
