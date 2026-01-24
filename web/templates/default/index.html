@@ -82,9 +82,23 @@
                 </div>
             </mdui-card>
 
-            <mdui-card class="mw-card mw-grid-item mw-note-board">
-                <div class="mw-card-header">
-                    <div class="mw-card-title">便签</div>
+            <mdui-card class="mw-card mw-grid-item mw-monitor-summary">
+                <div class="mw-card-header mw-monitor-summary-header">
+                    <div class="mw-card-title">监控</div>
+                    <div class="mw-monitor-tabs">
+                        <div class="tabs-nav">
+                            <span class="tabs-item active">流量</span>
+                            <span class="tabs-item">磁盘IO</span>
+                        </div>
+                        <div class="tabs-down">
+                            <select class="bt-input-text" name="network-io" style="font-size: 12px;">
+                                <option value="ALL">全部</option>
+                            </select>
+                            <select class="bt-input-text hide" name="disk-io" style="font-size: 12px;">
+                                <option value="ALL">全部</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <div class="mw-card-content">
                     <div class="mw-note-preview" id="notePreview"></div>
