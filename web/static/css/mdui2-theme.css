@@ -67,7 +67,7 @@ a {
     position: sticky;
     top: 0;
     z-index: 900;
-    background: #f7f8fb;
+    background: var(--mw-bg);
     padding: 16px 28px 0;
 }
 
@@ -120,11 +120,11 @@ a {
 .mw-topbar-nav {
     display: flex;
     align-items: center;
+    flex: 1 1 auto;
     flex-wrap: nowrap;
     gap: 10px;
     padding: 4px 0;
     justify-content: center;
-    min-width: 0;
     overflow-x: auto;
     scrollbar-width: thin;
 }
@@ -133,6 +133,7 @@ a {
     display: flex;
     align-items: center;
     gap: 8px;
+    margin-left: auto;
     flex-shrink: 0;
     flex-wrap: nowrap;
     white-space: nowrap;
