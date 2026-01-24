@@ -594,7 +594,7 @@ mdui-card.mw-card {
 }
 
 .mw-stat-progress mdui-linear-progress::part(track) {
-    background: color-mix(in srgb, var(--mw-surface) 70%, var(--mw-border) 30%);
+    background: var(--mw-surface-container);
 }
 
 .mw-stat-progress mdui-linear-progress::part(indicator) {
