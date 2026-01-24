@@ -1631,3 +1631,49 @@ function appPage(){
 		}
 	});
 }
+
+$(function () {
+    var themeInput = document.getElementById('mwThemeColor');
+    if (!themeInput) {
+        return;
+    }
+
+    var storedColor = null;
+    if (window.MWTheme && typeof window.MWTheme.getStoredColor === 'function') {
+        storedColor = window.MWTheme.getStoredColor();
+    }
+    if (storedColor) {
+        themeInput.value = storedColor;
+    }
+
+    var applyTheme = function (color) {
+        if (window.MWTheme && typeof window.MWTheme.applyColor === 'function') {
+            window.MWTheme.applyColor(color);
+        }
+    };
+
+    themeInput.addEventListener('input', function () {
+        applyTheme(themeInput.value);
+    });
+
+    var resetButton = document.getElementById('mwThemeReset');
+    if (resetButton) {
+        resetButton.addEventListener('click', function () {
+            if (window.MWTheme && typeof window.MWTheme.reset === 'function') {
+                window.MWTheme.reset();
+            }
+            themeInput.value = '#6750a4';
+        });
+    }
+
+    document.querySelectorAll('.mw-theme-preset').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var color = button.getAttribute('data-theme-color');
+            if (!color) {
+                return;
+            }
+            themeInput.value = color;
+            applyTheme(color);
+        });
+    });
+});
