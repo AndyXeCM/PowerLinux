@@ -17,11 +17,11 @@
             <div id="tipTools" class="mw-file-toolbar">
                 <div class="mw-file-toolbar-row">
                     <div class="mw-file-path">
-                        <button id="backBtn" class="backBtn mw-file-icon-btn" title="" onClick="backDir()">
-                            <i class="glyphicon glyphicon-arrow-left"></i>
+                        <button id="backBtn" class="backBtn mw-file-icon-btn mw-icon-button" title="返回上一级" onClick="backDir()">
+                            <span class="material-icons">arrow_back</span>
                         </button>
-                        <button class="backBtn refreshBtn mw-file-icon-btn" title="">
-                            <i class="glyphicon glyphicon-refresh"></i>
+                        <button class="backBtn refreshBtn mw-file-icon-btn mw-icon-button" title="刷新目录">
+                            <span class="material-icons">refresh</span>
                         </button>
                         <span id='DirPathPlace' class="mw-file-path-input"><input id="fileInputPath" type="text"></span>
                         <span id='PathPlaceBtn' class="mw-file-path-actions"></span>
@@ -29,7 +29,9 @@
                     <div class="mw-file-search">
                         <form target="hid">
                             <input type="text" id="search_file" class="ser-text mw-file-search-input" placeholder="搜索文件/目录" autocomplete="false" />
-                            <button type="button" class="ser-sub mw-file-search-btn" onclick='searchFile(1)'></button>
+                            <button type="button" class="ser-sub mw-file-search-btn mw-icon-button" onclick='searchFile(1)' aria-label="搜索">
+                                <span class="material-icons">search</span>
+                            </button>
                             <div class="file_search" draggable="false">
                                 <label for="search_file">包含子目录</label>
                                 <div id="search_all" class="file_search_checked"></div>
@@ -47,11 +49,11 @@
                         <span id='comlist' class="comlist mw-file-breadcrumbs"></span>
                     </div>
                     <div class="mw-file-view-toggle">
-                        <button id="set_icon" type="button" class="mw-file-icon-btn">
-                            <i class="glyphicon glyphicon-th"></i>
+                        <button id="set_icon" type="button" class="mw-file-icon-btn mw-icon-button" aria-label="图标视图">
+                            <span class="material-icons">grid_view</span>
                         </button>
-                        <button id="set_list" type="button" class="mw-file-icon-btn active">
-                            <i class="glyphicon glyphicon-th-list"></i>
+                        <button id="set_list" type="button" class="mw-file-icon-btn mw-icon-button active" aria-label="列表视图">
+                            <span class="material-icons">list</span>
                         </button>
                     </div>
                 </div>
