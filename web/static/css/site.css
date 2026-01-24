@@ -1357,6 +1357,61 @@ html .menu .menu_exit:hover {
     margin-top: 6px;
 }
 
+.mw-note-board {
+    display: flex;
+    flex-direction: column;
+}
+
+.mw-note-preview {
+    min-height: 240px;
+    padding: 12px;
+    border: 1px dashed #d0d7de;
+    border-radius: 8px;
+    background: #fff;
+    color: #1f2328;
+    line-height: 1.6;
+    white-space: normal;
+}
+
+.mw-note-preview ul,
+.mw-note-preview ol {
+    padding-left: 20px;
+}
+
+.mw-note-preview h1,
+.mw-note-preview h2,
+.mw-note-preview h3,
+.mw-note-preview h4 {
+    margin-top: 12px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.mw-note-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mw-note-input {
+    resize: vertical;
+    min-height: 240px;
+    font-family: inherit;
+    line-height: 1.6;
+}
+
+.mw-note-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.mw-note-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 0;
+}
+
 .circle {
     width: 100px;
     height: 100px;
