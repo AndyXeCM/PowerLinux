@@ -1006,15 +1006,36 @@ function getload(b,e){
 
 function getChartTheme() {
 	var styles = getComputedStyle(document.documentElement);
+	function resolveCssVar(value) {
+		if (!value) {
+			return value;
+		}
+		var trimmed = value.trim();
+		if (trimmed.indexOf('var(') !== 0) {
+			return trimmed;
+		}
+		var match = trimmed.match(/var\((--[^,\s)]+)\s*(?:,\s*(.+))?\)/);
+		if (!match) {
+			return trimmed;
+		}
+		var resolved = styles.getPropertyValue(match[1]).trim();
+		if (resolved) {
+			return resolveCssVar(resolved);
+		}
+		if (match[2]) {
+			return resolveCssVar(match[2].trim());
+		}
+		return trimmed;
+	}
 	return {
-		primary: styles.getPropertyValue('--mw-primary').trim() || '#6750a4',
-		secondary: styles.getPropertyValue('--mdui-color-secondary').trim() || '#4f8ef7',
-		tertiary: styles.getPropertyValue('--mdui-color-tertiary').trim() || '#22c55e',
-		accent: styles.getPropertyValue('--mdui-color-primary-container').trim() || '#a855f7',
-		border: styles.getPropertyValue('--mw-border').trim() || '#e2e8f0',
-		muted: styles.getPropertyValue('--mw-muted').trim() || '#64748b',
-		surface: styles.getPropertyValue('--mw-surface').trim() || '#ffffff',
-		text: styles.getPropertyValue('--mw-text').trim() || '#1f1f1f'
+		primary: resolveCssVar(styles.getPropertyValue('--mw-primary')) || '#6750a4',
+		secondary: resolveCssVar(styles.getPropertyValue('--mdui-color-secondary')) || '#4f8ef7',
+		tertiary: resolveCssVar(styles.getPropertyValue('--mdui-color-tertiary')) || '#22c55e',
+		accent: resolveCssVar(styles.getPropertyValue('--mdui-color-primary-container')) || '#a855f7',
+		border: resolveCssVar(styles.getPropertyValue('--mw-border')) || '#e2e8f0',
+		muted: resolveCssVar(styles.getPropertyValue('--mw-muted')) || '#64748b',
+		surface: resolveCssVar(styles.getPropertyValue('--mw-surface')) || '#ffffff',
+		text: resolveCssVar(styles.getPropertyValue('--mw-text')) || '#1f1f1f'
 	};
 }
 

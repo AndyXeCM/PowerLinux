@@ -603,7 +603,7 @@ mdui-card.mw-card {
 .mw-chart {
     width: 100%;
     height: 330px;
-    background: var(--mw-surface-container);
+    background: color-mix(in srgb, var(--mw-surface-container) 92%, var(--mw-primary) 8%);
     border: 1px solid var(--mw-border);
     border-radius: 16px;
     padding: 8px;
