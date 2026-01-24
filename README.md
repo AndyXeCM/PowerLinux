@@ -1,5 +1,6 @@
 # PowerLinux
-### 轻量易用的下一代Linux控制面板
+轻量易用的下一代Linux控制面板
+基于[MWPanel](https://github.com/midoks/mdserver-web/),同时增加现代化的UI和更多控制模块
 
 
 ## 设计理念
@@ -22,41 +23,6 @@ PowerLinux 希望把常见的运维任务做得更“省心”：
 
 - [兼容性测试报告](/compatibility.md)
 - [常用命令说明](/cmd.md)
-
-## 安装指南（推荐）
-
-> 适用于大多数用户，按步骤执行即可。
-
-1. **准备环境**
-   - 推荐系统：Debian / Ubuntu
-   - 确保具备 `curl`、`bash` 基础工具
-
-2. **一键安装**
-
-```
-bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/install.sh)
-```
-
-3. **完成后访问面板**
-
-```
-http://<服务器IP>:7200
-```
-
-> 首次登录信息会在安装输出中显示，请妥善保存。
-
-## 更新与卸载
-
-- **更新**
-
-```
-bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/update.sh)
-```
-
-
-### 版本更新 0.18.4
-
-- 国内安装优化。
 
 ### JSDelivr安装链接
 
