@@ -7,7 +7,7 @@
     --mw-bg: var(--mdui-color-surface-container-low, #f6f6fa);
     --mw-surface: var(--mdui-color-surface, #ffffff);
     --mw-surface-container: var(--mdui-color-surface-container, #f2f3f7);
-    --mw-border: var(--mdui-color-outline-variant, #e4e4e7);
+    --mw-border: var(--mdui-color-outline, #d1d5db);
     --mw-text: var(--mdui-color-on-surface, #1f1f1f);
     --mw-muted: var(--mdui-color-on-surface-variant, #5f6368);
     --mw-shadow: 0 10px 24px rgba(18, 18, 23, 0.08);
@@ -157,6 +157,8 @@ a {
 .mw-content {
     padding: 24px;
     flex: 1;
+    min-width: 0;
+    display: flow-root;
 }
 
 .footer {
@@ -242,6 +244,9 @@ textarea {
 
 .main-content {
     padding: 0;
+    margin-left: 0;
+    width: 100%;
+    min-width: 0;
 }
 
 .index-pos-box {
