@@ -1,6 +1,6 @@
 # PowerLinux
 轻量易用的下一代Linux控制面板
-基于[MWPanel](https://github.com/midoks/mdserver-web/),同时增加现代化的UI和更多控制模块
+基于[PowerLinux](https://github.com/midoks/mdserver-web/),同时增加现代化的UI和更多控制模块
 
 
 ## 设计理念
