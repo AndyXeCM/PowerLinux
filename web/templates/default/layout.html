@@ -172,6 +172,7 @@ if (thisPath.indexOf('?')>-1){
 }
 </script>
 <script src="https://unpkg.com/mdui@2.0.0/mdui.global.js"></script>
+<script src="/static/app/theme.js?v={{config.version}}"></script>
 <script type="text/javascript">
     const drawerToggle = document.getElementById('mw-drawer-toggle');
     const drawer = document.getElementById('mw-drawer');
@@ -179,6 +180,10 @@ if (thisPath.indexOf('?')>-1){
         drawerToggle.addEventListener('click', function () {
             document.body.classList.toggle('mw-drawer-open');
         });
+    }
+
+    if (window.MWTheme && typeof window.MWTheme.init === 'function') {
+        window.MWTheme.init();
     }
 </script>
 <script src="/static/codemirror/lib/codemirror.js?v={{config.version}}"></script>
