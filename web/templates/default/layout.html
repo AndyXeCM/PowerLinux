@@ -70,7 +70,7 @@
                 <button class="mw-icon-button" id="mw-drawer-toggle" aria-label="Toggle menu">
                     <span class="material-icons">menu</span>
                 </button>
-                <div class="mw-topbar-title">mdserver-web</div>
+                <div class="mw-topbar-title">PowerLinux</div>
                 <div class="mw-topbar-actions">
                     <button id="task" class="mw-icon-button" onclick="messageBox();" aria-label="Tasks">
                         <span class="material-icons">notifications</span>
@@ -124,7 +124,7 @@
                             <img src="https://digitalvirt.com/templates/BlueWhite/img/logo-dark.svg"/>
                         </a>
                     </td>
-                    <td>mdserver-web</td>
+                    <td>PowerLinux</td>
                 </tr>
             </tbody>
         </table>
@@ -173,9 +173,19 @@ if (thisPath.indexOf('?')>-1){
 <script type="text/javascript">
     const drawerToggle = document.getElementById('mw-drawer-toggle');
     const drawer = document.getElementById('mw-drawer');
+    const drawerBreakpoint = 1024;
     if (drawerToggle && drawer) {
         drawerToggle.addEventListener('click', function () {
-            document.body.classList.toggle('mw-drawer-open');
+            if (window.innerWidth <= drawerBreakpoint) {
+                document.body.classList.toggle('mw-drawer-open');
+            } else {
+                document.body.classList.toggle('mw-drawer-collapsed');
+            }
+        });
+        window.addEventListener('resize', function () {
+            if (window.innerWidth > drawerBreakpoint) {
+                document.body.classList.remove('mw-drawer-open');
+            }
         });
     }
 
