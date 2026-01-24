@@ -74,16 +74,29 @@ a {
 .mw-topbar-card {
     width: 100%;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 28px;
-    gap: 16px;
+    align-items: flex-end;
     flex-wrap: nowrap;
-    background: rgba(255, 255, 255, 0.5);
-    border: 1px solid var(--mw-border);
-    border-radius: var(--mw-radius);
-    box-shadow: var(--mw-shadow);
-    backdrop-filter: blur(10px);
+    padding: 16px 28px 0;
+    gap: 16px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    overflow: hidden;
+}
+
+.mw-topbar-left,
+.mw-topbar-right {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.mw-topbar-center {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
 }
 
 .mw-topbar-brand {
@@ -91,6 +104,7 @@ a {
     flex-direction: column;
     gap: 4px;
     flex-shrink: 0;
+    align-items: flex-start;
 }
 
 .mw-topbar-title {
@@ -106,10 +120,11 @@ a {
 .mw-topbar-nav {
     display: flex;
     align-items: center;
-    flex: 0 1 auto;
     flex-wrap: nowrap;
     gap: 10px;
-    padding: 4px 0;
+    padding: 0;
+    justify-content: center;
+    min-width: 0;
     overflow-x: auto;
     scrollbar-width: thin;
 }
@@ -119,6 +134,9 @@ a {
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    align-self: flex-end;
 }
 
 .mw-topbar-item {
@@ -128,7 +146,10 @@ a {
     width: 38px;
     height: 38px;
     border-radius: 12px;
+    border: none;
+    background: transparent;
     color: var(--mw-muted);
+    cursor: pointer;
     transition: background 0.2s ease, color 0.2s ease;
 }
 
