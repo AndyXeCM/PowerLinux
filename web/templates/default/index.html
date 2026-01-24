@@ -82,45 +82,22 @@
                 </div>
             </mdui-card>
 
-            <mdui-card class="mw-card mw-grid-item mw-monitor-summary">
-                <div class="mw-card-header mw-monitor-summary-header">
-                    <div class="mw-card-title">监控</div>
-                    <div class="mw-monitor-tabs">
-                        <div class="tabs-nav">
-                            <span class="tabs-item active">流量</span>
-                            <span class="tabs-item">磁盘IO</span>
-                        </div>
-                        <div class="tabs-down">
-                            <select class="bt-input-text" name="network-io" style="font-size: 12px;">
-                                <option value="ALL">全部</option>
-                            </select>
-                            <select class="bt-input-text hide" name="disk-io" style="font-size: 12px;">
-                                <option value="ALL">全部</option>
-                            </select>
+            <mdui-card class="mw-card mw-grid-item mw-note-board">
+                <div class="mw-card-header">
+                    <div class="mw-card-title">便签</div>
+                </div>
+                <div class="mw-card-content">
+                    <div class="mw-note-preview" id="notePreview"></div>
+                    <div class="mw-note-editor hide" id="noteEditor">
+                        <textarea id="noteInput" class="bt-input-text mw-note-input" rows="10" placeholder="使用 Markdown 记录你的想法..."></textarea>
+                        <div class="mw-note-actions">
+                            <mdui-button id="noteSaveBtn" variant="text">保存</mdui-button>
+                            <mdui-button id="noteCancelBtn" variant="text">取消</mdui-button>
                         </div>
                     </div>
                 </div>
-
-                <div class="mw-card-content tabs-content">
-                    <div class="tabs-active tabs-item">
-                        <div class="bw-info">
-                            <div class="col-sm-6 col-md-3"><p class="c9"><span class="ico-up"></span>上行</p><a id="upSpeed">0</a></div>
-                            <div class="col-sm-6 col-md-3"><p class="c9"><span class="ico-down"></span>下行</p><a id="downSpeed">0</a></div>
-                            <div class="col-sm-6 col-md-3"><p class="c9">总发送</p><a id="upAll">0</a></div>
-                            <div class="col-sm-6 col-md-3"><p class="c9">总接收</p><a id="downAll">0</a></div>
-                        </div>
-                        <div id="netImg" class="mw-chart"></div>
-                    </div>
-
-                    <div class="tabs-item">
-                        <div class="bw-info">
-                            <div class="col-sm-6 col-md-3"><p class="c9"><span class="ico-read"></span>读取</p><a id="readBytes">0</a></div>
-                            <div class="col-sm-6 col-md-3"><p class="c9"><span class="ico-write"></span>写入</p><a id="writeBytes">0</a></div>
-                            <div class="col-sm-6 col-md-3"><p class="c9">每秒读写</p><a id="diskIops">0</a></div>
-                            <div class="col-sm-6 col-md-3"><p class="c9">读写IO延迟</p><a id="diskTime" style="color: rgb(32, 165, 58);">0</a></div>
-                        </div>
-                        <div id="ioStat" class="mw-chart"></div>
-                    </div>
+                <div class="mw-card-footer mw-note-footer">
+                    <mdui-button id="noteEditBtn" variant="text">编辑</mdui-button>
                 </div>
             </mdui-card>
         </div>
@@ -128,10 +105,12 @@
 </div>
 <script type="text/javascript" src="/static/app/site.js?v={{config.version}}"></script>
 <script type="text/javascript" src="/static/app/soft.js?v={{config.version}}"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script type="text/javascript" src="/static/app/index.js?v={{config.version}}"></script>
 <script type="text/javascript">
 
 index.init();
+initNoteBoard();
 
 pluginInit();
 //加载关键数据总数

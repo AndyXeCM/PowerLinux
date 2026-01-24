@@ -115,6 +115,93 @@ function updateLinearProgressValue(element, value, color) {
     }
 }
 
+function escapeHtml(text) {
+    return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function renderNoteMarkdown(content) {
+    var text = String(content || '').trim();
+    if (!text) {
+        return '';
+    }
+    if (window.marked && typeof window.marked.parse === 'function') {
+        return window.marked.parse(text);
+    }
+    return escapeHtml(text).replace(/\n/g, '<br>');
+}
+
+function initNoteBoard() {
+    var preview = $('#notePreview');
+    if (!preview.length) {
+        return;
+    }
+    var editor = $('#noteEditor');
+    var input = $('#noteInput');
+    var editButton = $('#noteEditBtn');
+    var saveButton = $('#noteSaveBtn');
+    var cancelButton = $('#noteCancelBtn');
+    var storageKey = 'mw-note-board';
+    var fallbackText = '## 欢迎使用便签\n\n- 支持 **Markdown** 语法\n- 记录维护事项、变更说明\n- 点击底部“编辑”开始编写';
+    var storedText = '';
+    try {
+        storedText = localStorage.getItem(storageKey) || '';
+    } catch (error) {
+        storedText = '';
+    }
+    var currentText = storedText || fallbackText;
+
+    function updatePreview(text) {
+        var rendered = renderNoteMarkdown(text);
+        if (!rendered) {
+            preview.html('<p class="c9">暂无便签内容，点击“编辑”开始记录。</p>');
+        } else {
+            preview.html(rendered);
+        }
+    }
+
+    function setEditMode(editing) {
+        if (editing) {
+            editor.removeClass('hide');
+            preview.addClass('hide');
+            editButton.addClass('hide');
+        } else {
+            editor.addClass('hide');
+            preview.removeClass('hide');
+            editButton.removeClass('hide');
+        }
+    }
+
+    updatePreview(currentText);
+    setEditMode(false);
+
+    editButton.on('click', function () {
+        input.val(currentText);
+        setEditMode(true);
+        input.trigger('focus');
+    });
+
+    saveButton.on('click', function () {
+        var nextText = input.val();
+        currentText = nextText;
+        try {
+            localStorage.setItem(storageKey, nextText);
+        } catch (error) {
+            console.warn('Failed to save note content', error);
+        }
+        updatePreview(currentText);
+        setEditMode(false);
+    });
+
+    cancelButton.on('click', function () {
+        setEditMode(false);
+    });
+}
+
 function applyColorAlpha(color, alpha) {
     if (!color) {
         return 'rgba(0, 0, 0, ' + alpha + ')';
@@ -191,8 +278,8 @@ function reMemory() {
         setCookie("mem-before", memText);
         setCookie("memRealUsed", rdata.memRealUsed);
         $("#left").text(percent);
-        setcolor(percent, "#left", 75, 90, 95);
-        updateLinearProgressValue(document.getElementById('MemProgress'), percent);
+        var memColor = setcolor(percent, "#left", 75, 90, 95);
+        updateLinearProgressValue(document.getElementById('MemProgress'), percent, memColor);
         var memNull = Math.round(prevMemRealUsed - rdata.memRealUsed);
         if (prevMemRealUsed > 0 && memNull > 0) {
             $("#memory").text(lan.index.memre_ok_1 + " " + memNull + "MB");
@@ -282,8 +369,8 @@ function setMemImg(info){
 
     var memPre = Math.floor(info.memRealUsed / (info.memTotal / 100));
     $("#left").html(memPre);
-    setcolor(memPre, "#left", 75, 90, 95);
-    updateLinearProgressValue(document.getElementById('MemProgress'), memPre);
+    var memColor = setcolor(memPre, "#left", 75, 90, 95);
+    updateLinearProgressValue(document.getElementById('MemProgress'), memPre, memColor);
 
     var memFree = info.memTotal - info.memRealUsed;
     if (memFree/(1024*1024) < 64) {
@@ -317,7 +404,8 @@ function getInfo() {
         }
         $("#core").html(info.cpuNum + ' 核心');
         $("#state").html(info.cpuRealUsed);
-        setcolor(info.cpuRealUsed, "#state", 30, 70, 90);
+        var cpuColor = setcolor(info.cpuRealUsed, "#state", 30, 70, 90);
+        updateLinearProgressValue(document.getElementById('CpuProgress'), info.cpuRealUsed, cpuColor);
        
 
         // if (info.isuser > 0) {
@@ -352,6 +440,7 @@ function setcolor(pre, s, s1, s2, s3) {
     var item = co.closest('.mw-stat-item');
     var progressElement = item.find('mdui-linear-progress').get(0);
     updateLinearProgressValue(progressElement, value, LoadColor);
+    return LoadColor;
 }
 
 
@@ -370,7 +459,8 @@ function getNet() {
         $("#upAll").attr('title', lan.index.package + ':' + net.upPackets)
         $("#core").html(net.cpu[1] + " " + lan.index.cpu_core);
         $("#state").html(net.cpu[0]);
-        setcolor(net.cpu[0], "#state", 30, 70, 90);
+        var cpuColor = setcolor(net.cpu[0], "#state", 30, 70, 90);
+        updateLinearProgressValue(document.getElementById('CpuProgress'), net.cpu[0], cpuColor);
         setCookie("upNet", net.up);
         setCookie("downNet", net.down);
 
