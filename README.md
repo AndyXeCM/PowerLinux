@@ -53,7 +53,7 @@ http://<服务器IP>:7200
 - **更新**
 
 ```
-bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/install.sh)
+bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/update.sh)
 ```
 
 
@@ -86,19 +86,19 @@ wget --no-check-certificate -O uninstall.sh https://cdn.jsdelivr.net/gh/AndyXeCM
 - 初始安装
 
 ```
-bash <(curl --insecure -fsSL https://raw.githubusercontent.com/AndyXeCM/PowerLinux/main/scripts/install.sh)
+bash <(curl --insecure -fsSL https://raw.githubusercontent.com/AndyXeCM/PowerLinux/master/scripts/install.sh)
 ```
 
 - **更新**
 
 ```
-bash <(curl --insecure -fsSL https://raw.githubusercontent.com/AndyXeCM/PowerLinux/main/scripts/update.sh)
+bash <(curl --insecure -fsSL https://raw.githubusercontent.com/AndyXeCM/PowerLinux/master/scripts/update.sh)
 ```
 
 - **卸载**
 
 ```
-wget --no-check-certificate -O uninstall.sh https://raw.githubusercontent.com/AndyXeCM/PowerLinux/main/scripts/uninstall.sh && bash uninstall.sh
+wget --no-check-certificate -O uninstall.sh https://raw.githubusercontent.com/AndyXeCM/PowerLinux/master/scripts/uninstall.sh && bash uninstall.sh
 ```
 
 ## 插件开发与扩展
