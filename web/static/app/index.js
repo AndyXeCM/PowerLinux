@@ -886,6 +886,24 @@ function reBoot() {
     });
 }
 
+//关机服务器
+function shutdownServer() {
+    layer.confirm('确定要关闭服务器吗？此操作将会停止所有服务。', { title: '关机确认', closeBtn: 1, icon: 3 }, function () {
+        var loadT = layer.load();
+        $.post('/system/shutdown_server', '', function (rdata) {
+            layer.close(loadT);
+            layer.msg(rdata.msg, { icon: rdata.status ? 1 : 2 });
+        }, 'json').error(function () {
+            layer.close(loadT);
+            layer.msg('关机请求失败，请重试。', { icon: 2 });
+        });
+    });
+}
+
+function showVipInfo() {
+    layer.alert('您已经是永久VIP。', { title: '会员信息', closeBtn: 1, icon: 1 });
+}
+
 //修复面板
 function repPanel() {
     layer.confirm(lan.index.rep_panel_msg, { title: lan.index.rep_panel_title, closeBtn: 1, icon: 3 }, function() {
