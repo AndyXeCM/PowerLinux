@@ -76,6 +76,7 @@ a {
     display: grid;
     grid-template-columns: max-content minmax(0, 1fr) max-content;
     align-items: center;
+    flex-wrap: nowrap;
     padding: 16px 28px;
     gap: 16px;
     background: transparent;
@@ -84,6 +85,19 @@ a {
     box-shadow: none;
     backdrop-filter: none;
     overflow: hidden;
+}
+
+.mw-topbar-left,
+.mw-topbar-right {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.mw-topbar-center {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
 }
 
 .mw-topbar-brand {
@@ -121,6 +135,7 @@ a {
     gap: 8px;
     flex-shrink: 0;
     flex-wrap: nowrap;
+    white-space: nowrap;
 }
 
 .mw-topbar-item {
