@@ -15,7 +15,7 @@
     <mdui-card class="mw-card mw-file-card file-box">
         <div class="mw-card-content">
             <div id="tipTools" class="mw-file-toolbar">
-                <div class="mw-file-toolbar-row">
+                <div class="mw-file-toolbar-row mw-file-toolbar-primary">
                     <div class="mw-file-path">
                         <button id="backBtn" class="backBtn mw-file-icon-btn mw-icon-button" title="返回上一级" onClick="backDir()">
                             <span class="material-icons">arrow_back</span>
@@ -23,15 +23,20 @@
                         <button class="backBtn refreshBtn mw-file-icon-btn mw-icon-button" title="刷新目录">
                             <span class="material-icons">refresh</span>
                         </button>
-                        <span id='DirPathPlace' class="mw-file-path-input"><input id="fileInputPath" type="text"></span>
+                        <div class="mw-file-path-field">
+                            <span class="mw-file-path-label">根目录</span>
+                            <span id='DirPathPlace' class="mw-file-path-input"><input id="fileInputPath" type="text" aria-label="路径"></span>
+                        </div>
                         <span id='PathPlaceBtn' class="mw-file-path-actions"></span>
                     </div>
                     <div class="mw-file-search">
-                        <form target="hid">
-                            <input type="text" id="search_file" class="ser-text mw-file-search-input" placeholder="搜索文件/目录" autocomplete="false" />
-                            <button type="button" class="ser-sub mw-file-search-btn mw-icon-button" onclick='searchFile(1)' aria-label="搜索">
-                                <span class="material-icons">search</span>
-                            </button>
+                        <form target="hid" class="mw-file-search-form">
+                            <div class="mw-file-search-field">
+                                <input type="text" id="search_file" class="ser-text mw-file-search-input" placeholder="搜索文件/目录" autocomplete="false" />
+                                <button type="button" class="ser-sub mw-file-search-btn mw-icon-button" onclick='searchFile(1)' aria-label="搜索">
+                                    <span class="material-icons">search</span>
+                                </button>
+                            </div>
                             <div class="file_search" draggable="false">
                                 <label for="search_file">包含子目录</label>
                                 <div id="search_all" class="file_search_checked"></div>
@@ -40,7 +45,7 @@
                         <iframe name='hid' id="hid" style="display:none"></iframe>
                     </div>
                 </div>
-                <div class="mw-file-toolbar-row">
+                <div class="mw-file-toolbar-row mw-file-toolbar-secondary">
                     <div class="mw-file-actions">
                         <mdui-button variant="outlined" class="mw-file-btn" onclick="uploadFiles()">上传</mdui-button>
                         <mdui-button variant="outlined" class="mw-file-btn" onclick="downloadFile()" title="远程下载">远程下载</mdui-button>
