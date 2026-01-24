@@ -27,7 +27,7 @@
                     <li class="circle-box text-center mw-stat-item" id="LoadList">
                         <h3 class="c5 f15">负载状态<a href="https://github.com/midoks/mdserver-web/wiki#负载简述" target="_blank" class="bt-ico-ask" style="cursor: pointer;">?</a></h3>
                         <div class="mw-stat-progress">
-                            <mdui-linear-progress id="LoadProgress" value="0"></mdui-linear-progress>
+                            <mdui-linear-progress id="LoadProgress" max="100" value="0"></mdui-linear-progress>
                         </div>
                         <div class="mw-stat-value mask"><span id="Load">0</span>%</div>
                         <div id="LoadState" class="mw-stat-status c5 f15">获取中...</div>
@@ -35,7 +35,7 @@
                     <li class="circle-box text-center mw-stat-item" id="cpuChart">
                         <h3 class="c5 f15">CPU使用率</h3>
                         <div class="mw-stat-progress">
-                            <mdui-linear-progress id="CpuProgress" value="0"></mdui-linear-progress>
+                            <mdui-linear-progress id="CpuProgress" max="100" value="0"></mdui-linear-progress>
                         </div>
                         <div class="mw-stat-value mask"><span id="state">0</span>%</div>
                         <div id="core" class="mw-stat-status c5 f15">获取中...</div>
@@ -43,7 +43,7 @@
                     <li class="circle-box text-center mw-stat-item mem-release" id="memChart">
                         <h3 class="c5 f15">内存使用率</h3>
                         <div class="mw-stat-progress">
-                            <mdui-linear-progress id="MemProgress" value="0"></mdui-linear-progress>
+                            <mdui-linear-progress id="MemProgress" max="100" value="0"></mdui-linear-progress>
                         </div>
                         <div class="mw-stat-value mask"><span id="left">0</span>%</div>
                         <div id="memory" class="mw-stat-status c5 f15">获取中...</div>

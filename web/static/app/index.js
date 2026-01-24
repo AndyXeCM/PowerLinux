@@ -24,7 +24,7 @@ function getLoad(data) {
         AverageText = '运行堵塞';
     }
     index.find('.mask').css({ "color": LoadColor });
-    $("#LoadProgress").attr('value', Occupy).css('--mdui-color-primary', LoadColor);
+    updateLinearProgressValue(document.getElementById('LoadProgress'), Occupy, LoadColor);
     $('#Load').html(Occupy);
     $('#LoadState').html('<span>' + AverageText + '</span>');
 }
@@ -77,8 +77,46 @@ function getChartTheme() {
         border: styles.getPropertyValue('--mw-border').trim() || '#e2e8f0',
         muted: styles.getPropertyValue('--mw-muted').trim() || '#64748b',
         surface: styles.getPropertyValue('--mw-surface').trim() || '#ffffff',
-        text: styles.getPropertyValue('--mw-text').trim() || '#1f1f1f'
+        text: styles.getPropertyValue('--mw-text').trim() || '#1f1f1f',
+        surfaceContainer: styles.getPropertyValue('--mw-surface-container').trim() || '#f2f3f7'
     };
+}
+
+function updateLinearProgressValue(element, value, color) {
+    if (!element) {
+        return;
+    }
+    var safeValue = Math.max(0, Math.min(100, parseFloat(value) || 0));
+    element.value = safeValue;
+    element.setAttribute('value', safeValue);
+    if (color) {
+        element.style.setProperty('--mdui-color-primary', color);
+    }
+}
+
+function applyColorAlpha(color, alpha) {
+    if (!color) {
+        return 'rgba(0, 0, 0, ' + alpha + ')';
+    }
+    if (color.indexOf('rgb') === 0) {
+        var numbers = color.replace(/[^\d,]/g, '').split(',');
+        if (numbers.length >= 3) {
+            return 'rgba(' + numbers[0] + ', ' + numbers[1] + ', ' + numbers[2] + ', ' + alpha + ')';
+        }
+    }
+    if (color.indexOf('#') === 0) {
+        var hex = color.replace('#', '');
+        if (hex.length === 3) {
+            hex = hex.split('').map(function (item) { return item + item; }).join('');
+        }
+        if (hex.length === 6) {
+            var r = parseInt(hex.slice(0, 2), 16);
+            var g = parseInt(hex.slice(2, 4), 16);
+            var b = parseInt(hex.slice(4, 6), 16);
+            return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
+        }
+    }
+    return color;
 }
 
 
@@ -101,7 +139,7 @@ function reMemory() {
         setCookie("memRealUsed", rdata.memRealUsed);
         $("#left").text(percent);
         setcolor(percent, "#left", 75, 90, 95);
-        $("#MemProgress").attr('value', percent);
+        updateLinearProgressValue(document.getElementById('MemProgress'), percent);
         var memNull = Math.round(prevMemRealUsed - rdata.memRealUsed);
         if (prevMemRealUsed > 0 && memNull > 0) {
             $("#memory").text(lan.index.memre_ok_1 + " " + memNull + "MB");
@@ -156,7 +194,7 @@ function getDiskInfo() {
             dBody = '<li class="col-xs-6 col-sm-3 col-md-3 col-lg-2 mtb20 circle-box text-center diskbox">' +
                 '<h3 class="c5 f15">' + rdata[i].path + '</h3>' +
                 '<div class="mw-stat-progress mw-disk-progress">' +
-                '<mdui-linear-progress value="' + usagePercent + '" style="--mdui-color-primary: ' + LoadColor + ';"></mdui-linear-progress>' +
+                '<mdui-linear-progress max="100" value="' + usagePercent + '" style="--mdui-color-primary: ' + LoadColor + ';"></mdui-linear-progress>' +
                 '</div>' +
                 '<div class="mw-stat-value mask" style="color:' + LoadColor + '"' + inodes + '><span>' + usagePercent + '</span>%</div>' +
                 '<h4 class="c5 f15">' + rdata[i].size[1] + '/' + rdata[i].size[0] + '</h4>' +
@@ -192,7 +230,7 @@ function setMemImg(info){
     var memPre = Math.floor(info.memRealUsed / (info.memTotal / 100));
     $("#left").html(memPre);
     setcolor(memPre, "#left", 75, 90, 95);
-    $("#MemProgress").attr('value', memPre);
+    updateLinearProgressValue(document.getElementById('MemProgress'), memPre);
 
     var memFree = info.memTotal - info.memRealUsed;
     if (memFree/(1024*1024) < 64) {
@@ -259,7 +297,8 @@ function setcolor(pre, s, s1, s2, s3) {
     var co = $(s).closest('.mask');
     co.css("color", LoadColor);
     var item = co.closest('.mw-stat-item');
-    item.find('mdui-linear-progress').attr('value', Math.max(0, Math.min(100, value))).css('--mdui-color-primary', LoadColor);
+    var progressElement = item.find('mdui-linear-progress').get(0);
+    updateLinearProgressValue(progressElement, value, LoadColor);
 }
 
 
@@ -1037,6 +1076,11 @@ var index = {
                     backgroundColor: theme.surface,
                     borderColor: theme.border,
                     textStyle: { color: theme.text },
+                    extraCssText: 'box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12); border-radius: 12px; padding: 10px;',
+                    axisPointer: {
+                        type: 'line',
+                        lineStyle: { color: theme.border }
+                    },
                     formatter :function (config) {
                         var _config = config, _tips = "时间：" + _config[0].axisValue + "<br />";
                         for (var i = 0; i < config.length; i++) {
@@ -1093,10 +1137,10 @@ var index = {
                         normal: {
                             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
                                 offset: 0,
-                                color: theme.primary
+                                color: applyColorAlpha(theme.primary, 0.35)
                             }, {
                                 offset: 1,
-                                color: 'rgba(103, 80, 164, 0.1)'
+                                color: applyColorAlpha(theme.primary, 0.08)
                             }], false)
                         }
                     },
@@ -1123,10 +1167,10 @@ var index = {
                         normal: {
                             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
                                 offset: 0,
-                                color: theme.secondary
+                                color: applyColorAlpha(theme.secondary, 0.35)
                             }, {
                                 offset: 1,
-                                color: 'rgba(79, 142, 247, 0.12)'
+                                color: applyColorAlpha(theme.secondary, 0.08)
                             }], false)
                         }
                     },
@@ -1235,6 +1279,14 @@ var index = {
             index.iostat.table.setOption({
                 tooltip: {
                     trigger: 'axis',
+                    backgroundColor: theme.surface,
+                    borderColor: theme.border,
+                    textStyle: { color: theme.text },
+                    extraCssText: 'box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12); border-radius: 12px; padding: 10px;',
+                    axisPointer: {
+                        type: 'line',
+                        lineStyle: { color: theme.border }
+                    },
                     formatter :function (config) {
                         var _config = config, _tips = "时间：" + _config[0].axisValue + "<br />", options = {
                             read_bytes: '读取字节数',
@@ -1300,7 +1352,12 @@ var index = {
                     trigger: 'axis',
                     backgroundColor: theme.surface,
                     borderColor: theme.border,
-                    textStyle: { color: theme.text }
+                    textStyle: { color: theme.text },
+                    extraCssText: 'box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12); border-radius: 12px; padding: 10px;',
+                    axisPointer: {
+                        type: 'line',
+                        lineStyle: { color: theme.border }
+                    }
                 },
                 legend: {
                     data: ["读取", "写入"],
@@ -1343,7 +1400,13 @@ var index = {
                     symbol: 'circle',
                     areaStyle: {
                         normal: {
-                            color: theme.primary
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                offset: 0,
+                                color: applyColorAlpha(theme.primary, 0.3)
+                            }, {
+                                offset: 1,
+                                color: applyColorAlpha(theme.primary, 0.06)
+                            }], false)
                         }
                     },
                     itemStyle: {
@@ -1367,7 +1430,13 @@ var index = {
                     symbolSize: 6,
                     areaStyle: {
                         normal: {
-                            color: theme.secondary
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                offset: 0,
+                                color: applyColorAlpha(theme.secondary, 0.3)
+                            }, {
+                                offset: 1,
+                                color: applyColorAlpha(theme.secondary, 0.06)
+                            }], false)
                         }
                     },
                     itemStyle: {
