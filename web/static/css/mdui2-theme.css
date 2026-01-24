@@ -443,6 +443,12 @@ textarea {
     box-sizing: border-box;
 }
 
+mdui-card.mw-card {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+}
+
 .mw-card-header {
     display: flex;
     align-items: center;
@@ -459,6 +465,7 @@ textarea {
 
 .mw-card-content {
     padding: 20px;
+    display: flow-root;
 }
 
 .mw-dashboard {
@@ -466,6 +473,7 @@ textarea {
     flex-direction: column;
     gap: 20px;
     width: 100%;
+    min-width: 0;
 }
 
 .mw-dashboard-body {
@@ -473,6 +481,7 @@ textarea {
     flex-direction: column;
     gap: 20px;
     width: 100%;
+    min-width: 0;
 }
 
 .mw-page-header {
@@ -564,6 +573,7 @@ textarea {
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 20px;
     width: 100%;
+    min-width: 0;
 }
 
 .mw-grid-item {
@@ -626,10 +636,13 @@ textarea {
     flex-wrap: wrap;
     gap: 12px;
     margin-bottom: 12px;
+    height: auto;
 }
 
 .bw-info > div {
     flex: 1 1 120px;
+    float: none;
+    padding-top: 0;
 }
 
 .mw-theme-settings .mw-theme-controls {
