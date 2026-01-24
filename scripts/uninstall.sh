@@ -14,7 +14,7 @@ _os=`uname`
 echo "检测到系统: ${_os}"
 
 if [ "$EUID" -ne 0 ]
-  then echo "Please run as root!"
+  then echo "需要使用 root 权限运行卸载脚本，请用 sudo 或切换到 root 后重试～"
   exit
 fi
 
@@ -24,8 +24,8 @@ UNINSTALL_CHECK()
     echo -e "目前支持卸载 OpenResty/PHP/MySQL/Redis/Memcached"
     echo -e "其他插件请先手动卸载哦！"
     echo -e "----------------------------------------------------"
-    echo -e "风险提示：输入 yes 才会继续卸载！[yes/no]"
-    read -p "输入 yes 强制卸载: " yes;
+    echo -e "温馨提示：输入 yes 才会继续卸载！[yes/no]"
+    read -p "输入 yes 开始卸载（可随时 Ctrl+C 退出）: " yes;
     if [ "$yes" != "yes" ];then
         echo -e "------------"
         echo "已取消卸载，安全第一～"
@@ -43,7 +43,7 @@ UNINSTALL_MySQL()
         echo -e "----------------------------------------------------"
         echo -e "检测到 MySQL，卸载可能影响站点与数据"
         echo -e "----------------------------------------------------"
-        echo -e "风险提示：输入 yes 才会继续卸载！[yes/no]"
+        echo -e "温馨提示：输入 yes 才会继续卸载！[yes/no]"
         read -p "输入 yes 强制卸载: " yes;
         if [ "$yes" != "yes" ];then
             echo -e "------------"
@@ -61,7 +61,7 @@ UNINSTALL_OP()
         echo -e "----------------------------------------------------"
         echo -e "检测到 OpenResty，卸载可能影响站点与数据"
         echo -e "----------------------------------------------------"
-        echo -e "风险提示：输入 yes 才会继续卸载！[yes/no]"
+        echo -e "温馨提示：输入 yes 才会继续卸载！[yes/no]"
         read -p "输入 yes 强制卸载: " yes;
         if [ "$yes" != "yes" ];then
             echo -e "------------"
@@ -134,7 +134,7 @@ UNINSTALL_MW()
     echo -e "----------------------------------------------------"
     echo -e "检测到面板环境，卸载可能影响站点与数据"
     echo -e "----------------------------------------------------"
-    read -p "输入 yes 强制卸载面板: " yes;
+    read -p "输入 yes 强制卸载面板（仅移除面板，不清理网站/数据库数据）: " yes;
     if [ "$yes" != "yes" ];then
         echo -e "------------"
         echo "已取消卸载面板"
