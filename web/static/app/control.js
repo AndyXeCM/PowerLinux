@@ -242,7 +242,6 @@ function cpu(b,e){
 	$.get('/system/get_cpu_io?start='+b+'&end='+e,function(rdata){
 		var rdata = rdata.data;
 		var theme = getChartTheme();
-		var myChartCpu = echarts.init(document.getElementById('cupview'));
 		var xData = [];
 		var yData = [];
 		//var zData = [];
@@ -328,10 +327,7 @@ function cpu(b,e){
 				}
 			]
 		};
-		myChartCpu.setOption(option);
-	   window.addEventListener("resize",function(){
-			myChartCpu.resize();
-		});
+		initEchartWhenReady('cupview', option);
 	},'json');
 }
 
@@ -340,7 +336,6 @@ function mem(b,e){
 	$.get('/system/get_cpu_io?start='+b+'&end='+e,function(rdata){
 		var rdata = rdata.data;
 		var theme = getChartTheme();
-		var myChartMen = echarts.init(document.getElementById('memview'));
 		var xData = [];
 		//var yData = [];
 		var zData = [];
@@ -426,10 +421,7 @@ function mem(b,e){
 				}
 			]
 		};
-		myChartMen.setOption(option);
-		window.addEventListener("resize",function(){
-			myChartMen.resize();
-		});
+		initEchartWhenReady('memview', option);
 	},'json');
 }
 
@@ -438,7 +430,6 @@ function disk(b,e){
 	$.get('/system/get_disk_io?start='+b+'&end='+e,function(rdata){
 		var rdata = rdata.data;
 		var theme = getChartTheme();
-		var myChartDisk = echarts.init(document.getElementById('diskview'));
 		var rData = [];
 		var wData = [];
 		var xData = [];
@@ -550,10 +541,7 @@ function disk(b,e){
 				}
 			]
 		};
-		myChartDisk.setOption(option);
-		window.addEventListener("resize",function(){
-			myChartDisk.resize();
-		});
+		initEchartWhenReady('diskview', option);
 	},'json');
 }
 
@@ -562,7 +550,6 @@ function network(b,e){
 	$.get('/system/get_network_io?start='+b+'&end='+e,function(rdata){
 		var rdata = rdata.data;
 		var theme = getChartTheme();
-		var myChartNetwork = echarts.init(document.getElementById('network'));
 		var aData = [];
 		var bData = [];
 		var cData = [];
@@ -678,17 +665,13 @@ function network(b,e){
 				}
 			]
 		};
-		myChartNetwork.setOption(option);
-		window.addEventListener("resize",function(){
-			myChartNetwork.resize();
-		});
+		initEchartWhenReady('network', option);
 	},'json');
 }
 //负载
 function getload_old(b,e){
 	$.get('/system/get_load_average?start='+b+'&end='+e,function(rdata){
 		var rdata = data.data;
-		var myChartgetload = echarts.init(document.getElementById('getloadview'));
 		var aData = [];
 		var bData = [];
 		var xData = [];
@@ -809,10 +792,7 @@ function getload_old(b,e){
 				}
 			]
 		};
-		myChartgetload.setOption(option);
-		window.addEventListener("resize",function(){
-			myChartgetload.resize();
-		});
+		initEchartWhenReady('getloadview', option);
 	},'json');
 }
 //系统负载
@@ -820,7 +800,6 @@ function getload(b,e){
 	$.get('/system/get_load_average?start='+b+'&end='+e,function(rdata){
 		var rdata = rdata.data;
 		var theme = getChartTheme();
-		var myChartgetload = echarts.init(document.getElementById('getloadview'));
 		var aData = [];
 		var bData = [];
 		var xData = [];
@@ -997,10 +976,7 @@ function getload(b,e){
 			],
 			textStyle: { color: theme.muted, fontSize: 12 }
 		}
-		myChartgetload.setOption(option);
-		window.addEventListener("resize",function(){
-			myChartgetload.resize();
-		})
+		initEchartWhenReady('getloadview', option);
 	},'json');
 }
 
@@ -1062,4 +1038,41 @@ function applyColorAlpha(color, alpha) {
 		}
 	}
 	return color;
+}
+
+var chartResizeRegistry = {};
+
+function initEchartWhenReady(elementId, option, onReady) {
+	if (typeof echarts === 'undefined') {
+		return;
+	}
+	var element = document.getElementById(elementId);
+	if (!element) {
+		return;
+	}
+	var attempt = 0;
+	var maxAttempts = 30;
+	var raf = window.requestAnimationFrame || function(callback) {
+		return setTimeout(callback, 16);
+	};
+	function tryInit() {
+		if (element.clientWidth === 0 || element.clientHeight === 0) {
+			if (attempt++ < maxAttempts) {
+				raf(tryInit);
+			}
+			return;
+		}
+		var chart = echarts.getInstanceByDom(element) || echarts.init(element);
+		chart.setOption(option);
+		if (!chartResizeRegistry[elementId]) {
+			chartResizeRegistry[elementId] = true;
+			window.addEventListener("resize", function() {
+				chart.resize();
+			});
+		}
+		if (onReady) {
+			onReady(chart);
+		}
+	}
+	tryInit();
 }

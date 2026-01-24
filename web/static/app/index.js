@@ -140,6 +140,38 @@ function applyColorAlpha(color, alpha) {
     return color;
 }
 
+function initEchartWhenReady(elementId, option, onReady) {
+    if (typeof echarts === 'undefined') {
+        return null;
+    }
+    var element = document.getElementById(elementId);
+    if (!element) {
+        return null;
+    }
+    var attempt = 0;
+    var maxAttempts = 30;
+    var raf = window.requestAnimationFrame || function(callback) {
+        return setTimeout(callback, 16);
+    };
+    function tryInit() {
+        if (element.clientWidth === 0 || element.clientHeight === 0) {
+            if (attempt++ < maxAttempts) {
+                raf(tryInit);
+            }
+            return;
+        }
+        var chart = echarts.getInstanceByDom(element) || echarts.init(element);
+        if (option) {
+            chart.setOption(option);
+        }
+        if (onReady) {
+            onReady(chart);
+        }
+    }
+    tryInit();
+    return null;
+}
+
 
 function rocket(sum, m) {
     var n = sum - m;
@@ -995,10 +1027,14 @@ $(function() {
         $('.tabs-down select:eq(' + indexs + ')').removeClass('hide').siblings().addClass('hide');
         switch (indexs) {
         case 0:
-          index.net.table.resize();
+          if (index.net.table) {
+              index.net.table.resize();
+          }
           break;
         case 1:
-          index.iostat.table.resize();
+          if (index.iostat.table) {
+              index.iostat.table.resize();
+          }
           break;
         }
     })
@@ -1046,15 +1082,20 @@ var index = {
                 index.net.data.zData.push(0);
             }
 
-            index.net.table = echarts.init(document.getElementById('netImg'));
             var option = index.net.defaultOption();
-            index.net.table.setOption(option);
-
-            window.addEventListener("resize", function () {
-                index.net.table.resize();
+            initEchartWhenReady('netImg', option, function (chart) {
+                index.net.table = chart;
+                window.addEventListener("resize", function () {
+                    if (index.net.table) {
+                        index.net.table.resize();
+                    }
+                });
             });
         },
         render:function(){
+            if (!index.net.table) {
+                return;
+            }
             var theme = getChartTheme();
             index.net.table.setOption({
                 yAxis: {
@@ -1080,7 +1121,7 @@ var index = {
         defaultOption:function(){
             var theme = getChartTheme();
             var option = {
-                backgroundColor: 'transparent',
+                backgroundColor: theme.surfaceContainer,
                 color: [theme.primary, theme.secondary],
                 title: {
                     text: "",
@@ -1286,16 +1327,21 @@ var index = {
                 index.iostat.data.tipsData.push({});
             }
 
-            index.iostat.table = echarts.init(document.getElementById('ioStat'));
             var option = index.iostat.defaultOption();
-            index.iostat.table.setOption(option);
-
-            window.addEventListener("resize", function () {
-                index.iostat.table.resize();
+            initEchartWhenReady('ioStat', option, function (chart) {
+                index.iostat.table = chart;
+                window.addEventListener("resize", function () {
+                    if (index.iostat.table) {
+                        index.iostat.table.resize();
+                    }
+                });
             });
         },
 
         render:function(){
+            if (!index.iostat.table) {
+                return;
+            }
             var theme = getChartTheme();
             index.iostat.table.setOption({
                 tooltip: {
@@ -1357,7 +1403,7 @@ var index = {
         defaultOption:function(){
             var theme = getChartTheme();
             var option = {
-                backgroundColor: 'transparent',
+                backgroundColor: theme.surfaceContainer,
                 color: [theme.primary, theme.secondary],
                 title: {
                     text: "",
