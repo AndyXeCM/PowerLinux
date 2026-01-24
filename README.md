@@ -1,9 +1,6 @@
-<p align="center">
-  <img alt="PowerLinux logo" src="https://cdn.jsdelivr.net/gh/midoks/mdserver-web@latest/route/static/logo.png" height="140" />
-  <h3 align="center">PowerLinux</h3>
-  <p align="center">面向日常运维的轻量级 Linux 面板</p>
-  <p align="center">建议系统：Debian/Ubuntu</p>
-</p>
+# PowerLinux
+### 轻量易用的下一代Linux控制面板
+
 
 ## 设计理念
 
@@ -61,29 +58,29 @@ bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@lat
 
 - 国内安装优化。
 
-### JSDelivr安装地址
+### JSDelivr安装链接
 
-- 初始安装
+- **初始安装**
 
 ```
 bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/install.sh)
 ```
 
-- 直接更新
+- **直接更新**
 
 ```
 bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/update.sh)
 ```
 
-## 备用下载地址
+- **卸载**
 
 ```
 wget --no-check-certificate -O uninstall.sh https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@latest/scripts/uninstall.sh && bash uninstall.sh
 ```
 
-### 备用地址
+### Github安装链接
 
-- 初始安装
+- **初始安装**
 
 ```
 bash <(curl --insecure -fsSL https://raw.githubusercontent.com/AndyXeCM/PowerLinux/master/scripts/install.sh)
