@@ -590,7 +590,7 @@ mdui-card.mw-card {
     display: block;
     height: 8px;
     border-radius: 999px;
-    --mw-progress-gradient: linear-gradient(90deg, #4ade80 0%, #facc15 50%, #f87171 100%);
+    --mw-progress-solid: var(--mw-primary);
 }
 
 .mw-stat-progress mdui-linear-progress::part(track) {
@@ -598,7 +598,7 @@ mdui-card.mw-card {
 }
 
 .mw-stat-progress mdui-linear-progress::part(indicator) {
-    background: var(--mw-progress-gradient);
+    background: var(--mw-progress-solid);
 }
 
 .mw-overview-grid {
