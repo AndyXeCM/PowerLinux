@@ -12,11 +12,12 @@
 <link href="https://unpkg.com/mdui@2.0.0/mdui.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/static/layer/skin/default/layer.css?v={{config.version}}">
 <link rel="stylesheet" type="text/css" href="/static/css/site.css?v={{config.version}}">
+<link rel="stylesheet" type="text/css" href="/static/css/mdui2-theme.css?v={{config.version}}">
 <link rel="stylesheet" type="text/css" href="/static/css/login.css?v={{config.version}}">
 </head>
 <body class="mw-login">
 <main class="mw-login-layout">
-	<section class="mw-login-card">
+	<mdui-card class="mw-login-card">
 		<div class="mw-login-brand">
 			<span class="material-icons">shield</span>
 			<h1>{{data['title']}}</h1>
@@ -42,11 +43,11 @@
 				</div>
 				<div class="Validform_checktip"></div>
 			</div>
-			<button class="mw-primary-button" id="login-button" type="submit">登录</button>
+			<mdui-button class="mw-login-submit" id="login-button" variant="filled" type="submit">登录</mdui-button>
 			<p class="pwinfo" style="display:none"></p>
-			<a class="resetpw" href="//github.com/midoks/mdserver-web/wiki/%E5%AF%86%E7%A0%81%E4%BF%AE%E6%94%B9" target="_blank">忘记密码</a>
+			<mdui-button class="mw-login-link" variant="text" href="//github.com/midoks/mdserver-web/wiki/%E5%AF%86%E7%A0%81%E4%BF%AE%E6%94%B9" target="_blank">忘记密码</mdui-button>
 		</form>
-	</section>
+	</mdui-card>
 </main>
 <script type="text/javascript" src="/static/js/jquery-1.10.2.min.js?v={{config.version}}"></script>
 <script src="/static/language/zh-cn.js?v={{config.version}}"></script>
@@ -56,27 +57,7 @@
 <script type="text/javascript" src="/static/js/Validform_v5.3.2_min.js?v={{config.version}}"></script>
 <script type="text/javascript">
 $(function(){
-	wreset();
-})
-
-window.onresize=function(){
-	wreset();
-}
-
-function wreset(){
-	var w = $(window).width();
-	var yzmw = $(".login .line").width() - 140;
-	if($(".yzm").is(":visible") && w > 640){
-		$(".login").css({"height":"365px","margin-top":"-230px"});
-	} else {
-		$(".login").removeAttr("style")
-	}
-	$(".login .yzm .inputtxt").width(yzmw);
-}
-
-
-$(function(){
-	$(".loginform").Validform({
+	$(".mw-login-form").Validform({
 		tiptype:function(msg,o,cssctl){
 			if(!o.obj.is("form")){
 				var objtip=o.obj.siblings(".Validform_checktip");
@@ -115,8 +96,7 @@ $('#login-button').click(function(){
 				$("input[name='code']").val('');
 				$(".passcode").click();
 			}
-			$(".yzm").show();
-			wreset();
+			$(".mw-captcha").show();
 			layer.msg(rdata.msg,{icon:2,time:5000});
 			return;
 		}
