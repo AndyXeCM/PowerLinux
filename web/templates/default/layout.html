@@ -39,52 +39,54 @@
     <div class="mw-shell">
         <div class="mw-main">
             <header class="mw-topbar">
-                <div class="mw-topbar-brand">
-                    <div class="mw-topbar-title">{{data['title']}}</div>
-                    <div class="mw-topbar-sub">{{data['ip']}}</div>
-                </div>
-                <nav class="mw-topbar-nav" aria-label="主导航">
-                    <a id="memuA" class="mw-topbar-item" href="/" title="首页" aria-label="首页">
-                        <span class="material-icons">dashboard</span>
-                    </a>
-                    <a id="memuAsite" class="mw-topbar-item" href="/site/index" title="网站" aria-label="网站">
-                        <span class="material-icons">language</span>
-                    </a>
-                    <a id="memuAfirewall" class="mw-topbar-item" href="/firewall/index" title="安全" aria-label="安全">
-                        <span class="material-icons">shield</span>
-                    </a>
-                    <a id="memuAfiles" class="mw-topbar-item" href="/files/index" title="文件" aria-label="文件">
-                        <span class="material-icons">folder</span>
-                    </a>
-                    <a id="memuAlogs" class="mw-topbar-item" href="/logs/index" title="日志" aria-label="日志">
-                        <span class="material-icons">article</span>
-                    </a>
-                    <a id="memuAcrontab" class="mw-topbar-item" href="/crontab/index" title="计划任务" aria-label="计划任务">
-                        <span class="material-icons">schedule</span>
-                    </a>
-                    {% for menu in data['hook_menu'] %}
-                    <a id="memuAplugins_{{menu['name']}}" class="mw-topbar-item" href="/plugins/menu?tag={{menu['name']}}" title="{{menu['title']}}" aria-label="{{menu['title']}}">
-                        <span class="material-icons">extension</span>
-                    </a>
-                    {% endfor %}
-                    <a id="memuAsoft" class="mw-topbar-item" href="/soft/index" title="软件管理" aria-label="软件管理">
-                        <span class="material-icons">apps</span>
-                    </a>
-                    <a id="memuAsetting" class="mw-topbar-item" href="/setting/index" title="面板设置" aria-label="面板设置">
-                        <span class="material-icons">settings</span>
-                    </a>
-                </nav>
-                <div class="mw-topbar-actions">
-                    <button id="task" class="mw-icon-button" onclick="messageBox();" aria-label="任务通知">
-                        <span class="material-icons">notifications</span>
-                    </button>
-                    <button class="mw-icon-button" onclick="bindPanel(0,'b')" aria-label="添加面板">
-                        <span class="material-icons">add</span>
-                    </button>
-                    <button class="mw-icon-button" id="signout" aria-label="退出">
-                        <span class="material-icons">logout</span>
-                    </button>
-                </div>
+                <mdui-card class="mw-card mw-topbar-card">
+                    <div class="mw-topbar-brand">
+                        <div class="mw-topbar-title">{{data['title']}}</div>
+                        <div class="mw-topbar-sub">{{data['ip']}}</div>
+                    </div>
+                    <nav class="mw-topbar-nav" aria-label="主导航">
+                        <a id="memuA" class="mw-topbar-item" href="/" title="首页" aria-label="首页">
+                            <span class="material-icons">dashboard</span>
+                        </a>
+                        <a id="memuAsite" class="mw-topbar-item" href="/site/index" title="网站" aria-label="网站">
+                            <span class="material-icons">language</span>
+                        </a>
+                        <a id="memuAfirewall" class="mw-topbar-item" href="/firewall/index" title="安全" aria-label="安全">
+                            <span class="material-icons">shield</span>
+                        </a>
+                        <a id="memuAfiles" class="mw-topbar-item" href="/files/index" title="文件" aria-label="文件">
+                            <span class="material-icons">folder</span>
+                        </a>
+                        <a id="memuAlogs" class="mw-topbar-item" href="/logs/index" title="日志" aria-label="日志">
+                            <span class="material-icons">article</span>
+                        </a>
+                        <a id="memuAcrontab" class="mw-topbar-item" href="/crontab/index" title="计划任务" aria-label="计划任务">
+                            <span class="material-icons">schedule</span>
+                        </a>
+                        {% for menu in data['hook_menu'] %}
+                        <a id="memuAplugins_{{menu['name']}}" class="mw-topbar-item" href="/plugins/menu?tag={{menu['name']}}" title="{{menu['title']}}" aria-label="{{menu['title']}}">
+                            <span class="material-icons">extension</span>
+                        </a>
+                        {% endfor %}
+                        <a id="memuAsoft" class="mw-topbar-item" href="/soft/index" title="软件管理" aria-label="软件管理">
+                            <span class="material-icons">apps</span>
+                        </a>
+                        <a id="memuAsetting" class="mw-topbar-item" href="/setting/index" title="面板设置" aria-label="面板设置">
+                            <span class="material-icons">settings</span>
+                        </a>
+                    </nav>
+                    <div class="mw-topbar-actions">
+                        <button id="task" class="mw-icon-button" onclick="messageBox();" aria-label="任务通知">
+                            <span class="material-icons">notifications</span>
+                        </button>
+                        <button class="mw-icon-button" onclick="bindPanel(0,'b')" aria-label="添加面板">
+                            <span class="material-icons">add</span>
+                        </button>
+                        <button class="mw-icon-button" id="signout" aria-label="退出">
+                            <span class="material-icons">logout</span>
+                        </button>
+                    </div>
+                </mdui-card>
             </header>
             <div class="mw-content">
                 <button style="display: none;" id="mw_copys" class="mw_copy" data-clipboard-text=""></button>
@@ -115,7 +117,11 @@
             
             {% block content %}{% endblock %}
             </div>
-            <div class="footer"></div>
+            <footer class="mw-footer">
+                <mdui-card class="mw-card mw-footer-card">
+                    <div class="mw-footer-content">{{data['footer_text']}}</div>
+                </mdui-card>
+            </footer>
         </div>
     </div>
     <mdui-dialog id="panel-ad-dialog" headline="【AD】求恰饭">

@@ -67,14 +67,22 @@ a {
     position: sticky;
     top: 0;
     z-index: 900;
-    background: var(--mw-surface);
-    border-bottom: 1px solid var(--mw-border);
+    background: transparent;
+    padding: 16px 28px 0;
+}
+
+.mw-topbar-card {
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 16px 28px;
     gap: 16px;
     flex-wrap: wrap;
+    background: var(--mw-surface);
+    border: 1px solid var(--mw-border);
+    border-radius: var(--mw-radius);
+    box-shadow: var(--mw-shadow);
 }
 
 .mw-topbar-brand {
@@ -142,12 +150,29 @@ a {
     margin: 0 auto;
 }
 
-.footer {
+.mw-footer {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto 24px;
+    padding: 0 32px 24px;
+}
+
+.mw-footer-card {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 20px;
     background: var(--mw-surface);
-    border-top: 1px solid var(--mw-border);
-    padding: 16px 24px;
+    border: 1px solid var(--mw-border);
+    border-radius: var(--mw-radius);
+    box-shadow: var(--mw-shadow);
+}
+
+.mw-footer-content {
     font-size: 12px;
     color: var(--mw-muted);
+    text-align: center;
 }
 
 .bgw {
@@ -401,11 +426,15 @@ textarea {
 
 @media (max-width: 1024px) {
     .mw-topbar {
-        padding: 14px 20px;
+        padding: 14px 20px 0;
     }
 
     .mw-content {
         padding: 20px;
+    }
+
+    .mw-footer {
+        padding: 0 20px 20px;
     }
 }
 
@@ -822,6 +851,10 @@ mdui-card.mw-card {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    background: var(--mw-surface-container);
+    border: 1px solid var(--mw-border);
+    border-radius: 12px;
+    padding: 16px;
     margin-bottom: 16px;
 }
 
