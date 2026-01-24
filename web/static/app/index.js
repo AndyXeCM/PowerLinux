@@ -69,6 +69,18 @@ function showCpuTips(rdata){
     });
 }
 
+function getChartTheme() {
+    var styles = getComputedStyle(document.documentElement);
+    return {
+        primary: styles.getPropertyValue('--mw-primary').trim() || '#6750a4',
+        secondary: styles.getPropertyValue('--mdui-color-secondary').trim() || '#4f8ef7',
+        border: styles.getPropertyValue('--mw-border').trim() || '#e2e8f0',
+        muted: styles.getPropertyValue('--mw-muted').trim() || '#64748b',
+        surface: styles.getPropertyValue('--mw-surface').trim() || '#ffffff',
+        text: styles.getPropertyValue('--mw-text').trim() || '#1f1f1f'
+    };
+}
+
 
 function rocket(sum, m) {
     var n = sum - m;
@@ -77,6 +89,8 @@ function rocket(sum, m) {
 
 //释放内存
 function reMemory() {
+    var memButton = $("#memReleaseBtn");
+    memButton.prop("disabled", true);
     $("#memory").text(lan.index.memre_ok_0);
     $.post('/system/rememory', '', function(rdata) {
         var percent = getPercent(rdata.memRealUsed, rdata.memTotal);
@@ -89,13 +103,18 @@ function reMemory() {
         setcolor(percent, "#left", 75, 90, 95);
         $("#MemProgress").attr('value', percent);
         var memNull = Math.round(prevMemRealUsed - rdata.memRealUsed);
-        if (memNull > 0) {
+        if (prevMemRealUsed > 0 && memNull > 0) {
             $("#memory").text(lan.index.memre_ok_1 + " " + memNull + "MB");
         } else {
             $("#memory").text(lan.index.memre_ok_2);
         }
         $(".mem-release").removeClass("mem-action");
-    },'json');
+        memButton.prop("disabled", false);
+    },'json').fail(function() {
+        $(".mem-release").removeClass("mem-action");
+        $("#memory").text(lan.index.memre_ok_2);
+        memButton.prop("disabled", false);
+    });
 }
 
 function getPercent(num, total) {
@@ -220,12 +239,16 @@ function getInfo() {
 
 
 function setcolor(pre, s, s1, s2, s3) {
+    var value = parseFloat(pre);
+    if (isNaN(value)) {
+        value = 0;
+    }
     var LoadColor;
-    if (pre <= s1) {
+    if (value <= s1) {
         LoadColor = '#20a53a';
-    } else if (pre <= s2) {
+    } else if (value <= s2) {
         LoadColor = '#6ea520';
-    } else if (pre <= s3) {
+    } else if (value <= s3) {
         LoadColor = '#ff9900';
     } else {
         LoadColor = '#dd2f00';
@@ -236,7 +259,7 @@ function setcolor(pre, s, s1, s2, s3) {
     var co = $(s).closest('.mask');
     co.css("color", LoadColor);
     var item = co.closest('.mw-stat-item');
-    item.find('mdui-linear-progress').attr('value', pre).css('--mdui-color-primary', LoadColor);
+    item.find('mdui-linear-progress').attr('value', Math.max(0, Math.min(100, value))).css('--mdui-color-primary', LoadColor);
 }
 
 
@@ -972,14 +995,18 @@ var index = {
             });
         },
         render:function(){
+            var theme = getChartTheme();
             index.net.table.setOption({
                 yAxis: {
                     name:  '单位 '+ index.net.default_unit,
-                    splitLine: { lineStyle: { color: "#eee" } },
-                    axisLine: { lineStyle: { color: "#666" } }
+                    splitLine: { lineStyle: { color: theme.border } },
+                    axisLine: { lineStyle: { color: theme.border } },
+                    axisLabel: { color: theme.muted }
                 },
                 xAxis: {
-                    data: index.net.data.xData
+                    data: index.net.data.xData,
+                    axisLine: { lineStyle: { color: theme.border } },
+                    axisLabel: { color: theme.muted }
                 },
                 series: [{
                     name: lan.index.net_up,
@@ -991,19 +1018,25 @@ var index = {
             });
         },
         defaultOption:function(){
+            var theme = getChartTheme();
             var option = {
+                backgroundColor: 'transparent',
+                color: [theme.primary, theme.secondary],
                 title: {
                     text: "",
                     left: 'center',
                     textStyle: {
-                        color: '#888888',
+                        color: theme.muted,
                         fontStyle: 'normal',
-                        fontFamily: "宋体",
-                        fontSize: 16,
+                        fontFamily: "Inter, PingFang SC, Microsoft YaHei, sans-serif",
+                        fontSize: 14
                     }
                 },
                 tooltip: {
                     trigger: 'axis',
+                    backgroundColor: theme.surface,
+                    borderColor: theme.border,
+                    textStyle: { color: theme.text },
                     formatter :function (config) {
                         var _config = config, _tips = "时间：" + _config[0].axisValue + "<br />";
                         for (var i = 0; i < config.length; i++) {
@@ -1018,7 +1051,14 @@ var index = {
                 },
                 legend: {
                     data: [lan.index.net_up, lan.index.net_down],
-                    bottom: '2%'
+                    bottom: '2%',
+                    textStyle: { color: theme.muted }
+                },
+                grid: {
+                    left: '2%',
+                    right: '3%',
+                    bottom: '15%',
+                    containLabel: true
                 },
                 xAxis: {
                     type: 'category',
@@ -1026,18 +1066,20 @@ var index = {
                     data: index.net.data.xData,
                     axisLine: {
                         lineStyle: {
-                            color: "#666"
+                            color: theme.border
                         }
-                    }
+                    },
+                    axisLabel: { color: theme.muted }
                 },
                 yAxis: {
                     name:  '单位 '+ index.net.default_unit,
                     splitLine: {
-                        lineStyle: { color: "#eee" }
+                        lineStyle: { color: theme.border }
                     },
                     axisLine: {
-                        lineStyle: { color: "#666" }
-                    }
+                        lineStyle: { color: theme.border }
+                    },
+                    axisLabel: { color: theme.muted }
                 },
                 series: [{
                     name: '上行',
@@ -1051,16 +1093,16 @@ var index = {
                         normal: {
                             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
                                 offset: 0,
-                                color: 'rgba(255, 140, 0,0.5)'
+                                color: theme.primary
                             }, {
                                 offset: 1,
-                                color: 'rgba(255, 140, 0,0.8)'
+                                color: 'rgba(103, 80, 164, 0.1)'
                             }], false)
                         }
                     },
                     itemStyle: {
                         normal: {
-                            color: '#f7b851'
+                            color: theme.primary
                         }
                     },
                     lineStyle: {
@@ -1081,16 +1123,16 @@ var index = {
                         normal: {
                             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
                                 offset: 0,
-                                color: 'rgba(30, 144, 255,0.5)',
+                                color: theme.secondary
                             }, {
                                 offset: 1,
-                                color: 'rgba(30, 144, 255,0.8)',
+                                color: 'rgba(79, 142, 247, 0.12)'
                             }], false)
                         }
                     },
                     itemStyle: {
                         normal: {
-                            color: '#52a9ff',
+                            color: theme.secondary,
                         }
                     },
                     lineStyle: {
@@ -1189,6 +1231,7 @@ var index = {
         },
 
         render:function(){
+            var theme = getChartTheme();
             index.iostat.table.setOption({
                 tooltip: {
                     trigger: 'axis',
@@ -1220,11 +1263,14 @@ var index = {
                 },
                 yAxis: {
                     name:  '单位 '+ index.iostat.default_unit,
-                    splitLine: { lineStyle: { color: "#eee" } },
-                    axisLine: { lineStyle: { color: "#666" } }
+                    splitLine: { lineStyle: { color: theme.border } },
+                    axisLine: { lineStyle: { color: theme.border } },
+                    axisLabel: { color: theme.muted }
                 },
                 xAxis: {
-                    data: index.iostat.data.xData
+                    data: index.iostat.data.xData,
+                    axisLine: { lineStyle: { color: theme.border } },
+                    axisLabel: { color: theme.muted }
                 },
                 series: [{
                     name: "读取",
@@ -1236,23 +1282,36 @@ var index = {
             });
         },
         defaultOption:function(){
+            var theme = getChartTheme();
             var option = {
+                backgroundColor: 'transparent',
+                color: [theme.primary, theme.secondary],
                 title: {
                     text: "",
                     left: 'center',
                     textStyle: {
-                        color: '#888888',
+                        color: theme.muted,
                         fontStyle: 'normal',
-                        fontFamily: "宋体",
-                        fontSize: 16,
+                        fontFamily: "Inter, PingFang SC, Microsoft YaHei, sans-serif",
+                        fontSize: 14
                     }
                 },
                 tooltip: {
-                    trigger: 'axis'
+                    trigger: 'axis',
+                    backgroundColor: theme.surface,
+                    borderColor: theme.border,
+                    textStyle: { color: theme.text }
                 },
                 legend: {
                     data: ["读取", "写入"],
-                    bottom: '2%'
+                    bottom: '2%',
+                    textStyle: { color: theme.muted }
+                },
+                grid: {
+                    left: '2%',
+                    right: '3%',
+                    bottom: '15%',
+                    containLabel: true
                 },
                 xAxis: {
                     type: 'category',
@@ -1260,18 +1319,20 @@ var index = {
                     data: index.iostat.data.xData,
                     axisLine: {
                         lineStyle: {
-                            color: "#666"
+                            color: theme.border
                         }
-                    }
+                    },
+                    axisLabel: { color: theme.muted }
                 },
                 yAxis: {
                     name:  '单位 '+ index.iostat.default_unit,
                     splitLine: {
-                        lineStyle: { color: "#eee" }
+                        lineStyle: { color: theme.border }
                     },
                     axisLine: {
-                        lineStyle: { color: "#666" }
-                    }
+                        lineStyle: { color: theme.border }
+                    },
+                    axisLabel: { color: theme.muted }
                 },
                 series: [{
                     name: '读取',
@@ -1282,12 +1343,12 @@ var index = {
                     symbol: 'circle',
                     areaStyle: {
                         normal: {
-                            color: 'rgb(255, 70, 131)'
+                            color: theme.primary
                         }
                     },
                     itemStyle: {
                         normal: {
-                            color: 'rgb(255, 70, 131)'
+                            color: theme.primary
                         }
                     },
                     lineStyle: {
@@ -1306,12 +1367,12 @@ var index = {
                     symbolSize: 6,
                     areaStyle: {
                         normal: {
-                            color: 'rgba(46, 165, 186, .7)'
+                            color: theme.secondary
                         }
                     },
                     itemStyle: {
                         normal: {
-                            color: 'rgba(46, 165, 186, .7)'
+                            color: theme.secondary
                         }
                     },
                     lineStyle: {

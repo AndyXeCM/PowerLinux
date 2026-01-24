@@ -136,6 +136,15 @@ a {
     min-height: 100vh;
 }
 
+body.mw-drawer-collapsed .mw-drawer {
+    transform: translateX(-100%);
+    box-shadow: none;
+}
+
+body.mw-drawer-collapsed .mw-main {
+    margin-left: 0;
+}
+
 .mw-topbar {
     position: sticky;
     top: 0;

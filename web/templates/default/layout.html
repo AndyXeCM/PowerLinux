@@ -173,9 +173,19 @@ if (thisPath.indexOf('?')>-1){
 <script type="text/javascript">
     const drawerToggle = document.getElementById('mw-drawer-toggle');
     const drawer = document.getElementById('mw-drawer');
+    const drawerBreakpoint = 1024;
     if (drawerToggle && drawer) {
         drawerToggle.addEventListener('click', function () {
-            document.body.classList.toggle('mw-drawer-open');
+            if (window.innerWidth <= drawerBreakpoint) {
+                document.body.classList.toggle('mw-drawer-open');
+            } else {
+                document.body.classList.toggle('mw-drawer-collapsed');
+            }
+        });
+        window.addEventListener('resize', function () {
+            if (window.innerWidth > drawerBreakpoint) {
+                document.body.classList.remove('mw-drawer-open');
+            }
         });
     }
 

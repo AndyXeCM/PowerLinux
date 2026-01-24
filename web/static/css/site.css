@@ -1343,6 +1343,16 @@ html .menu .menu_exit:hover {
     margin: 6px auto;
 }
 
+.diskbox .mask {
+    position: static;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: transparent;
+    line-height: normal;
+    font-size: 16px;
+}
+
 .mw-mem-release-btn {
     margin-top: 6px;
 }
