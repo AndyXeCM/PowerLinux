@@ -67,8 +67,14 @@ a {
     position: sticky;
     top: 0;
     z-index: 900;
-    background: var(--mw-bg);
+    background: transparent;
     padding: 16px 28px 0;
+}
+
+.mw-topbar-glass {
+    background: rgba(247, 248, 251, 0.6);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .mw-topbar-card {
