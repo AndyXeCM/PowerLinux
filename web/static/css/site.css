@@ -1314,10 +1314,12 @@ html .menu .menu_exit:hover {
     align-items: stretch;
     gap: 6px;
     text-align: left;
+    justify-content: flex-start;
 }
 
 .mw-stat-progress {
     width: 100%;
+    display: block;
 }
 
 .mw-stat-progress mdui-linear-progress {
@@ -1326,6 +1328,8 @@ html .menu .menu_exit:hover {
     border-radius: 999px;
     background: var(--mw-surface-container);
     --mdui-linear-progress-height: 10px;
+    display: block;
+    opacity: 1;
 }
 
 .mw-stat-value {
