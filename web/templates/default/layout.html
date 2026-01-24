@@ -37,42 +37,52 @@
 
 <body class="mw-theme">
     <div class="mw-shell">
-        <aside class="mw-drawer" id="mw-drawer">
-            <div class="mw-drawer-header">
-                <div class="mw-drawer-title">{{data['title']}}</div>
-                <div class="mw-drawer-ip">{{data['ip']}}</div>
-            </div>
-            <nav class="mw-menu">
-                <a id="memuA" class="mw-menu-item" href="/"><span class="material-icons">dashboard</span>首页</a>
-                <a id="memuAsite" class="mw-menu-item" href="/site/index"><span class="material-icons">language</span>网站</a>
-                <a id="memuAfirewall" class="mw-menu-item" href="/firewall/index"><span class="material-icons">shield</span>安全</a>
-                <a id="memuAfiles" class="mw-menu-item" href="/files/index"><span class="material-icons">folder</span>文件</a>
-                <a id="memuAlogs" class="mw-menu-item" href="/logs/index"><span class="material-icons">article</span>日志</a>
-                <a id="memuAcrontab" class="mw-menu-item" href="/crontab/index"><span class="material-icons">schedule</span>计划任务</a>
-                {% for menu in data['hook_menu'] %}
-                <a id="memuAplugins_{{menu['name']}}" class="mw-menu-item" href="/plugins/menu?tag={{menu['name']}}">
-                    <span class="material-icons">extension</span>{{menu['title']}}
-                </a>
-                {% endfor %}
-                <a id="memuAsoft" class="mw-menu-item" href="/soft/index"><span class="material-icons">apps</span>软件管理</a>
-                <a id="memuAsetting" class="mw-menu-item" href="/setting/index"><span class="material-icons">settings</span>面板设置</a>
-                <a class="mw-menu-item" href="javascript:;" id="signout"><span class="material-icons">logout</span>退出</a>
-            </nav>
-            <div class="mw-drawer-footer">
-                <button class="mw-icon-button" onclick="bindPanel(0,'b')">
-                    <span class="material-icons">add</span>
-                </button>
-            </div>
-        </aside>
         <div class="mw-main">
             <header class="mw-topbar">
-                <button class="mw-icon-button" id="mw-drawer-toggle" aria-label="Toggle menu">
-                    <span class="material-icons">menu</span>
-                </button>
-                <div class="mw-topbar-title">PowerLinux</div>
+                <div class="mw-topbar-brand">
+                    <div class="mw-topbar-title">{{data['title']}}</div>
+                    <div class="mw-topbar-sub">{{data['ip']}}</div>
+                </div>
+                <nav class="mw-topbar-nav" aria-label="主导航">
+                    <a id="memuA" class="mw-topbar-item" href="/" title="首页" aria-label="首页">
+                        <span class="material-icons">dashboard</span>
+                    </a>
+                    <a id="memuAsite" class="mw-topbar-item" href="/site/index" title="网站" aria-label="网站">
+                        <span class="material-icons">language</span>
+                    </a>
+                    <a id="memuAfirewall" class="mw-topbar-item" href="/firewall/index" title="安全" aria-label="安全">
+                        <span class="material-icons">shield</span>
+                    </a>
+                    <a id="memuAfiles" class="mw-topbar-item" href="/files/index" title="文件" aria-label="文件">
+                        <span class="material-icons">folder</span>
+                    </a>
+                    <a id="memuAlogs" class="mw-topbar-item" href="/logs/index" title="日志" aria-label="日志">
+                        <span class="material-icons">article</span>
+                    </a>
+                    <a id="memuAcrontab" class="mw-topbar-item" href="/crontab/index" title="计划任务" aria-label="计划任务">
+                        <span class="material-icons">schedule</span>
+                    </a>
+                    {% for menu in data['hook_menu'] %}
+                    <a id="memuAplugins_{{menu['name']}}" class="mw-topbar-item" href="/plugins/menu?tag={{menu['name']}}" title="{{menu['title']}}" aria-label="{{menu['title']}}">
+                        <span class="material-icons">extension</span>
+                    </a>
+                    {% endfor %}
+                    <a id="memuAsoft" class="mw-topbar-item" href="/soft/index" title="软件管理" aria-label="软件管理">
+                        <span class="material-icons">apps</span>
+                    </a>
+                    <a id="memuAsetting" class="mw-topbar-item" href="/setting/index" title="面板设置" aria-label="面板设置">
+                        <span class="material-icons">settings</span>
+                    </a>
+                </nav>
                 <div class="mw-topbar-actions">
-                    <button id="task" class="mw-icon-button" onclick="messageBox();" aria-label="Tasks">
+                    <button id="task" class="mw-icon-button" onclick="messageBox();" aria-label="任务通知">
                         <span class="material-icons">notifications</span>
+                    </button>
+                    <button class="mw-icon-button" onclick="bindPanel(0,'b')" aria-label="添加面板">
+                        <span class="material-icons">add</span>
+                    </button>
+                    <button class="mw-icon-button" id="signout" aria-label="退出">
+                        <span class="material-icons">logout</span>
                     </button>
                 </div>
             </header>
@@ -170,24 +180,6 @@ if (thisPath.indexOf('?')>-1){
 <script src="https://unpkg.com/mdui@2.0.0/mdui.global.js"></script>
 <script src="/static/app/theme.js?v={{config.version}}"></script>
 <script type="text/javascript">
-    const drawerToggle = document.getElementById('mw-drawer-toggle');
-    const drawer = document.getElementById('mw-drawer');
-    const drawerBreakpoint = 1024;
-    if (drawerToggle && drawer) {
-        drawerToggle.addEventListener('click', function () {
-            if (window.innerWidth <= drawerBreakpoint) {
-                document.body.classList.toggle('mw-drawer-open');
-            } else {
-                document.body.classList.toggle('mw-drawer-collapsed');
-            }
-        });
-        window.addEventListener('resize', function () {
-            if (window.innerWidth > drawerBreakpoint) {
-                document.body.classList.remove('mw-drawer-open');
-            }
-        });
-    }
-
     if (window.MWTheme && typeof window.MWTheme.init === 'function') {
         window.MWTheme.init();
     }
