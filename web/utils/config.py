@@ -86,5 +86,6 @@ def getGlobalVar():
     data['panel_api'] = thisdb.getOptionByJson('panel_api', default={'open':False})
     data['panel_ssl'] = thisdb.getOptionByJson('panel_ssl', default={'open':False})
     data['panel_domain'] = thisdb.getOption('panel_domain', default='')
+    data['footer_text'] = thisdb.getOption('footer_text', default='PowerPanel 2026')
     
     return data

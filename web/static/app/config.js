@@ -23,6 +23,16 @@ $('input[name="webname"]').change(function(){
 	});
 });
 
+$('input[name="footer_text"]').change(function(){
+	var footerText = $(this).val();
+	$('.btn_footer_text').removeAttr('disabled');
+	$('.btn_footer_text').unbind().click(function(){
+		$.post('/setting/set_footer_text','footer_text='+encodeURIComponent(footerText), function(rdata){
+			showMsg(rdata.msg,function(){window.location.reload();},{icon:rdata.status?1:2},2000);
+		},'json');
+	});
+});
+
 
 $('input[name="host_ip"]').change(function(){
 	var host_ip = $(this).val();
