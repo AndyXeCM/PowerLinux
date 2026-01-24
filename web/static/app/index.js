@@ -356,12 +356,21 @@ function clearSystem() {
 
 function setMemImg(info){
 
-    var memRealUsed = toSize(info.memRealUsed);
-    var memTotal = toSize(info.memTotal);
-
-    var memRealUsedVal = memRealUsed.split(' ')[0];
-    var memTotalVal = memTotal.split(' ')[0];
-    var unit = memTotal.split(' ')[1];
+    var memRealUsedBytes = parseFloat(info.memRealUsed) || 0;
+    var memTotalBytes = parseFloat(info.memTotal) || 0;
+    var gbBytes = 1024 * 1024 * 1024;
+    var memRealUsedVal;
+    var memTotalVal;
+    var unit;
+    if (memRealUsedBytes < gbBytes) {
+        memRealUsedVal = (memRealUsedBytes / 1024 / 1024).toFixed(2);
+        memTotalVal = (memTotalBytes / 1024 / 1024).toFixed(2);
+        unit = 'MB';
+    } else {
+        memRealUsedVal = (memRealUsedBytes / gbBytes).toFixed(2);
+        memTotalVal = (memTotalBytes / gbBytes).toFixed(2);
+        unit = 'GB';
+    }
 
     var mem_txt = memRealUsedVal + '/' + memTotalVal + ' ('+ unit +')';
     setCookie("mem-before", mem_txt);
