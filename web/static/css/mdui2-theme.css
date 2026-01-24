@@ -767,6 +767,126 @@ mdui-card.mw-card {
     gap: 16px;
 }
 
+.mw-monitor-controls .mw-card-content {
+    padding-top: 8px;
+}
+
+.mw-monitor-controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.mw-monitor-control {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--mw-border);
+    background: var(--mw-surface-container);
+}
+
+.mw-monitor-label {
+    font-size: 13px;
+    color: var(--mw-muted);
+}
+
+.mw-monitor-field {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.mw-monitor-control-action {
+    justify-content: center;
+}
+
+.mw-monitor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 20px;
+}
+
+.mw-monitor-span {
+    grid-column: 1 / -1;
+}
+
+.mw-monitor-card-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.mw-monitor-card .searcTime {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 0;
+}
+
+.mw-monitor-card .searcTime .tit {
+    display: inline-flex;
+    padding: 0;
+    color: var(--mw-muted);
+}
+
+.mw-monitor-card .searcTime .gt,
+.mw-monitor-card .searcTime .ss .st {
+    float: none;
+    border-radius: 999px;
+    border: 1px solid var(--mw-border);
+    background: var(--mw-surface);
+    margin-right: 0;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.mw-monitor-card .searcTime .gt.on,
+.mw-monitor-card .searcTime .gt:hover,
+.mw-monitor-card .searcTime .ss .st:hover,
+.mw-monitor-card .searcTime .ss .st.on {
+    background: var(--mw-primary);
+    color: #fff;
+    border-color: transparent;
+}
+
+.mw-monitor-card .searcTime .ss {
+    float: none;
+}
+
+.mw-monitor-card .searcTime .ss .time {
+    top: calc(100% + 6px);
+    right: 0;
+    border-radius: 12px;
+    border: 1px solid var(--mw-border);
+    background: var(--mw-surface);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.mw-monitor-card .searcTime .ss .time input {
+    height: 30px;
+    border-radius: 8px;
+}
+
+.mw-monitor-card .searcTime .ss .sbtn {
+    border-radius: 8px;
+}
+
+.mw-monitor-summary .tabs-nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.mw-monitor-summary .tabs-down {
+    margin-left: auto;
+}
+
 .tabs-nav .tab-list {
     display: flex;
     gap: 16px;
@@ -1140,5 +1260,13 @@ mdui-card.mw-card {
 
     .mw-file-path-input input {
         min-width: 200px;
+    }
+
+    .mw-monitor-grid {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .mw-monitor-span {
+        grid-column: auto;
     }
 }
