@@ -73,7 +73,8 @@ a {
 
 .mw-topbar-card {
     width: 100%;
-    display: flex;
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
     align-items: center;
     flex-wrap: nowrap;
     padding: 16px 28px;
