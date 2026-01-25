@@ -1,3 +1,4 @@
+<img src="https://github.com/AndyXeCM/PowerLinux/blob/master/web/static/logo.png" />
 # PowerLinux
 
 轻量易用的下一代Linux控制面板
