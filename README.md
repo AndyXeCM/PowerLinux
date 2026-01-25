@@ -1,4 +1,4 @@
-<img width="100" height="100" alt="image" src="https://github.com/AndyXeCM/PowerLinux/blob/master/web/static/logo.png" />
+<center><img width="100" height="100" alt="image" src="https://github.com/AndyXeCM/PowerLinux/blob/master/web/static/logo.png" />
 
 # PowerLinux
 
@@ -80,6 +80,17 @@ wget --no-check-certificate -O uninstall.sh https://raw.githubusercontent.com/An
 
 本项目采用 Apache 开源授权许可证，完整的授权说明已放置在 [LICENSE](https://github.com/midoks/mdserver-web/blob/master/LICENSE) 文件中。
 ***
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+  
 以下是原作者readme
 <p align="center">
   <img alt="logo" src="https://cdn.jsdelivr.net/gh/midoks/mdserver-web@latest/route/static/logo.png" height="140" />
