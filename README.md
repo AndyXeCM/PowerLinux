@@ -1,4 +1,5 @@
-<img width="300" height="300" alt="image" src="https://github.com/AndyXeCM/PowerLinux/blob/master/web/static/logo.png" />
+<img width="100" height="100" alt="image" src="https://github.com/AndyXeCM/PowerLinux/blob/master/web/static/logo.png" />
+
 # PowerLinux
 
 轻量易用的下一代Linux控制面板
