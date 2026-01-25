@@ -2,6 +2,8 @@
 
 轻量易用的下一代Linux控制面板
 <p></p>
+<img width="2796" height="3022" alt="image" src="https://github.com/user-attachments/assets/9b23df4c-47a2-4f9f-a107-0ecafcd5cc70" />
+<p>
 开源项目，社区维护，不！可！能！收！费！
 <p></p>
 欢迎各位积极完善，提交pull request!
