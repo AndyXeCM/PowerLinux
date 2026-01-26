@@ -1355,7 +1355,7 @@ html .menu .menu_exit:hover {
 }
 
 .mw-disk-progress {
-    margin: 6px auto;
+    margin: 0;
 }
 
 .diskbox .mask {
@@ -1365,7 +1365,7 @@ html .menu .menu_exit:hover {
     border-radius: 0;
     background: transparent;
     line-height: normal;
-    font-size: 16px;
+    font-size: 20px;
 }
 
 .mw-mem-release-btn {
