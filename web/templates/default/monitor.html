@@ -4,8 +4,8 @@
 <div class="main-content mw-dashboard">
     <mdui-card class="mw-card mw-page-header">
         <div class="mw-page-left">
-            <div class="mw-page-title">系统监控</div>
-            <div class="mw-page-sub">按时间区间查看系统负载、资源与 IO 指标</div>
+            <div class="mw-page-title">服务器信息监控</div>
+            <div class="mw-page-sub">按时间区间查看 CPU、内存、磁盘与网络的实时变化</div>
         </div>
         <div class="mw-page-actions">
             <mdui-button variant="text" href="/" class="mw-link-button">返回首页</mdui-button>
@@ -13,6 +13,92 @@
     </mdui-card>
 
     <div class="mw-dashboard-body">
+        <mdui-card class="mw-card mw-monitor-hero">
+            <div class="mw-card-header">
+                <div>
+                    <div class="mw-card-title">运行概览</div>
+                    <div class="mw-card-subtitle">在图表中对比不同时间跨度的资源变化趋势</div>
+                </div>
+                <div class="mw-monitor-range">
+                    <span class="mw-monitor-range-label">时间跨度</span>
+                    <div class="mw-monitor-range-actions">
+                        <button type="button" class="mw-monitor-range-chip">1小时</button>
+                        <button type="button" class="mw-monitor-range-chip is-active">24小时</button>
+                        <button type="button" class="mw-monitor-range-chip">7天</button>
+                        <button type="button" class="mw-monitor-range-chip">30天</button>
+                    </div>
+                </div>
+            </div>
+            <div class="mw-card-content">
+                <div class="mw-monitor-kpi-grid">
+                    <mdui-card class="mw-card mw-monitor-kpi">
+                        <div class="mw-monitor-kpi-header">
+                            <div>
+                                <div class="mw-monitor-kpi-title">CPU 使用率</div>
+                                <div class="mw-monitor-kpi-value">62%</div>
+                            </div>
+                            <span class="material-icons mw-monitor-kpi-icon">memory</span>
+                        </div>
+                        <div class="mw-monitor-kpi-meta">过去 24 小时峰值 86%</div>
+                        <div class="mw-monitor-sparkline">
+                            <svg viewBox="0 0 200 60" preserveAspectRatio="none">
+                                <path class="mw-monitor-sparkline-area" d="M0,45 L20,38 L40,42 L60,28 L80,34 L100,20 L120,26 L140,18 L160,25 L180,14 L200,20 L200,60 L0,60 Z"></path>
+                                <path class="mw-monitor-sparkline-line" d="M0,45 L20,38 L40,42 L60,28 L80,34 L100,20 L120,26 L140,18 L160,25 L180,14 L200,20"></path>
+                            </svg>
+                        </div>
+                    </mdui-card>
+                    <mdui-card class="mw-card mw-monitor-kpi">
+                        <div class="mw-monitor-kpi-header">
+                            <div>
+                                <div class="mw-monitor-kpi-title">内存占用</div>
+                                <div class="mw-monitor-kpi-value">12.4 GB</div>
+                            </div>
+                            <span class="material-icons mw-monitor-kpi-icon">dns</span>
+                        </div>
+                        <div class="mw-monitor-kpi-meta">可用内存 5.6 GB</div>
+                        <div class="mw-monitor-sparkline">
+                            <svg viewBox="0 0 200 60" preserveAspectRatio="none">
+                                <path class="mw-monitor-sparkline-area" d="M0,40 L20,30 L40,36 L60,22 L80,18 L100,26 L120,16 L140,20 L160,14 L180,18 L200,12 L200,60 L0,60 Z"></path>
+                                <path class="mw-monitor-sparkline-line" d="M0,40 L20,30 L40,36 L60,22 L80,18 L100,26 L120,16 L140,20 L160,14 L180,18 L200,12"></path>
+                            </svg>
+                        </div>
+                    </mdui-card>
+                    <mdui-card class="mw-card mw-monitor-kpi">
+                        <div class="mw-monitor-kpi-header">
+                            <div>
+                                <div class="mw-monitor-kpi-title">网络吞吐</div>
+                                <div class="mw-monitor-kpi-value">128 Mbps</div>
+                            </div>
+                            <span class="material-icons mw-monitor-kpi-icon">swap_vert</span>
+                        </div>
+                        <div class="mw-monitor-kpi-meta">上行 46 Mbps · 下行 82 Mbps</div>
+                        <div class="mw-monitor-sparkline">
+                            <svg viewBox="0 0 200 60" preserveAspectRatio="none">
+                                <path class="mw-monitor-sparkline-area" d="M0,48 L20,44 L40,38 L60,30 L80,24 L100,32 L120,22 L140,26 L160,20 L180,28 L200,18 L200,60 L0,60 Z"></path>
+                                <path class="mw-monitor-sparkline-line" d="M0,48 L20,44 L40,38 L60,30 L80,24 L100,32 L120,22 L140,26 L160,20 L180,28 L200,18"></path>
+                            </svg>
+                        </div>
+                    </mdui-card>
+                    <mdui-card class="mw-card mw-monitor-kpi">
+                        <div class="mw-monitor-kpi-header">
+                            <div>
+                                <div class="mw-monitor-kpi-title">磁盘 IO</div>
+                                <div class="mw-monitor-kpi-value">312 MB/s</div>
+                            </div>
+                            <span class="material-icons mw-monitor-kpi-icon">storage</span>
+                        </div>
+                        <div class="mw-monitor-kpi-meta">读取 180 MB/s · 写入 132 MB/s</div>
+                        <div class="mw-monitor-sparkline">
+                            <svg viewBox="0 0 200 60" preserveAspectRatio="none">
+                                <path class="mw-monitor-sparkline-area" d="M0,50 L20,42 L40,34 L60,38 L80,26 L100,30 L120,24 L140,28 L160,22 L180,26 L200,18 L200,60 L0,60 Z"></path>
+                                <path class="mw-monitor-sparkline-line" d="M0,50 L20,42 L40,34 L60,38 L80,26 L100,30 L120,24 L140,28 L160,22 L180,26 L200,18"></path>
+                            </svg>
+                        </div>
+                    </mdui-card>
+                </div>
+            </div>
+        </mdui-card>
+
         <mdui-card class="mw-card mw-monitor-controls">
             <div class="mw-card-header">
                 <div class="mw-card-title">监控设置</div>
@@ -47,12 +133,12 @@
                     <div class="mw-card-title">平均负载</div>
                     <div class="searcTime">
                         <span class="tit">区间检索：</span>
-                        <span class="gt" onclick="Wday(1,'getload')">昨天</span>
-                        <span class="gt on" onclick="Wday(0,'getload')">今天</span>
-                        <span class="gt" onclick="Wday(7,'getload')">最近7天</span>
-                        <span class="gt" onclick="Wday(30,'getload')">最近30天</span>
+                        <button type="button" class="gt" onclick="Wday(1,'getload')">昨天</button>
+                        <button type="button" class="gt on" onclick="Wday(0,'getload')">今天</button>
+                        <button type="button" class="gt" onclick="Wday(7,'getload')">最近7天</button>
+                        <button type="button" class="gt" onclick="Wday(30,'getload')">最近30天</button>
                         <div class="ss">
-                            <span class="st">自定义时间</span>
+                            <button type="button" class="st">自定义时间</button>
                             <div class="time">
                                 <span class="bt">时间范围
                                     <input id="loadbtn_rtime" class="rtime" type="text" value="2023-07-06 00:00:00 - 2023-08-08 00:00:00">
@@ -72,12 +158,12 @@
                     <div class="mw-card-title">CPU</div>
                     <div class="searcTime">
                         <span class="tit">区间检索：</span>
-                        <span class="gt" onclick="Wday(1,'cpu')">昨天</span>
-                        <span class="gt on" onclick="Wday(0,'cpu')">今天</span>
-                        <span class="gt" onclick="Wday(7,'cpu')">最近7天</span>
-                        <span class="gt" onclick="Wday(30,'cpu')">最近30天</span>
+                        <button type="button" class="gt" onclick="Wday(1,'cpu')">昨天</button>
+                        <button type="button" class="gt on" onclick="Wday(0,'cpu')">今天</button>
+                        <button type="button" class="gt" onclick="Wday(7,'cpu')">最近7天</button>
+                        <button type="button" class="gt" onclick="Wday(30,'cpu')">最近30天</button>
                         <div class="ss">
-                            <span class="st">自定义时间</span>
+                            <button type="button" class="st">自定义时间</button>
                             <div class="time">
                                 <span class="bt">时间范围
                                     <input id="cpubtn_rtime" class="rtime" type="text" value="2023-07-06 00:00:00 - 2023-08-08 00:00:00">
@@ -97,12 +183,12 @@
                     <div class="mw-card-title">内存</div>
                     <div class="searcTime">
                         <span class="tit">区间检索：</span>
-                        <span class="gt" onclick="Wday(1,'mem')">昨天</span>
-                        <span class="gt on" onclick="Wday(0,'mem')">今天</span>
-                        <span class="gt" onclick="Wday(7,'mem')">最近7天</span>
-                        <span class="gt" onclick="Wday(30,'mem')">最近30天</span>
+                        <button type="button" class="gt" onclick="Wday(1,'mem')">昨天</button>
+                        <button type="button" class="gt on" onclick="Wday(0,'mem')">今天</button>
+                        <button type="button" class="gt" onclick="Wday(7,'mem')">最近7天</button>
+                        <button type="button" class="gt" onclick="Wday(30,'mem')">最近30天</button>
                         <div class="ss">
-                            <span class="st">自定义时间</span>
+                            <button type="button" class="st">自定义时间</button>
                             <div class="time">
                                 <span class="bt">时间范围
                                     <input id="membtn_rtime" class="rtime" type="text" value="2023-07-06 00:00:00 - 2023-08-08 00:00:00">
@@ -122,12 +208,12 @@
                     <div class="mw-card-title">磁盘 IO</div>
                     <div class="searcTime">
                         <span class="tit">区间检索：</span>
-                        <span class="gt" onclick="Wday(1,'disk')">昨天</span>
-                        <span class="gt on" onclick="Wday(0,'disk')">今天</span>
-                        <span class="gt" onclick="Wday(7,'disk')">最近7天</span>
-                        <span class="gt" onclick="Wday(30,'disk')">最近30天</span>
+                        <button type="button" class="gt" onclick="Wday(1,'disk')">昨天</button>
+                        <button type="button" class="gt on" onclick="Wday(0,'disk')">今天</button>
+                        <button type="button" class="gt" onclick="Wday(7,'disk')">最近7天</button>
+                        <button type="button" class="gt" onclick="Wday(30,'disk')">最近30天</button>
                         <div class="ss">
-                            <span class="st">自定义时间</span>
+                            <button type="button" class="st">自定义时间</button>
                             <div class="time">
                                 <span class="bt">时间范围
                                     <input id="diskbtn_rtime" class="rtime" type="text" value="2023-07-06 00:00:00 - 2023-08-08 00:00:00">
@@ -147,12 +233,12 @@
                     <div class="mw-card-title">网络 IO</div>
                     <div class="searcTime">
                         <span class="tit">区间检索：</span>
-                        <span class="gt" onclick="Wday(1,'network')">昨天</span>
-                        <span class="gt on" onclick="Wday(0,'network')">今天</span>
-                        <span class="gt" onclick="Wday(7,'network')">最近7天</span>
-                        <span class="gt" onclick="Wday(30,'network')">最近30天</span>
+                        <button type="button" class="gt" onclick="Wday(1,'network')">昨天</button>
+                        <button type="button" class="gt on" onclick="Wday(0,'network')">今天</button>
+                        <button type="button" class="gt" onclick="Wday(7,'network')">最近7天</button>
+                        <button type="button" class="gt" onclick="Wday(30,'network')">最近30天</button>
                         <div class="ss">
-                            <span class="st">自定义时间</span>
+                            <button type="button" class="st">自定义时间</button>
                             <div class="time">
                                 <span class="bt">时间范围
                                     <input id="networkbtn_rtime" class="rtime" type="text" value="2023-07-06 00:00:00 - 2023-08-08 00:00:00">
