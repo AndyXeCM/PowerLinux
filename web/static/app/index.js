@@ -331,7 +331,7 @@ function getDiskInfo() {
                 } 
             }
            
-            dBody = '<li class="col-xs-6 col-sm-3 col-md-3 col-lg-2 mtb20 circle-box text-center diskbox">' +
+            dBody = '<li class="col-xs-6 col-sm-3 col-md-3 col-lg-2 mtb20 circle-box mw-stat-item diskbox">' +
                 '<h3 class="c5 f15">' + rdata[i].path + '</h3>' +
                 '<div class="mw-stat-progress mw-disk-progress">' +
                 '<mdui-linear-progress max="100" value="' + usagePercent + '" style="--mdui-color-primary: ' + LoadColor + ';"></mdui-linear-progress>' +
