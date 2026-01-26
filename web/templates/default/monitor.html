@@ -5,7 +5,7 @@
     <mdui-card class="mw-card mw-page-header">
         <div class="mw-page-left">
             <div class="mw-page-title">服务器信息监控</div>
-            <div class="mw-page-sub">按时间区间查看 CPU、内存、磁盘与网络的实时变化</div>
+            <div class="mw-page-sub">集中查看 CPU、内存、磁盘与网络的关键变化趋势</div>
         </div>
         <div class="mw-page-actions">
             <mdui-button variant="text" href="/" class="mw-link-button">返回首页</mdui-button>
@@ -13,11 +13,11 @@
     </mdui-card>
 
     <div class="mw-dashboard-body">
-        <mdui-card class="mw-card mw-monitor-hero">
+        <mdui-card class="mw-card mw-monitor-overview">
             <div class="mw-card-header">
                 <div>
-                    <div class="mw-card-title">运行概览</div>
-                    <div class="mw-card-subtitle">在图表中对比不同时间跨度的资源变化趋势</div>
+                    <div class="mw-card-title">监控概览</div>
+                    <div class="mw-card-subtitle">选择时间跨度，快速了解资源负载和吞吐情况</div>
                 </div>
                 <div class="mw-monitor-range">
                     <span class="mw-monitor-range-label">时间跨度</span>
@@ -31,23 +31,18 @@
             </div>
             <div class="mw-card-content">
                 <div class="mw-monitor-kpi-grid">
-                    <mdui-card class="mw-card mw-monitor-kpi">
+                    <div class="mw-monitor-kpi-card">
                         <div class="mw-monitor-kpi-header">
                             <div>
-                                <div class="mw-monitor-kpi-title">CPU 使用率</div>
-                                <div class="mw-monitor-kpi-value">62%</div>
+                                <div class="mw-monitor-kpi-title">CPU 峰值</div>
+                                <div class="mw-monitor-kpi-value">86%</div>
                             </div>
                             <span class="material-icons mw-monitor-kpi-icon">memory</span>
                         </div>
-                        <div class="mw-monitor-kpi-meta">过去 24 小时峰值 86%</div>
-                        <div class="mw-monitor-sparkline">
-                            <svg viewBox="0 0 200 60" preserveAspectRatio="none">
-                                <path class="mw-monitor-sparkline-area" d="M0,45 L20,38 L40,42 L60,28 L80,34 L100,20 L120,26 L140,18 L160,25 L180,14 L200,20 L200,60 L0,60 Z"></path>
-                                <path class="mw-monitor-sparkline-line" d="M0,45 L20,38 L40,42 L60,28 L80,34 L100,20 L120,26 L140,18 L160,25 L180,14 L200,20"></path>
-                            </svg>
-                        </div>
-                    </mdui-card>
-                    <mdui-card class="mw-card mw-monitor-kpi">
+                        <div class="mw-monitor-kpi-sub">平均负载 62%</div>
+                        <div class="mw-monitor-kpi-bar"><span style="width: 86%"></span></div>
+                    </div>
+                    <div class="mw-monitor-kpi-card">
                         <div class="mw-monitor-kpi-header">
                             <div>
                                 <div class="mw-monitor-kpi-title">内存占用</div>
@@ -55,15 +50,10 @@
                             </div>
                             <span class="material-icons mw-monitor-kpi-icon">dns</span>
                         </div>
-                        <div class="mw-monitor-kpi-meta">可用内存 5.6 GB</div>
-                        <div class="mw-monitor-sparkline">
-                            <svg viewBox="0 0 200 60" preserveAspectRatio="none">
-                                <path class="mw-monitor-sparkline-area" d="M0,40 L20,30 L40,36 L60,22 L80,18 L100,26 L120,16 L140,20 L160,14 L180,18 L200,12 L200,60 L0,60 Z"></path>
-                                <path class="mw-monitor-sparkline-line" d="M0,40 L20,30 L40,36 L60,22 L80,18 L100,26 L120,16 L140,20 L160,14 L180,18 L200,12"></path>
-                            </svg>
-                        </div>
-                    </mdui-card>
-                    <mdui-card class="mw-card mw-monitor-kpi">
+                        <div class="mw-monitor-kpi-sub">可用 5.6 GB</div>
+                        <div class="mw-monitor-kpi-bar"><span style="width: 68%"></span></div>
+                    </div>
+                    <div class="mw-monitor-kpi-card">
                         <div class="mw-monitor-kpi-header">
                             <div>
                                 <div class="mw-monitor-kpi-title">网络吞吐</div>
@@ -71,15 +61,10 @@
                             </div>
                             <span class="material-icons mw-monitor-kpi-icon">swap_vert</span>
                         </div>
-                        <div class="mw-monitor-kpi-meta">上行 46 Mbps · 下行 82 Mbps</div>
-                        <div class="mw-monitor-sparkline">
-                            <svg viewBox="0 0 200 60" preserveAspectRatio="none">
-                                <path class="mw-monitor-sparkline-area" d="M0,48 L20,44 L40,38 L60,30 L80,24 L100,32 L120,22 L140,26 L160,20 L180,28 L200,18 L200,60 L0,60 Z"></path>
-                                <path class="mw-monitor-sparkline-line" d="M0,48 L20,44 L40,38 L60,30 L80,24 L100,32 L120,22 L140,26 L160,20 L180,28 L200,18"></path>
-                            </svg>
-                        </div>
-                    </mdui-card>
-                    <mdui-card class="mw-card mw-monitor-kpi">
+                        <div class="mw-monitor-kpi-sub">上行 46 Mbps · 下行 82 Mbps</div>
+                        <div class="mw-monitor-kpi-bar"><span style="width: 54%"></span></div>
+                    </div>
+                    <div class="mw-monitor-kpi-card">
                         <div class="mw-monitor-kpi-header">
                             <div>
                                 <div class="mw-monitor-kpi-title">磁盘 IO</div>
@@ -87,14 +72,9 @@
                             </div>
                             <span class="material-icons mw-monitor-kpi-icon">storage</span>
                         </div>
-                        <div class="mw-monitor-kpi-meta">读取 180 MB/s · 写入 132 MB/s</div>
-                        <div class="mw-monitor-sparkline">
-                            <svg viewBox="0 0 200 60" preserveAspectRatio="none">
-                                <path class="mw-monitor-sparkline-area" d="M0,50 L20,42 L40,34 L60,38 L80,26 L100,30 L120,24 L140,28 L160,22 L180,26 L200,18 L200,60 L0,60 Z"></path>
-                                <path class="mw-monitor-sparkline-line" d="M0,50 L20,42 L40,34 L60,38 L80,26 L100,30 L120,24 L140,28 L160,22 L180,26 L200,18"></path>
-                            </svg>
-                        </div>
-                    </mdui-card>
+                        <div class="mw-monitor-kpi-sub">读取 180 MB/s · 写入 132 MB/s</div>
+                        <div class="mw-monitor-kpi-bar"><span style="width: 72%"></span></div>
+                    </div>
                 </div>
             </div>
         </mdui-card>
@@ -130,7 +110,10 @@
         <div class="mw-monitor-grid">
             <mdui-card class="mw-card mw-monitor-card mw-monitor-span">
                 <div class="mw-card-header mw-monitor-card-header">
-                    <div class="mw-card-title">平均负载</div>
+                    <div>
+                        <div class="mw-card-title">平均负载</div>
+                        <div class="mw-card-subtitle">1 分钟 / 5 分钟 / 15 分钟负载</div>
+                    </div>
                     <div class="searcTime">
                         <span class="tit">区间检索：</span>
                         <button type="button" class="gt" onclick="Wday(1,'getload')">昨天</button>
@@ -155,7 +138,10 @@
 
             <mdui-card class="mw-card mw-monitor-card">
                 <div class="mw-card-header mw-monitor-card-header">
-                    <div class="mw-card-title">CPU</div>
+                    <div>
+                        <div class="mw-card-title">CPU 使用率</div>
+                        <div class="mw-card-subtitle">用户态 / 内核态占比</div>
+                    </div>
                     <div class="searcTime">
                         <span class="tit">区间检索：</span>
                         <button type="button" class="gt" onclick="Wday(1,'cpu')">昨天</button>
@@ -180,7 +166,10 @@
 
             <mdui-card class="mw-card mw-monitor-card">
                 <div class="mw-card-header mw-monitor-card-header">
-                    <div class="mw-card-title">内存</div>
+                    <div>
+                        <div class="mw-card-title">内存使用</div>
+                        <div class="mw-card-subtitle">占用 / 缓冲 / 缓存分布</div>
+                    </div>
                     <div class="searcTime">
                         <span class="tit">区间检索：</span>
                         <button type="button" class="gt" onclick="Wday(1,'mem')">昨天</button>
@@ -205,7 +194,10 @@
 
             <mdui-card class="mw-card mw-monitor-card">
                 <div class="mw-card-header mw-monitor-card-header">
-                    <div class="mw-card-title">磁盘 IO</div>
+                    <div>
+                        <div class="mw-card-title">磁盘 IO</div>
+                        <div class="mw-card-subtitle">读写速率与延迟</div>
+                    </div>
                     <div class="searcTime">
                         <span class="tit">区间检索：</span>
                         <button type="button" class="gt" onclick="Wday(1,'disk')">昨天</button>
@@ -230,7 +222,10 @@
 
             <mdui-card class="mw-card mw-monitor-card">
                 <div class="mw-card-header mw-monitor-card-header">
-                    <div class="mw-card-title">网络 IO</div>
+                    <div>
+                        <div class="mw-card-title">网络 IO</div>
+                        <div class="mw-card-subtitle">进出流量与峰值</div>
+                    </div>
                     <div class="searcTime">
                         <span class="tit">区间检索：</span>
                         <button type="button" class="gt" onclick="Wday(1,'network')">昨天</button>

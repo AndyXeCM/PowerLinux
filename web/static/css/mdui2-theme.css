@@ -127,12 +127,17 @@ a {
     display: flex;
     align-items: center;
     flex-wrap: nowrap;
-    gap: 10px;
+    gap: 12px;
     padding: 0;
     justify-content: center;
     min-width: 0;
     overflow-x: auto;
     scrollbar-width: thin;
+}
+
+.mw-topbar-nav > * {
+    margin: 0;
+    flex: 0 0 auto;
 }
 
 .mw-topbar-actions {
@@ -669,12 +674,12 @@ mdui-card.mw-card {
     padding-top: 8px;
 }
 
-.mw-monitor-hero .mw-card-header {
+.mw-monitor-overview .mw-card-header {
     align-items: flex-start;
     gap: 16px;
 }
 
-.mw-monitor-hero .mw-card-subtitle {
+.mw-monitor-overview .mw-card-subtitle {
     margin-top: 6px;
     color: var(--mw-muted);
     font-size: 13px;
@@ -723,9 +728,14 @@ mdui-card.mw-card {
     gap: 16px;
 }
 
-.mw-monitor-kpi {
+.mw-monitor-kpi-card {
     padding: 16px;
     background: var(--mw-surface-container);
+    border-radius: 16px;
+    border: 1px solid var(--mw-border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .mw-monitor-kpi-header {
@@ -746,8 +756,7 @@ mdui-card.mw-card {
     margin-top: 4px;
 }
 
-.mw-monitor-kpi-meta {
-    margin-top: 8px;
+.mw-monitor-kpi-sub {
     font-size: 12px;
     color: var(--mw-muted);
 }
@@ -764,26 +773,18 @@ mdui-card.mw-card {
     font-size: 20px;
 }
 
-.mw-monitor-sparkline {
-    margin-top: 12px;
-    height: 60px;
+.mw-monitor-kpi-bar {
+    height: 6px;
+    background: color-mix(in srgb, var(--mw-border) 60%, transparent);
+    border-radius: 999px;
+    overflow: hidden;
 }
 
-.mw-monitor-sparkline svg {
-    width: 100%;
+.mw-monitor-kpi-bar span {
+    display: block;
     height: 100%;
-}
-
-.mw-monitor-sparkline-area {
-    fill: color-mix(in srgb, var(--mw-primary) 15%, transparent);
-}
-
-.mw-monitor-sparkline-line {
-    fill: none;
-    stroke: var(--mw-primary);
-    stroke-width: 2.2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--mw-primary) 0%, color-mix(in srgb, var(--mw-primary) 50%, #fff) 100%);
 }
 
 .mw-monitor-controls-grid {
