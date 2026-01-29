@@ -125,40 +125,53 @@
     };
   }
 
+  function buildEmptyOption(message) {
+    return {
+      title: {
+        text: message || '暂无数据',
+        left: 'center',
+        top: 'middle',
+        textStyle: { color: '#9aa0a6', fontSize: 14, fontWeight: 400 },
+      },
+      xAxis: { show: false },
+      yAxis: { show: false },
+      series: [],
+    };
+  }
+
+  function renderChart(chart, option, hasData) {
+    if (!chart) return;
+    if (!hasData) {
+      chart.setOption(buildEmptyOption('暂无监控数据'));
+      return;
+    }
+    chart.setOption(option);
+  }
+
   function renderCharts(series) {
-    if (charts.load) {
-      charts.load.setOption(buildLineOption(series.load.labels, [
+    renderChart(charts.load, buildLineOption(series.load.labels, [
         { name: '1分钟', type: 'line', data: series.load.one, smooth: true },
         { name: '5分钟', type: 'line', data: series.load.five, smooth: true },
         { name: '15分钟', type: 'line', data: series.load.fifteen, smooth: true },
-      ]));
-    }
+      ]), series.load.labels && series.load.labels.length > 0);
 
-    if (charts.cpu) {
-      charts.cpu.setOption(buildLineOption(series.cpu.labels, [
+    renderChart(charts.cpu, buildLineOption(series.cpu.labels, [
         { name: 'CPU使用率', type: 'line', data: series.cpu.cpu, smooth: true },
-      ], '%'));
-    }
+      ], '%'), series.cpu.labels && series.cpu.labels.length > 0);
 
-    if (charts.mem) {
-      charts.mem.setOption(buildLineOption(series.cpu.labels, [
+    renderChart(charts.mem, buildLineOption(series.cpu.labels, [
         { name: '内存使用率', type: 'line', data: series.cpu.mem, smooth: true },
-      ], '%'));
-    }
+      ], '%'), series.cpu.labels && series.cpu.labels.length > 0);
 
-    if (charts.disk) {
-      charts.disk.setOption(buildLineOption(series.disk.labels, [
+    renderChart(charts.disk, buildLineOption(series.disk.labels, [
         { name: '读取', type: 'line', data: series.disk.read, smooth: true },
         { name: '写入', type: 'line', data: series.disk.write, smooth: true },
-      ], 'MB'));
-    }
+      ], 'MB'), series.disk.labels && series.disk.labels.length > 0);
 
-    if (charts.net) {
-      charts.net.setOption(buildLineOption(series.net.labels, [
+    renderChart(charts.net, buildLineOption(series.net.labels, [
         { name: '上行', type: 'line', data: series.net.up, smooth: true },
         { name: '下行', type: 'line', data: series.net.down, smooth: true },
-      ], 'Mbps'));
-    }
+      ], 'Mbps'), series.net.labels && series.net.labels.length > 0);
   }
 
   async function loadOverview() {
