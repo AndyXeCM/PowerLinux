@@ -74,6 +74,15 @@ def _build_series(start_time, end_time):
     return series, load_data, cpu_data, disk_data, net_data
 
 
+def _is_monitor_open():
+    monitor_status = thisdb.getOption('monitor_status', default='open', type='monitor')
+    return monitor_status == 'open'
+
+
+def _should_collect_sample(load_data, cpu_data, disk_data, net_data):
+    return not (load_data or cpu_data or disk_data or net_data)
+
+
 def _safe_latest(data, key):
     if not data:
         return None
@@ -95,6 +104,9 @@ def api_overview():
     start_time, end_time = _parse_range(range_key)
 
     series, load_data, cpu_data, disk_data, net_data = _build_series(start_time, end_time)
+    if _should_collect_sample(load_data, cpu_data, disk_data, net_data) and _is_monitor_open():
+        sys.monitor.instance().run()
+        series, load_data, cpu_data, disk_data, net_data = _build_series(start_time, end_time)
 
     latest_net = None
     if net_data:
