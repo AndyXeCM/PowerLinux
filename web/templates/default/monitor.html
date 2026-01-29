@@ -1,255 +1,186 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="main-content mw-dashboard">
-    <mdui-card class="mw-card mw-page-header">
+<div class="main-content mw-dashboard mw-observe-page">
+    <mdui-card class="mw-card mw-page-header mw-observe-hero">
         <div class="mw-page-left">
-            <div class="mw-page-title">服务器信息监控</div>
-            <div class="mw-page-sub">集中查看 CPU、内存、磁盘与网络的关键变化趋势</div>
+            <div class="mw-page-title">服务器监控中枢</div>
+            <div class="mw-page-sub">从趋势、事件与容量三条线观察系统运行状态</div>
         </div>
-        <div class="mw-page-actions">
+        <div class="mw-page-actions mw-observe-hero-actions">
+            <mdui-button variant="outlined" onclick="location.reload()">刷新视图</mdui-button>
             <mdui-button variant="text" href="/" class="mw-link-button">返回首页</mdui-button>
         </div>
     </mdui-card>
 
-    <div class="mw-dashboard-body">
-        <mdui-card class="mw-card mw-monitor-overview">
-            <div class="mw-card-header">
-                <div>
-                    <div class="mw-card-title">监控概览</div>
-                    <div class="mw-card-subtitle">选择时间跨度，快速了解资源负载和吞吐情况</div>
-                </div>
-                <div class="mw-monitor-range">
-                    <span class="mw-monitor-range-label">时间跨度</span>
-                    <div class="mw-monitor-range-actions">
-                        <button type="button" class="mw-monitor-range-chip">1小时</button>
-                        <button type="button" class="mw-monitor-range-chip is-active">24小时</button>
-                        <button type="button" class="mw-monitor-range-chip">7天</button>
-                        <button type="button" class="mw-monitor-range-chip">30天</button>
+    <div class="mw-dashboard-body mw-observe-shell">
+        <aside class="mw-observe-aside">
+            <mdui-card class="mw-card mw-observe-panel">
+                <div class="mw-observe-panel-header">
+                    <div>
+                        <div class="mw-observe-panel-title">关键指标</div>
+                        <div class="mw-observe-panel-subtitle">实时追踪资源消耗与瓶颈</div>
                     </div>
-                </div>
-            </div>
-            <div class="mw-card-content">
-                <div class="mw-monitor-kpi-grid">
-                    <div class="mw-monitor-kpi-card">
-                        <div class="mw-monitor-kpi-header">
-                            <div>
-                                <div class="mw-monitor-kpi-title">CPU 峰值</div>
-                                <div class="mw-monitor-kpi-value">86%</div>
-                            </div>
-                            <span class="material-icons mw-monitor-kpi-icon">memory</span>
+                    <div class="mw-observe-quick-range">
+                        <span>时间跨度</span>
+                        <div class="mw-observe-quick-range-actions">
+                            <button type="button" class="mw-observe-chip" data-range="1h">近 1 小时</button>
+                            <button type="button" class="mw-observe-chip is-active" data-range="24h">近 24 小时</button>
+                            <button type="button" class="mw-observe-chip" data-range="7d">近 7 天</button>
+                            <button type="button" class="mw-observe-chip" data-range="30d">近 30 天</button>
                         </div>
-                        <div class="mw-monitor-kpi-sub">平均负载 62%</div>
-                        <div class="mw-monitor-kpi-bar"><span style="width: 86%"></span></div>
-                    </div>
-                    <div class="mw-monitor-kpi-card">
-                        <div class="mw-monitor-kpi-header">
-                            <div>
-                                <div class="mw-monitor-kpi-title">内存占用</div>
-                                <div class="mw-monitor-kpi-value">12.4 GB</div>
-                            </div>
-                            <span class="material-icons mw-monitor-kpi-icon">dns</span>
-                        </div>
-                        <div class="mw-monitor-kpi-sub">可用 5.6 GB</div>
-                        <div class="mw-monitor-kpi-bar"><span style="width: 68%"></span></div>
-                    </div>
-                    <div class="mw-monitor-kpi-card">
-                        <div class="mw-monitor-kpi-header">
-                            <div>
-                                <div class="mw-monitor-kpi-title">网络吞吐</div>
-                                <div class="mw-monitor-kpi-value">128 Mbps</div>
-                            </div>
-                            <span class="material-icons mw-monitor-kpi-icon">swap_vert</span>
-                        </div>
-                        <div class="mw-monitor-kpi-sub">上行 46 Mbps · 下行 82 Mbps</div>
-                        <div class="mw-monitor-kpi-bar"><span style="width: 54%"></span></div>
-                    </div>
-                    <div class="mw-monitor-kpi-card">
-                        <div class="mw-monitor-kpi-header">
-                            <div>
-                                <div class="mw-monitor-kpi-title">磁盘 IO</div>
-                                <div class="mw-monitor-kpi-value">312 MB/s</div>
-                            </div>
-                            <span class="material-icons mw-monitor-kpi-icon">storage</span>
-                        </div>
-                        <div class="mw-monitor-kpi-sub">读取 180 MB/s · 写入 132 MB/s</div>
-                        <div class="mw-monitor-kpi-bar"><span style="width: 72%"></span></div>
                     </div>
                 </div>
-            </div>
-        </mdui-card>
+                <div class="mw-observe-kpi-list">
+                    <div class="mw-observe-kpi" data-kpi="cpu">
+                        <span class="material-icons mw-observe-kpi-icon">developer_board</span>
+                        <div>
+                            <div class="mw-observe-kpi-title">CPU 使用率</div>
+                            <div class="mw-observe-kpi-value" data-metric="cpu_latest">--</div>
+                            <div class="mw-observe-kpi-desc">峰值 --</div>
+                        </div>
+                        <div class="mw-observe-kpi-meter"><span style="width: 0%"></span></div>
+                    </div>
+                    <div class="mw-observe-kpi" data-kpi="mem">
+                        <span class="material-icons mw-observe-kpi-icon">memory</span>
+                        <div>
+                            <div class="mw-observe-kpi-title">内存使用率</div>
+                            <div class="mw-observe-kpi-value" data-metric="mem_latest">--</div>
+                            <div class="mw-observe-kpi-desc">峰值 --</div>
+                        </div>
+                        <div class="mw-observe-kpi-meter"><span style="width: 0%"></span></div>
+                    </div>
+                    <div class="mw-observe-kpi" data-kpi="net">
+                        <span class="material-icons mw-observe-kpi-icon">swap_vert</span>
+                        <div>
+                            <div class="mw-observe-kpi-title">网络吞吐</div>
+                            <div class="mw-observe-kpi-value" data-metric="net_latest">--</div>
+                            <div class="mw-observe-kpi-desc">峰值 --</div>
+                        </div>
+                        <div class="mw-observe-kpi-meter"><span style="width: 0%"></span></div>
+                    </div>
+                    <div class="mw-observe-kpi" data-kpi="disk">
+                        <span class="material-icons mw-observe-kpi-icon">storage</span>
+                        <div>
+                            <div class="mw-observe-kpi-title">磁盘 IO</div>
+                            <div class="mw-observe-kpi-value" data-metric="disk_latest">--</div>
+                            <div class="mw-observe-kpi-desc">峰值 --</div>
+                        </div>
+                        <div class="mw-observe-kpi-meter"><span style="width: 0%"></span></div>
+                    </div>
+                </div>
+            </mdui-card>
 
-        <mdui-card class="mw-card mw-monitor-controls">
-            <div class="mw-card-header">
-                <div class="mw-card-title">监控设置</div>
-            </div>
-            <div class="mw-card-content">
-                <div class="mw-monitor-controls-grid">
-                    <div class="mw-monitor-control">
-                        <div class="mw-monitor-label">开启监控</div>
-                        <div id="openJK" class="mw-monitor-switch"></div>
+            <mdui-card class="mw-card mw-observe-panel">
+                <div class="mw-observe-panel-header">
+                    <div>
+                        <div class="mw-observe-panel-title">监控策略</div>
+                        <div class="mw-observe-panel-subtitle">控制采集开关与保留周期</div>
                     </div>
-                    <div class="mw-monitor-control">
-                        <div class="mw-monitor-label">保存天数</div>
-                        <div class="mw-monitor-field">
+                </div>
+                <div class="mw-observe-settings-grid">
+                    <div class="mw-observe-settings-item">
+                        <div class="mw-observe-settings-label">开启监控</div>
+                        <div id="openJK" class="mw-observe-switch"></div>
+                    </div>
+                    <div class="mw-observe-settings-item">
+                        <div class="mw-observe-settings-label">保存天数</div>
+                        <div class="mw-observe-settings-field">
                             <input class="bt-input-text" id="save_day" value="" type="number">
-                            <mdui-button variant="outlined" onclick="setControl('save_day',true);">更改</mdui-button>
+                            <mdui-button variant="outlined" onclick="setControl('save_day',true);">保存</mdui-button>
                         </div>
                     </div>
-                    <div class="mw-monitor-control">
-                        <div class="mw-monitor-label">仅统计外网</div>
-                        <div id="statAll" class="mw-monitor-switch"></div>
+                    <div class="mw-observe-settings-item">
+                        <div class="mw-observe-settings-label">仅统计外网</div>
+                        <div id="statAll" class="mw-observe-switch"></div>
                     </div>
-                    <div class="mw-monitor-control mw-monitor-control-action">
+                    <div class="mw-observe-settings-item is-action">
                         <mdui-button variant="outlined" onclick="closeControl()">清空记录</mdui-button>
                     </div>
                 </div>
+            </mdui-card>
+
+            <mdui-card class="mw-card mw-observe-panel">
+                <div class="mw-observe-panel-header">
+                    <div>
+                        <div class="mw-observe-panel-title">运行事件</div>
+                        <div class="mw-observe-panel-subtitle">来自监控数据的峰值提示</div>
+                    </div>
+                </div>
+                <ul class="mw-observe-event-list" id="observeEvents"></ul>
+            </mdui-card>
+        </aside>
+
+        <section class="mw-observe-main">
+            <div class="mw-observe-main-header">
+                <div>
+                    <div class="mw-observe-main-title">趋势图表</div>
+                    <div class="mw-observe-main-subtitle">展示资源随时间变化的详细曲线</div>
+                </div>
             </div>
-        </mdui-card>
-
-        <div class="mw-monitor-grid">
-            <mdui-card class="mw-card mw-monitor-card mw-monitor-span">
-                <div class="mw-card-header mw-monitor-card-header">
-                    <div>
-                        <div class="mw-card-title">平均负载</div>
-                        <div class="mw-card-subtitle">1 分钟 / 5 分钟 / 15 分钟负载</div>
-                    </div>
-                    <div class="searcTime">
-                        <span class="tit">区间检索：</span>
-                        <button type="button" class="gt" onclick="Wday(1,'getload')">昨天</button>
-                        <button type="button" class="gt on" onclick="Wday(0,'getload')">今天</button>
-                        <button type="button" class="gt" onclick="Wday(7,'getload')">最近7天</button>
-                        <button type="button" class="gt" onclick="Wday(30,'getload')">最近30天</button>
-                        <div class="ss">
-                            <button type="button" class="st">自定义时间</button>
-                            <div class="time">
-                                <span class="bt">时间范围
-                                    <input id="loadbtn_rtime" class="rtime" type="text" value="2023-07-06 00:00:00 - 2023-08-08 00:00:00">
-                                </span>
-                                <div class="sbtn loadbtn">提交</div>
-                            </div>
+            <div class="mw-observe-charts">
+                <mdui-card class="mw-card mw-observe-chart-card mw-observe-span">
+                    <div class="mw-observe-chart-header">
+                        <div>
+                            <div class="mw-observe-chart-title">系统负载趋势</div>
+                            <div class="mw-observe-chart-subtitle">1 / 5 / 15 分钟负载随时间变化</div>
                         </div>
                     </div>
-                </div>
-                <div class="mw-card-content">
-                    <div id="getloadview" class="mw-chart mw-monitor-chart"></div>
-                </div>
-            </mdui-card>
-
-            <mdui-card class="mw-card mw-monitor-card">
-                <div class="mw-card-header mw-monitor-card-header">
-                    <div>
-                        <div class="mw-card-title">CPU 使用率</div>
-                        <div class="mw-card-subtitle">用户态 / 内核态占比</div>
+                    <div class="mw-observe-chart-body">
+                        <div id="getloadview" class="mw-chart mw-observe-chart"></div>
                     </div>
-                    <div class="searcTime">
-                        <span class="tit">区间检索：</span>
-                        <button type="button" class="gt" onclick="Wday(1,'cpu')">昨天</button>
-                        <button type="button" class="gt on" onclick="Wday(0,'cpu')">今天</button>
-                        <button type="button" class="gt" onclick="Wday(7,'cpu')">最近7天</button>
-                        <button type="button" class="gt" onclick="Wday(30,'cpu')">最近30天</button>
-                        <div class="ss">
-                            <button type="button" class="st">自定义时间</button>
-                            <div class="time">
-                                <span class="bt">时间范围
-                                    <input id="cpubtn_rtime" class="rtime" type="text" value="2023-07-06 00:00:00 - 2023-08-08 00:00:00">
-                                </span>
-                                <div class="sbtn cpubtn">提交</div>
-                            </div>
+                </mdui-card>
+
+                <mdui-card class="mw-card mw-observe-chart-card">
+                    <div class="mw-observe-chart-header">
+                        <div>
+                            <div class="mw-observe-chart-title">CPU 使用率</div>
+                            <div class="mw-observe-chart-subtitle">用户态 / 内核态占比趋势</div>
                         </div>
                     </div>
-                </div>
-                <div class="mw-card-content">
-                    <div id="cupview" class="mw-chart mw-monitor-chart"></div>
-                </div>
-            </mdui-card>
-
-            <mdui-card class="mw-card mw-monitor-card">
-                <div class="mw-card-header mw-monitor-card-header">
-                    <div>
-                        <div class="mw-card-title">内存使用</div>
-                        <div class="mw-card-subtitle">占用 / 缓冲 / 缓存分布</div>
+                    <div class="mw-observe-chart-body">
+                        <div id="cupview" class="mw-chart mw-observe-chart"></div>
                     </div>
-                    <div class="searcTime">
-                        <span class="tit">区间检索：</span>
-                        <button type="button" class="gt" onclick="Wday(1,'mem')">昨天</button>
-                        <button type="button" class="gt on" onclick="Wday(0,'mem')">今天</button>
-                        <button type="button" class="gt" onclick="Wday(7,'mem')">最近7天</button>
-                        <button type="button" class="gt" onclick="Wday(30,'mem')">最近30天</button>
-                        <div class="ss">
-                            <button type="button" class="st">自定义时间</button>
-                            <div class="time">
-                                <span class="bt">时间范围
-                                    <input id="membtn_rtime" class="rtime" type="text" value="2023-07-06 00:00:00 - 2023-08-08 00:00:00">
-                                </span>
-                                <div class="sbtn membtn">提交</div>
-                            </div>
+                </mdui-card>
+
+                <mdui-card class="mw-card mw-observe-chart-card">
+                    <div class="mw-observe-chart-header">
+                        <div>
+                            <div class="mw-observe-chart-title">内存占用分布</div>
+                            <div class="mw-observe-chart-subtitle">应用 / 缓冲 / 缓存走势</div>
                         </div>
                     </div>
-                </div>
-                <div class="mw-card-content">
-                    <div id="memview" class="mw-chart mw-monitor-chart"></div>
-                </div>
-            </mdui-card>
-
-            <mdui-card class="mw-card mw-monitor-card">
-                <div class="mw-card-header mw-monitor-card-header">
-                    <div>
-                        <div class="mw-card-title">磁盘 IO</div>
-                        <div class="mw-card-subtitle">读写速率与延迟</div>
+                    <div class="mw-observe-chart-body">
+                        <div id="memview" class="mw-chart mw-observe-chart"></div>
                     </div>
-                    <div class="searcTime">
-                        <span class="tit">区间检索：</span>
-                        <button type="button" class="gt" onclick="Wday(1,'disk')">昨天</button>
-                        <button type="button" class="gt on" onclick="Wday(0,'disk')">今天</button>
-                        <button type="button" class="gt" onclick="Wday(7,'disk')">最近7天</button>
-                        <button type="button" class="gt" onclick="Wday(30,'disk')">最近30天</button>
-                        <div class="ss">
-                            <button type="button" class="st">自定义时间</button>
-                            <div class="time">
-                                <span class="bt">时间范围
-                                    <input id="diskbtn_rtime" class="rtime" type="text" value="2023-07-06 00:00:00 - 2023-08-08 00:00:00">
-                                </span>
-                                <div class="sbtn diskbtn">提交</div>
-                            </div>
+                </mdui-card>
+
+                <mdui-card class="mw-card mw-observe-chart-card">
+                    <div class="mw-observe-chart-header">
+                        <div>
+                            <div class="mw-observe-chart-title">磁盘 IO 速率</div>
+                            <div class="mw-observe-chart-subtitle">读取 / 写入吞吐与延迟变化</div>
                         </div>
                     </div>
-                </div>
-                <div class="mw-card-content">
-                    <div id="diskview" class="mw-chart mw-monitor-chart"></div>
-                </div>
-            </mdui-card>
-
-            <mdui-card class="mw-card mw-monitor-card">
-                <div class="mw-card-header mw-monitor-card-header">
-                    <div>
-                        <div class="mw-card-title">网络 IO</div>
-                        <div class="mw-card-subtitle">进出流量与峰值</div>
+                    <div class="mw-observe-chart-body">
+                        <div id="diskview" class="mw-chart mw-observe-chart"></div>
                     </div>
-                    <div class="searcTime">
-                        <span class="tit">区间检索：</span>
-                        <button type="button" class="gt" onclick="Wday(1,'network')">昨天</button>
-                        <button type="button" class="gt on" onclick="Wday(0,'network')">今天</button>
-                        <button type="button" class="gt" onclick="Wday(7,'network')">最近7天</button>
-                        <button type="button" class="gt" onclick="Wday(30,'network')">最近30天</button>
-                        <div class="ss">
-                            <button type="button" class="st">自定义时间</button>
-                            <div class="time">
-                                <span class="bt">时间范围
-                                    <input id="networkbtn_rtime" class="rtime" type="text" value="2023-07-06 00:00:00 - 2023-08-08 00:00:00">
-                                </span>
-                                <div class="sbtn networkbtn">提交</div>
-                            </div>
+                </mdui-card>
+
+                <mdui-card class="mw-card mw-observe-chart-card">
+                    <div class="mw-observe-chart-header">
+                        <div>
+                            <div class="mw-observe-chart-title">网络 IO 变化</div>
+                            <div class="mw-observe-chart-subtitle">流入 / 流出带宽随时间变化</div>
                         </div>
                     </div>
-                </div>
-                <div class="mw-card-content">
-                    <div id="network" class="mw-chart mw-monitor-chart"></div>
-                </div>
-            </mdui-card>
-        </div>
+                    <div class="mw-observe-chart-body">
+                        <div id="network" class="mw-chart mw-observe-chart"></div>
+                    </div>
+                </mdui-card>
+            </div>
+        </section>
     </div>
 </div>
-<script type="text/javascript" src="/static/laydate/laydate.js?v={{config.version}}"></script>
-<script src="/static/app/control.js?v={{config.version}}"></script>
+<script src="/static/app/monitor_observe.js?v={{config.version}}"></script>
 {% endblock %}
