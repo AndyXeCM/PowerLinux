@@ -1,0 +1,262 @@
+(function () {
+  const rangeButtons = document.querySelectorAll('[data-range]');
+  let currentRange = '24h';
+  let currentStatus = {
+    monitorOpen: true,
+    onlyNet: true,
+  };
+
+  function setActiveRange(range) {
+    currentRange = range;
+    rangeButtons.forEach((btn) => {
+      btn.classList.toggle('is-active', btn.dataset.range === range);
+    });
+    loadOverview();
+  }
+
+  rangeButtons.forEach((btn) => {
+    btn.addEventListener('click', () => setActiveRange(btn.dataset.range));
+  });
+
+  async function requestJson(url, options) {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error('request failed');
+    }
+    return response.json();
+  }
+
+  function toPercent(value) {
+    if (value === null || value === undefined) return '--';
+    return `${Number(value).toFixed(1)}%`;
+  }
+
+  function toMbpsFromKB(value) {
+    if (value === null || value === undefined) return '--';
+    const mbps = (Number(value) * 8) / 1024;
+    return `${mbps.toFixed(2)} Mbps`;
+  }
+
+  function toMBFromBytes(value) {
+    if (value === null || value === undefined) return '--';
+    return `${(Number(value) / (1024 * 1024)).toFixed(2)} MB`;
+  }
+
+  function updateKpi(summary) {
+    const cpuEl = document.querySelector('[data-metric="cpu_latest"]');
+    const memEl = document.querySelector('[data-metric="mem_latest"]');
+    const netEl = document.querySelector('[data-metric="net_latest"]');
+    const diskEl = document.querySelector('[data-metric="disk_latest"]');
+
+    if (cpuEl) {
+      cpuEl.textContent = toPercent(summary.cpu.latest);
+      cpuEl.closest('[data-kpi="cpu"]').querySelector('.mw-observe-kpi-desc').textContent = `峰值 ${toPercent(summary.cpu.peak)}`;
+      updateMeter(cpuEl.closest('[data-kpi="cpu"]'), summary.cpu.latest, 100);
+    }
+
+    if (memEl) {
+      memEl.textContent = toPercent(summary.mem.latest);
+      memEl.closest('[data-kpi="mem"]').querySelector('.mw-observe-kpi-desc').textContent = `峰值 ${toPercent(summary.mem.peak)}`;
+      updateMeter(memEl.closest('[data-kpi="mem"]'), summary.mem.latest, 100);
+    }
+
+    if (netEl) {
+      netEl.textContent = toMbpsFromKB(summary.net.latest);
+      netEl.closest('[data-kpi="net"]').querySelector('.mw-observe-kpi-desc').textContent = `峰值 ${toMbpsFromKB(summary.net.peak)}`;
+      updateMeter(netEl.closest('[data-kpi="net"]'), summary.net.latest, summary.net.peak || 1);
+    }
+
+    if (diskEl) {
+      diskEl.textContent = toMBFromBytes(summary.disk.latest);
+      diskEl.closest('[data-kpi="disk"]').querySelector('.mw-observe-kpi-desc').textContent = `峰值 ${toMBFromBytes(summary.disk.peak)}`;
+      updateMeter(diskEl.closest('[data-kpi="disk"]'), summary.disk.latest, summary.disk.peak || 1);
+    }
+  }
+
+  function updateMeter(root, value, max) {
+    const meter = root.querySelector('.mw-observe-kpi-meter span');
+    if (!meter) return;
+    if (value === null || value === undefined || max === null || max === undefined || Number(max) <= 0) {
+      meter.style.width = '0%';
+      return;
+    }
+    const pct = Math.min((Number(value) / Number(max)) * 100, 100);
+    meter.style.width = `${pct.toFixed(1)}%`;
+  }
+
+  function updateEvents(events) {
+    const list = document.getElementById('observeEvents');
+    if (!list) return;
+    list.innerHTML = '';
+    if (!events || events.length === 0) {
+      const item = document.createElement('li');
+      item.innerHTML = '<span class="mw-observe-event-dot"></span><div><div class="mw-observe-event-title">暂无可用事件</div><div class="mw-observe-event-time">监控进程尚未输出峰值数据</div></div>';
+      list.appendChild(item);
+      return;
+    }
+    events.forEach((event) => {
+      const item = document.createElement('li');
+      item.innerHTML = `<span class="mw-observe-event-dot"></span><div><div class="mw-observe-event-title">${event.title}</div><div class="mw-observe-event-time">${event.time}</div></div>`;
+      list.appendChild(item);
+    });
+  }
+
+  function initChart(domId) {
+    const el = document.getElementById(domId);
+    if (!el || !window.echarts) return null;
+    return window.echarts.init(el);
+  }
+
+  const charts = {
+    load: initChart('getloadview'),
+    cpu: initChart('cupview'),
+    mem: initChart('memview'),
+    disk: initChart('diskview'),
+    net: initChart('network'),
+  };
+
+  function buildLineOption(labels, series, yLabel) {
+    return {
+      tooltip: { trigger: 'axis' },
+      grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+      xAxis: { type: 'category', boundaryGap: false, data: labels },
+      yAxis: { type: 'value', name: yLabel || '' },
+      series,
+    };
+  }
+
+  function renderCharts(series) {
+    if (charts.load) {
+      charts.load.setOption(buildLineOption(series.load.labels, [
+        { name: '1分钟', type: 'line', data: series.load.one, smooth: true },
+        { name: '5分钟', type: 'line', data: series.load.five, smooth: true },
+        { name: '15分钟', type: 'line', data: series.load.fifteen, smooth: true },
+      ]));
+    }
+
+    if (charts.cpu) {
+      charts.cpu.setOption(buildLineOption(series.cpu.labels, [
+        { name: 'CPU使用率', type: 'line', data: series.cpu.cpu, smooth: true },
+      ], '%'));
+    }
+
+    if (charts.mem) {
+      charts.mem.setOption(buildLineOption(series.cpu.labels, [
+        { name: '内存使用率', type: 'line', data: series.cpu.mem, smooth: true },
+      ], '%'));
+    }
+
+    if (charts.disk) {
+      charts.disk.setOption(buildLineOption(series.disk.labels, [
+        { name: '读取', type: 'line', data: series.disk.read, smooth: true },
+        { name: '写入', type: 'line', data: series.disk.write, smooth: true },
+      ], 'MB'));
+    }
+
+    if (charts.net) {
+      charts.net.setOption(buildLineOption(series.net.labels, [
+        { name: '上行', type: 'line', data: series.net.up, smooth: true },
+        { name: '下行', type: 'line', data: series.net.down, smooth: true },
+      ], 'Mbps'));
+    }
+  }
+
+  async function loadOverview() {
+    try {
+      const result = await requestJson(`/monitor/api/overview?range=${currentRange}`);
+      if (!result.status) return;
+      updateKpi(result.data.summary);
+      updateEvents(result.data.events);
+      renderCharts(result.data.series);
+    } catch (error) {
+      // ignore
+    }
+  }
+
+  async function getStatus() {
+    try {
+      const form = new URLSearchParams();
+      form.append('type', '-1');
+      const result = await requestJson('/system/set_control', { method: 'POST', body: form });
+      currentStatus.monitorOpen = result.status;
+      currentStatus.onlyNet = result.stat_all_status;
+      document.getElementById('save_day').value = result.day;
+      renderSwitches();
+    } catch (error) {
+      // ignore
+    }
+  }
+
+  function renderSwitches() {
+    const openContainer = document.getElementById('openJK');
+    const netContainer = document.getElementById('statAll');
+    if (openContainer) {
+      openContainer.innerHTML = `
+        <input class="btswitch btswitch-ios" id="monitorSwitch" type="checkbox" ${currentStatus.monitorOpen ? 'checked' : ''}>
+        <label class="btswitch-btn" for="monitorSwitch"></label>
+      `;
+      openContainer.querySelector('input').addEventListener('change', (event) => {
+        setControl('openjk', event.target.checked);
+      });
+    }
+    if (netContainer) {
+      netContainer.innerHTML = `
+        <input class="btswitch btswitch-ios" id="netSwitch" type="checkbox" ${currentStatus.onlyNet ? 'checked' : ''}>
+        <label class="btswitch-btn" for="netSwitch"></label>
+      `;
+      netContainer.querySelector('input').addEventListener('change', (event) => {
+        setControl('stat', event.target.checked);
+      });
+    }
+  }
+
+  window.setControl = async function (act, value) {
+    let type = '';
+    let day = document.getElementById('save_day').value;
+
+    if (act === 'openjk') {
+      type = value ? '1' : '0';
+      if (Number(day) < 1) {
+        layer.msg('保存天数不合法!', { icon: 2 });
+        return;
+      }
+    } else if (act === 'stat') {
+      type = value ? '3' : '2';
+    } else if (act === 'save_day') {
+      type = currentStatus.monitorOpen ? '1' : '0';
+      if (Number(day) < 1) {
+        layer.msg('保存天数不合法!', { icon: 2 });
+        return;
+      }
+    }
+
+    const form = new URLSearchParams();
+    form.append('type', type);
+    form.append('day', day);
+
+    try {
+      const result = await requestJson('/system/set_control', { method: 'POST', body: form });
+      layer.msg(result.msg, { icon: result.status ? 1 : 2 });
+      getStatus();
+    } catch (error) {
+      layer.msg('操作失败', { icon: 2 });
+    }
+  };
+
+  window.closeControl = async function () {
+    layer.confirm('您真的清空所有监控记录吗？', { title: '清空记录', icon: 3, closeBtn: 1 }, async function () {
+      const form = new URLSearchParams();
+      form.append('type', 'del');
+      try {
+        const result = await requestJson('/system/set_control', { method: 'POST', body: form });
+        layer.msg(result.msg, { icon: result.status ? 1 : 2 });
+        loadOverview();
+      } catch (error) {
+        layer.msg('操作失败', { icon: 2 });
+      }
+    });
+  };
+
+  getStatus();
+  loadOverview();
+})();

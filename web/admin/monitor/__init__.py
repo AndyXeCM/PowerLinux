@@ -9,9 +9,15 @@
 # ---------------------------------------------------------------------------------
 
 
+import time
+
 from flask import Blueprint, render_template
+from flask import request
 
 from admin.user_login_check import panel_login_required
+
+import core.mw as mw
+import utils.system as sys
 
 import thisdb
 
@@ -21,3 +27,128 @@ blueprint = Blueprint('monitor', __name__, url_prefix='/monitor', template_folde
 def index():
     name = thisdb.getOption('template', default='default')
     return render_template('%s/monitor.html' % name)
+
+
+def _parse_range(range_key):
+    mapping = {
+        '1h': 3600,
+        '24h': 86400,
+        '7d': 7 * 86400,
+        '30d': 30 * 86400,
+    }
+    seconds = mapping.get(range_key, 86400)
+    end_time = int(time.time())
+    start_time = end_time - seconds
+    return start_time, end_time
+
+
+def _build_series(start_time, end_time):
+    load_data = sys.getLoadAverageByDB(start_time, end_time)
+    cpu_data = sys.getCpuIoByDB(start_time, end_time)
+    disk_data = sys.getDiskIoByDB(start_time, end_time)
+    net_data = sys.getNetworkIoByDB(start_time, end_time)
+
+    series = {
+        'load': {
+            'labels': [item['addtime'] for item in load_data],
+            'one': [item['one'] for item in load_data],
+            'five': [item['five'] for item in load_data],
+            'fifteen': [item['fifteen'] for item in load_data],
+        },
+        'cpu': {
+            'labels': [item['addtime'] for item in cpu_data],
+            'cpu': [item['pro'] for item in cpu_data],
+            'mem': [item['mem'] for item in cpu_data],
+        },
+        'disk': {
+            'labels': [item['addtime'] for item in disk_data],
+            'read': [round(item['read_bytes'] / (1024 * 1024), 2) for item in disk_data],
+            'write': [round(item['write_bytes'] / (1024 * 1024), 2) for item in disk_data],
+        },
+        'net': {
+            'labels': [item['addtime'] for item in net_data],
+            'up': [round((item['up'] * 8) / 1024, 2) for item in net_data],
+            'down': [round((item['down'] * 8) / 1024, 2) for item in net_data],
+        },
+    }
+    return series, load_data, cpu_data, disk_data, net_data
+
+
+def _safe_latest(data, key):
+    if not data:
+        return None
+    return data[-1][key]
+
+
+def _safe_peak(data, key, extra=None):
+    if not data:
+        return None
+    if extra:
+        return max(extra(item) for item in data)
+    return max(item[key] for item in data)
+
+
+@blueprint.route('/api/overview', endpoint='api_overview', methods=['GET'])
+@panel_login_required
+def api_overview():
+    range_key = request.args.get('range', '24h')
+    start_time, end_time = _parse_range(range_key)
+
+    series, load_data, cpu_data, disk_data, net_data = _build_series(start_time, end_time)
+
+    latest_net = None
+    if net_data:
+        latest_net = max(net_data[-1]['up'], net_data[-1]['down'])
+    latest_disk = None
+    if disk_data:
+        latest_disk = disk_data[-1]['read_bytes'] + disk_data[-1]['write_bytes']
+
+    summary = {
+        'cpu': {
+            'latest': _safe_latest(cpu_data, 'pro'),
+            'peak': _safe_peak(cpu_data, 'pro'),
+        },
+        'mem': {
+            'latest': _safe_latest(cpu_data, 'mem'),
+            'peak': _safe_peak(cpu_data, 'mem'),
+        },
+        'net': {
+            'latest': latest_net,
+            'peak': _safe_peak(net_data, 'up', lambda item: max(item['up'], item['down'])),
+        },
+        'disk': {
+            'latest': latest_disk,
+            'peak': _safe_peak(disk_data, 'read_bytes', lambda item: item['read_bytes'] + item['write_bytes']),
+        },
+        'load': {
+            'latest': _safe_latest(load_data, 'one'),
+            'peak': _safe_peak(load_data, 'one'),
+        },
+    }
+
+    events = []
+    if cpu_data:
+        top_cpu = max(cpu_data, key=lambda item: item['pro'])
+        events.append({'title': f"CPU 峰值 {round(top_cpu['pro'], 2)}%", 'time': top_cpu['addtime']})
+    if cpu_data:
+        top_mem = max(cpu_data, key=lambda item: item['mem'])
+        events.append({'title': f"内存峰值 {round(top_mem['mem'], 2)}%", 'time': top_mem['addtime']})
+    if net_data:
+        top_net = max(net_data, key=lambda item: max(item['up'], item['down']))
+        events.append({'title': f"网络峰值 {round((max(top_net['up'], top_net['down']) * 8) / 1024, 2)} Mbps", 'time': top_net['addtime']})
+    if disk_data:
+        top_disk = max(disk_data, key=lambda item: item['read_bytes'] + item['write_bytes'])
+        total_mb = round((top_disk['read_bytes'] + top_disk['write_bytes']) / (1024 * 1024), 2)
+        events.append({'title': f"磁盘 IO 峰值 {total_mb} MB", 'time': top_disk['addtime']})
+
+    data = {
+        'range': {
+            'start': start_time,
+            'end': end_time,
+            'key': range_key,
+        },
+        'summary': summary,
+        'events': events,
+        'series': series,
+    }
+    return mw.returnData(True, 'ok', data)
