@@ -831,7 +831,7 @@ mdui-card.mw-card {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 12px;
+    padding: 14px;
     border-radius: 12px;
     border: 1px solid var(--mw-border);
     background: var(--mw-surface-container);
@@ -896,6 +896,12 @@ mdui-card.mw-card {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    padding: 18px 20px 0;
+}
+
+.mw-observe-main-title {
+    font-size: 18px;
+    font-weight: 600;
 }
 
 .mw-observe-main-title {
