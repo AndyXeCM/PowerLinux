@@ -80,7 +80,7 @@ a {
 .mw-topbar-card {
     width: 100%;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     flex-wrap: nowrap;
     padding: 16px 28px 0;
     gap: 16px;
@@ -148,7 +148,7 @@ a {
     flex-shrink: 0;
     flex-wrap: nowrap;
     white-space: nowrap;
-    align-self: flex-end;
+    align-self: center;
 }
 
 .mw-topbar-item {
