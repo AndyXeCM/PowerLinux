@@ -968,6 +968,13 @@ mdui-card.mw-card {
         linear-gradient(90deg, transparent 23px, rgba(255, 255, 255, 0.05) 24px);
     background-size: 24px 24px;
     pointer-events: none;
+    z-index: 0;
+}
+
+.mw-observe-chart > div,
+.mw-observe-chart canvas {
+    position: relative;
+    z-index: 1;
 }
 
 
