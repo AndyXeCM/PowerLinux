@@ -963,14 +963,7 @@ mdui-card.mw-card {
 }
 
 .mw-observe-chart::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: linear-gradient(transparent 23px, rgba(255, 255, 255, 0.05) 24px),
-        linear-gradient(90deg, transparent 23px, rgba(255, 255, 255, 0.05) 24px);
-    background-size: 24px 24px;
-    pointer-events: none;
-    z-index: 0;
+    content: none;
 }
 
 .mw-observe-chart > div,
