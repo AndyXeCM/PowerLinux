@@ -284,5 +284,5 @@
   setInterval(() => {
     getStatus();
     loadOverview();
-  }, 60000);
+  }, 300000);
 })();
