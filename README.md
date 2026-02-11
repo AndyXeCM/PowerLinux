@@ -1,6 +1,6 @@
 <center><img width="100" height="100" alt="image" src="https://github.com/AndyXeCM/PowerLinux/blob/master/web/static/logo.png" />
 
-# PowerLinux
+# PowerLinux v2.0
 
 轻量易用的下一代Linux控制面板
 <p></p>
