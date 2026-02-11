@@ -958,18 +958,10 @@ mdui-card.mw-card {
     position: relative;
     overflow: hidden;
     padding: 0;
-    z-index: 2147483646;
-    isolation: isolate;
 }
 
 .mw-observe-chart::before {
     content: none;
-}
-
-.mw-observe-chart > div,
-.mw-observe-chart canvas {
-    position: relative;
-    z-index: 2147483647;
 }
 
 
