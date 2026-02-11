@@ -19,7 +19,10 @@
   });
 
   async function requestJson(url, options) {
-    const response = await fetch(url, options);
+    const response = await fetch(url, {
+      cache: 'no-store',
+      ...options,
+    });
     if (!response.ok) {
       throw new Error('request failed');
     }
@@ -43,6 +46,9 @@
   }
 
   function updateKpi(summary) {
+    if (!summary) {
+      return;
+    }
     const cpuEl = document.querySelector('[data-metric="cpu_latest"]');
     const memEl = document.querySelector('[data-metric="mem_latest"]');
     const netEl = document.querySelector('[data-metric="net_latest"]');
@@ -118,10 +124,26 @@
 
   function buildLineOption(labels, series, yLabel) {
     return {
+      animation: false,
       tooltip: { trigger: 'axis' },
-      grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+      legend: {
+        top: 8,
+      },
+      toolbox: {
+        right: 8,
+        feature: {
+          dataZoom: { yAxisIndex: 'none' },
+          restore: {},
+          saveAsImage: {},
+        },
+      },
+      grid: { left: '3%', right: '4%', bottom: 44, containLabel: true },
       xAxis: { type: 'category', boundaryGap: false, data: labels },
       yAxis: { type: 'value', name: yLabel || '' },
+      dataZoom: [
+        { type: 'inside', start: 0, end: 100 },
+        { type: 'slider', bottom: 6, start: 0, end: 100, height: 18 },
+      ],
       series,
     };
   }
@@ -157,42 +179,59 @@
   }
 
   function renderCharts(series) {
+    series = series || {};
+    const loadSeries = series.load || { labels: [], one: [], five: [], fifteen: [] };
+    const cpuSeries = series.cpu || { labels: [], cpu: [], mem: [] };
+    const diskSeries = series.disk || { labels: [], read: [], write: [] };
+    const netSeries = series.net || { labels: [], up: [], down: [] };
+
     const emptyMessage = getEmptyMessage();
-    renderChart(charts.load, buildLineOption(series.load.labels, [
-        { name: '1分钟', type: 'line', data: series.load.one, smooth: true },
-        { name: '5分钟', type: 'line', data: series.load.five, smooth: true },
-        { name: '15分钟', type: 'line', data: series.load.fifteen, smooth: true },
-      ]), series.load.labels && series.load.labels.length > 0, emptyMessage);
+    renderChart(charts.load, buildLineOption(loadSeries.labels, [
+      { name: '1分钟', type: 'line', data: loadSeries.one, smooth: true },
+      { name: '5分钟', type: 'line', data: loadSeries.five, smooth: true },
+      { name: '15分钟', type: 'line', data: loadSeries.fifteen, smooth: true },
+    ]), loadSeries.labels && loadSeries.labels.length > 0, emptyMessage);
 
-    renderChart(charts.cpu, buildLineOption(series.cpu.labels, [
-        { name: 'CPU使用率', type: 'line', data: series.cpu.cpu, smooth: true },
-      ], '%'), series.cpu.labels && series.cpu.labels.length > 0, emptyMessage);
+    renderChart(charts.cpu, buildLineOption(cpuSeries.labels, [
+      { name: 'CPU使用率', type: 'line', data: cpuSeries.cpu, smooth: true },
+    ], '%'), cpuSeries.labels && cpuSeries.labels.length > 0, emptyMessage);
 
-    renderChart(charts.mem, buildLineOption(series.cpu.labels, [
-        { name: '内存使用率', type: 'line', data: series.cpu.mem, smooth: true },
-      ], '%'), series.cpu.labels && series.cpu.labels.length > 0, emptyMessage);
+    renderChart(charts.mem, buildLineOption(cpuSeries.labels, [
+      { name: '内存使用率', type: 'line', data: cpuSeries.mem, smooth: true },
+    ], '%'), cpuSeries.labels && cpuSeries.labels.length > 0, emptyMessage);
 
-    renderChart(charts.disk, buildLineOption(series.disk.labels, [
-        { name: '读取', type: 'line', data: series.disk.read, smooth: true },
-        { name: '写入', type: 'line', data: series.disk.write, smooth: true },
-      ], 'MB'), series.disk.labels && series.disk.labels.length > 0, emptyMessage);
+    renderChart(charts.disk, buildLineOption(diskSeries.labels, [
+      { name: '读取', type: 'line', data: diskSeries.read, smooth: true },
+      { name: '写入', type: 'line', data: diskSeries.write, smooth: true },
+    ], 'MB'), diskSeries.labels && diskSeries.labels.length > 0, emptyMessage);
 
-    renderChart(charts.net, buildLineOption(series.net.labels, [
-        { name: '上行', type: 'line', data: series.net.up, smooth: true },
-        { name: '下行', type: 'line', data: series.net.down, smooth: true },
-      ], 'Mbps'), series.net.labels && series.net.labels.length > 0, emptyMessage);
+    renderChart(charts.net, buildLineOption(netSeries.labels, [
+      { name: '上行', type: 'line', data: netSeries.up, smooth: true },
+      { name: '下行', type: 'line', data: netSeries.down, smooth: true },
+    ], 'Mbps'), netSeries.labels && netSeries.labels.length > 0, emptyMessage);
   }
 
   async function loadOverview() {
     try {
       const result = await requestJson(`/monitor/api/overview?range=${currentRange}`);
-      if (!result.status) return;
-      updateKpi(result.data.summary);
-      updateEvents(result.data.events);
-      renderCharts(result.data.series);
+      if (!result.status || !result.data) {
+        renderCharts();
+        return;
+      }
+      updateKpi(result.data.summary || {});
+      updateEvents(result.data.events || []);
+      renderCharts(result.data.series || {});
     } catch (error) {
-      // ignore
+      renderCharts();
     }
+  }
+
+  function resizeCharts() {
+    Object.values(charts).forEach((chart) => {
+      if (chart) {
+        chart.resize();
+      }
+    });
   }
 
   async function getStatus() {
@@ -281,8 +320,10 @@
 
   getStatus();
   loadOverview();
+  window.addEventListener('resize', resizeCharts);
   setInterval(() => {
     getStatus();
     loadOverview();
-  }, 300000);
+    resizeCharts();
+  }, 5000);
 })();

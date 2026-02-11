@@ -909,8 +909,66 @@ function shutdownServer() {
     });
 }
 
+var __vipCountdownTimer = null;
+
+function formatVipRemain(seconds) {
+    if (seconds <= 0) {
+        return '永久有效';
+    }
+    var day = Math.floor(seconds / 86400);
+    var hour = Math.floor((seconds % 86400) / 3600);
+    var minute = Math.floor((seconds % 3600) / 60);
+    var second = Math.floor(seconds % 60);
+    return day + '天 ' + hour + '小时 ' + minute + '分钟 ' + second + '秒';
+}
+
 function showVipInfo() {
-    layer.alert('您已经是永久VIP。', { title: '会员信息', closeBtn: 1, icon: 1 });
+    var expireAt = new Date('2038-01-19T03:14:07+08:00').getTime();
+    var content = '<div class="pd20" style="line-height:1.9;">' +
+        '<div style="font-size:18px;font-weight:600;color:#20a53a;">PowerLinux Pro Max · 永久尊享</div>' +
+        '<div style="margin-top:8px;color:#666;">您已经是永久VIP，感谢长期支持。</div>' +
+        '<hr style="margin:12px 0;">' +
+        '<div><b>会员到期时间：</b>2038年1月19日03:14:07</div>' +
+        '<div><b>剩余时长：</b><span id="vipRemainTime">计算中...</span></div>' +
+        '<hr style="margin:12px 0;">' +
+        '<div><b>会员权益</b></div>' +
+        '<ul style="margin:8px 0 0 18px;padding:0;">' +
+        '<li>无限期面板更新（优先体验新版能力）</li>' +
+        '<li>高级监控与可视化页面持续增强</li>' +
+        '<li>社区身份标识与优先反馈通道</li>' +
+        '<li>长期稳定版本与性能优化补丁</li>' +
+        '</ul>' +
+        '<div style="margin-top:10px;color:#999;font-size:12px;">提示：剩余时长将实时刷新显示。</div>' +
+        '</div>';
+
+    layer.open({
+        type: 1,
+        title: 'Pro Max会员信息',
+        area: ['520px', '430px'],
+        closeBtn: 1,
+        icon: 1,
+        content: content,
+        success: function () {
+            if (__vipCountdownTimer) {
+                clearInterval(__vipCountdownTimer);
+                __vipCountdownTimer = null;
+            }
+            function tick() {
+                var now = Date.now();
+                var left = Math.max(0, Math.floor((expireAt - now) / 1000));
+                var remain = formatVipRemain(left);
+                $('#vipRemainTime').text(remain);
+            }
+            tick();
+            __vipCountdownTimer = setInterval(tick, 1000);
+        },
+        end: function () {
+            if (__vipCountdownTimer) {
+                clearInterval(__vipCountdownTimer);
+                __vipCountdownTimer = null;
+            }
+        }
+    });
 }
 
 //修复面板
@@ -1088,30 +1146,118 @@ function pluginInit(){
     },'json');
 }
 
-function loadKeyDataCount(){
-    var plist = ['mysql', 'gogs', 'gitea'];
-    for (var i = 0; i < plist.length; i++) {
-        pname = plist[i];
-        function call(pname){
-            $.post('/plugins/run', {name:pname, func:'get_total_statistics'}, function(data) {
-                try {
-                    var rdata = $.parseJSON(data['data']);
-                } catch(e){
-                    return;
-                }
-                if (!rdata['status']){
-                    return;
-                }
-                var html = '<li class="sys-li-box col-xs-3 col-sm-3 col-md-3 col-lg-3">\
-                        <p class="name f15 c9">'+pname+'</p>\
-                        <div class="val"><a class="btlink" onclick="softMain(\''+pname+'\',\''+pname+'\',\''+rdata['data']['ver']+'\')">'+rdata['data']['count']+'</a></div>\
-                    </li>';
-                $('#index_overview').append(html);
-            },'json');
-        }
-        call(pname);
+function appendOverviewItem(name, value, href, onclick) {
+    var linkStart = '<span>';
+    var linkEnd = '</span>';
+    if (onclick) {
+        linkStart = '<a class="btlink" href="javascript:;" onclick="' + onclick.replace(/"/g, '&quot;') + '">';
+        linkEnd = '</a>';
+    } else if (href) {
+        linkStart = '<a class="btlink" href="' + href + '">';
+        linkEnd = '</a>';
     }
+
+    var html = '<li class="sys-li-box mw-overview-item mw-overview-dynamic">' +
+        '<p class="name f15 c9">' + name + '</p>' +
+        '<div class="val">' + linkStart + value + linkEnd + '</div>' +
+        '</li>';
+    $('#index_overview').append(html);
 }
+
+function loadOverviewSystemStats() {
+    $.get('/overview_stats', function(res) {
+        if (!res || !res.status || !res.data) {
+            return;
+        }
+
+        var data = res.data;
+        if ($('#overview_site_count').length) {
+            $('#overview_site_count').text(data.site_count);
+        }
+
+        appendOverviewItem('待执行任务', data.pending_task_count, '/task/index');
+        appendOverviewItem('计划任务', data.crontab_count, '/crontab/index');
+        appendOverviewItem('防火墙规则', data.firewall_count, '/firewall/index');
+        appendOverviewItem('已启用应用', data.enabled_app_count, '/setting/index');
+        appendOverviewItem('数据库数量', '<span id="overview_db_total">0</span>', null, null);
+        appendOverviewItem('Docker容器数量', '<span id="overview_docker_total">0</span>', null, null);
+    }, 'json');
+}
+
+function loadOverviewDatabaseStats() {
+    var dbPlugins = ['mysql', 'pgsql', 'mongodb'];
+    var total = 0;
+    var done = 0;
+
+    function flushDbTotal() {
+        if ($('#overview_db_total').length) {
+            $('#overview_db_total').text(total);
+        }
+    }
+
+    if (dbPlugins.length === 0) {
+        flushDbTotal();
+    }
+
+    for (var i = 0; i < dbPlugins.length; i++) {
+        (function(pname) {
+            $.post('/plugins/run', {name: pname, func: 'get_total_statistics'}, function(data) {
+                var rdata;
+                try {
+                    rdata = $.parseJSON(data['data']);
+                } catch(e) {
+                    done++;
+                    if (done >= dbPlugins.length) flushDbTotal();
+                    return;
+                }
+
+                if (rdata && rdata['status'] && rdata['data']) {
+                    var count = Number(rdata['data']['count'] || 0);
+                    if (!isNaN(count) && count > 0) {
+                        total += count;
+                    }
+                }
+
+                done++;
+                if (done >= dbPlugins.length) {
+                    flushDbTotal();
+                }
+            }, 'json').error(function() {
+                done++;
+                if (done >= dbPlugins.length) flushDbTotal();
+            });
+        })(dbPlugins[i]);
+    }
+
+    // Docker 容器数量（未安装插件或读取失败时保持 0）
+    $.post('/plugins/run', {name: 'docker', func: 'get_total_statistics'}, function(data) {
+        var dockerCount = 0;
+        try {
+            var rdata = $.parseJSON(data['data']);
+            if (rdata && rdata['status'] && rdata['data']) {
+                dockerCount = Number(rdata['data']['count'] || 0);
+                if (isNaN(dockerCount) || dockerCount < 0) {
+                    dockerCount = 0;
+                }
+            }
+        } catch(e) {}
+
+        if ($('#overview_docker_total').length) {
+            $('#overview_docker_total').text(dockerCount);
+        }
+    }, 'json').error(function() {
+        if ($('#overview_docker_total').length) {
+            $('#overview_docker_total').text(0);
+        }
+    });
+}
+
+function loadKeyDataCount(){
+    $('#index_overview .mw-overview-dynamic').remove();
+    loadOverviewSystemStats();
+    loadOverviewDatabaseStats();
+}
+
 
 $(function() {
     $("#memReleaseBtn").on("click", function() {
