@@ -1245,6 +1245,10 @@ html .menu .menu_exit:hover {
     font-size:26px;
     font-family:arial;
 }
+.sys-li-box .val span{
+    font-size:26px;
+    font-family:arial;
+}
 .sys-i-c-box {
     box-sizing: border-box;
     max-width: 350px
