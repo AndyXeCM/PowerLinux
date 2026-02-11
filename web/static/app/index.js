@@ -909,8 +909,66 @@ function shutdownServer() {
     });
 }
 
+var __vipCountdownTimer = null;
+
+function formatVipRemain(seconds) {
+    if (seconds <= 0) {
+        return '永久有效';
+    }
+    var day = Math.floor(seconds / 86400);
+    var hour = Math.floor((seconds % 86400) / 3600);
+    var minute = Math.floor((seconds % 3600) / 60);
+    var second = Math.floor(seconds % 60);
+    return day + '天 ' + hour + '小时 ' + minute + '分钟 ' + second + '秒';
+}
+
 function showVipInfo() {
-    layer.alert('您已经是永久VIP。', { title: '会员信息', closeBtn: 1, icon: 1 });
+    var expireAt = new Date('2038-01-19T03:14:07+08:00').getTime();
+    var content = '<div class="pd20" style="line-height:1.9;">' +
+        '<div style="font-size:18px;font-weight:600;color:#20a53a;">PowerLinux Pro Max · 永久尊享</div>' +
+        '<div style="margin-top:8px;color:#666;">您已经是永久VIP，感谢长期支持。</div>' +
+        '<hr style="margin:12px 0;">' +
+        '<div><b>会员到期时间：</b>2038年1月19日03:14:07</div>' +
+        '<div><b>剩余时长：</b><span id="vipRemainTime">计算中...</span></div>' +
+        '<hr style="margin:12px 0;">' +
+        '<div><b>会员权益</b></div>' +
+        '<ul style="margin:8px 0 0 18px;padding:0;">' +
+        '<li>无限期面板更新（优先体验新版能力）</li>' +
+        '<li>高级监控与可视化页面持续增强</li>' +
+        '<li>社区身份标识与优先反馈通道</li>' +
+        '<li>长期稳定版本与性能优化补丁</li>' +
+        '</ul>' +
+        '<div style="margin-top:10px;color:#999;font-size:12px;">提示：剩余时长将实时刷新显示。</div>' +
+        '</div>';
+
+    layer.open({
+        type: 1,
+        title: 'Pro Max会员信息',
+        area: ['520px', '430px'],
+        closeBtn: 1,
+        icon: 1,
+        content: content,
+        success: function () {
+            if (__vipCountdownTimer) {
+                clearInterval(__vipCountdownTimer);
+                __vipCountdownTimer = null;
+            }
+            function tick() {
+                var now = Date.now();
+                var left = Math.max(0, Math.floor((expireAt - now) / 1000));
+                var remain = formatVipRemain(left);
+                $('#vipRemainTime').text(remain);
+            }
+            tick();
+            __vipCountdownTimer = setInterval(tick, 1000);
+        },
+        end: function () {
+            if (__vipCountdownTimer) {
+                clearInterval(__vipCountdownTimer);
+                __vipCountdownTimer = null;
+            }
+        }
+    });
 }
 
 //修复面板

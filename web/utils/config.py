@@ -62,7 +62,7 @@ def getGlobalVar():
     获取全局变量
     '''
     data = {}
-    data['title'] = thisdb.getOption('title', default='PowerLinux')
+    data['title'] = thisdb.getOption('title', default='PowerLinux Pro Max')
     server_ip = thisdb.getOption('server_ip', default='127.0.0.1')
     server_ip = _sanitize_server_ip(server_ip)
     if server_ip == '':
