@@ -1088,30 +1088,84 @@ function pluginInit(){
     },'json');
 }
 
-function loadKeyDataCount(){
-    var plist = ['mysql', 'gogs', 'gitea'];
-    for (var i = 0; i < plist.length; i++) {
-        pname = plist[i];
-        function call(pname){
-            $.post('/plugins/run', {name:pname, func:'get_total_statistics'}, function(data) {
-                try {
-                    var rdata = $.parseJSON(data['data']);
-                } catch(e){
-                    return;
-                }
-                if (!rdata['status']){
-                    return;
-                }
-                var html = '<li class="sys-li-box col-xs-3 col-sm-3 col-md-3 col-lg-3">\
-                        <p class="name f15 c9">'+pname+'</p>\
-                        <div class="val"><a class="btlink" onclick="softMain(\''+pname+'\',\''+pname+'\',\''+rdata['data']['ver']+'\')">'+rdata['data']['count']+'</a></div>\
-                    </li>';
-                $('#index_overview').append(html);
-            },'json');
+function appendOverviewItem(name, value, href, onclick) {
+    var linkStart = '<span>';
+    var linkEnd = '</span>';
+    if (onclick) {
+        linkStart = '<a class="btlink" href="javascript:;" onclick="' + onclick.replace(/"/g, '&quot;') + '">';
+        linkEnd = '</a>';
+    } else if (href) {
+        linkStart = '<a class="btlink" href="' + href + '">';
+        linkEnd = '</a>';
+    }
+
+    var html = '<li class="sys-li-box mw-overview-item mw-overview-dynamic">' +
+        '<p class="name f15 c9">' + name + '</p>' +
+        '<div class="val">' + linkStart + value + linkEnd + '</div>' +
+        '</li>';
+    $('#index_overview').append(html);
+}
+
+function loadOverviewSystemStats() {
+    $.get('/overview_stats', function(res) {
+        if (!res || !res.status || !res.data) {
+            return;
         }
-        call(pname);
+
+        var data = res.data;
+        if ($('#overview_site_count').length) {
+            $('#overview_site_count').text(data.site_count);
+        }
+
+        appendOverviewItem('待执行任务', data.pending_task_count, '/task/index');
+        appendOverviewItem('计划任务', data.crontab_count, '/crontab/index');
+        appendOverviewItem('防火墙规则', data.firewall_count, '/firewall/index');
+        appendOverviewItem('已启用应用', data.enabled_app_count, '/setting/index');
+        appendOverviewItem('CPU 核心', data.cpu_num, null, null);
+        appendOverviewItem('内存总量', data.mem_total_gb + ' GB', null, null);
+    }, 'json');
+}
+
+function loadOverviewDatabaseStats() {
+    var dbPlugins = ['mysql', 'pgsql', 'mongodb', 'redis'];
+    for (var i = 0; i < dbPlugins.length; i++) {
+        (function(pname) {
+            $.post('/plugins/run', {name: pname, func: 'get_total_statistics'}, function(data) {
+                var rdata;
+                try {
+                    rdata = $.parseJSON(data['data']);
+                } catch(e) {
+                    return;
+                }
+                if (!rdata || !rdata['status'] || !rdata['data']) {
+                    return;
+                }
+
+                var count = rdata['data']['count'];
+                if (count === undefined || count === null) {
+                    return;
+                }
+
+                var ver = rdata['data']['ver'] || '';
+                var labelMap = {
+                    mysql: 'MySQL 数据库',
+                    pgsql: 'PostgreSQL 数据库',
+                    mongodb: 'MongoDB 集合',
+                    redis: 'Redis Key'
+                };
+
+                appendOverviewItem(labelMap[pname] || pname, count, null, "softMain('" + pname + "','" + pname + "','" + ver + "')");
+            }, 'json');
+        })(dbPlugins[i]);
     }
 }
+
+function loadKeyDataCount(){
+    $('#index_overview .mw-overview-dynamic').remove();
+    loadOverviewSystemStats();
+    loadOverviewDatabaseStats();
+}
+
 
 $(function() {
     $("#memReleaseBtn").on("click", function() {
