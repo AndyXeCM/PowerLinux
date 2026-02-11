@@ -1175,12 +1175,12 @@ function loadOverviewSystemStats() {
             $('#overview_site_count').text(data.site_count);
         }
 
+        appendOverviewItem('数据库', '<span id="overview_db_total">0</span>', null, null);
+        appendOverviewItem('Docker容器', '<span id="overview_docker_total">0</span>', null, null);
         appendOverviewItem('待执行任务', data.pending_task_count, '/task/index');
         appendOverviewItem('计划任务', data.crontab_count, '/crontab/index');
         appendOverviewItem('防火墙规则', data.firewall_count, '/firewall/index');
         appendOverviewItem('应用', data.enabled_app_count, '/setting/index');
-        appendOverviewItem('数据库', '<span id="overview_db_total">0</span>', null, null);
-        appendOverviewItem('Docker容器', '<span id="overview_docker_total">0</span>', null, null);
     }, 'json');
 }
 
