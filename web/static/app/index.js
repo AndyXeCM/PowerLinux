@@ -1178,14 +1178,27 @@ function loadOverviewSystemStats() {
         appendOverviewItem('待执行任务', data.pending_task_count, '/task/index');
         appendOverviewItem('计划任务', data.crontab_count, '/crontab/index');
         appendOverviewItem('防火墙规则', data.firewall_count, '/firewall/index');
-        appendOverviewItem('已启用应用', data.enabled_app_count, '/setting/index');
-        appendOverviewItem('CPU 核心', data.cpu_num, null, null);
-        appendOverviewItem('内存总量', data.mem_total_gb + ' GB', null, null);
+        appendOverviewItem('应用', data.enabled_app_count, '/setting/index');
+        appendOverviewItem('数据库', '<span id="overview_db_total">0</span>', null, null);
+        appendOverviewItem('Docker容器', '<span id="overview_docker_total">0</span>', null, null);
     }, 'json');
 }
 
 function loadOverviewDatabaseStats() {
-    var dbPlugins = ['mysql', 'pgsql', 'mongodb', 'redis'];
+    var dbPlugins = ['mysql', 'pgsql', 'mongodb'];
+    var total = 0;
+    var done = 0;
+
+    function flushDbTotal() {
+        if ($('#overview_db_total').length) {
+            $('#overview_db_total').text(total);
+        }
+    }
+
+    if (dbPlugins.length === 0) {
+        flushDbTotal();
+    }
+
     for (var i = 0; i < dbPlugins.length; i++) {
         (function(pname) {
             $.post('/plugins/run', {name: pname, func: 'get_total_statistics'}, function(data) {
@@ -1193,29 +1206,50 @@ function loadOverviewDatabaseStats() {
                 try {
                     rdata = $.parseJSON(data['data']);
                 } catch(e) {
-                    return;
-                }
-                if (!rdata || !rdata['status'] || !rdata['data']) {
-                    return;
-                }
-
-                var count = rdata['data']['count'];
-                if (count === undefined || count === null) {
+                    done++;
+                    if (done >= dbPlugins.length) flushDbTotal();
                     return;
                 }
 
-                var ver = rdata['data']['ver'] || '';
-                var labelMap = {
-                    mysql: 'MySQL 数据库',
-                    pgsql: 'PostgreSQL 数据库',
-                    mongodb: 'MongoDB 集合',
-                    redis: 'Redis Key'
-                };
+                if (rdata && rdata['status'] && rdata['data']) {
+                    var count = Number(rdata['data']['count'] || 0);
+                    if (!isNaN(count) && count > 0) {
+                        total += count;
+                    }
+                }
 
-                appendOverviewItem(labelMap[pname] || pname, count, null, "softMain('" + pname + "','" + pname + "','" + ver + "')");
-            }, 'json');
+                done++;
+                if (done >= dbPlugins.length) {
+                    flushDbTotal();
+                }
+            }, 'json').error(function() {
+                done++;
+                if (done >= dbPlugins.length) flushDbTotal();
+            });
         })(dbPlugins[i]);
     }
+
+    // Docker 容器数量（未安装插件或读取失败时保持 0）
+    $.post('/plugins/run', {name: 'docker', func: 'get_total_statistics'}, function(data) {
+        var dockerCount = 0;
+        try {
+            var rdata = $.parseJSON(data['data']);
+            if (rdata && rdata['status'] && rdata['data']) {
+                dockerCount = Number(rdata['data']['count'] || 0);
+                if (isNaN(dockerCount) || dockerCount < 0) {
+                    dockerCount = 0;
+                }
+            }
+        } catch(e) {}
+
+        if ($('#overview_docker_total').length) {
+            $('#overview_docker_total').text(dockerCount);
+        }
+    }, 'json').error(function() {
+        if ($('#overview_docker_total').length) {
+            $('#overview_docker_total').text(0);
+        }
+    });
 }
 
 function loadKeyDataCount(){
