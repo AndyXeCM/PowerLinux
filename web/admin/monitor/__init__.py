@@ -63,6 +63,12 @@ def _build_series(start_time, end_time):
     disk_data = sys.getDiskIoByDB(start_time, end_time)
     net_data = sys.getNetworkIoByDB(start_time, end_time)
 
+    def _to_float(value, default=0.0):
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return default
+
     series = {
         'load': {
             'labels': [item['addtime'] for item in load_data],

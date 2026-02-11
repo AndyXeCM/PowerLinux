@@ -38,55 +38,8 @@ bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@mas
 ```
 wget --no-check-certificate -O uninstall.sh https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@master/scripts/uninstall.sh && bash uninstall.sh
 ```
-## 插件开发与扩展
 
-插件开发文档仍在完善中，如有疑问欢迎提交 Issue。
-
-- 插件文档：https://github.com/midoks/mdserver-web/wiki/插件开发
-***
-
-本项目采用 Apache 开源授权许可证，完整的授权说明已放置在 [LICENSE](https://github.com/midoks/mdserver-web/blob/master/LICENSE) 文件中。
-***
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-  
-以下是原作者readme
-<p align="center">
-  <img alt="logo" src="https://cdn.jsdelivr.net/gh/midoks/mdserver-web@latest/route/static/logo.png" height="140" />
-  <h3 align="center">mdserver-web</h3>
-  <p align="center">一款简单Linux面板服务</p>
-  <p align="center">强烈推荐系统:debian</p>
-</p>
-
-### 简介
-
-简单的Linux面板,感谢BT.CN写出如此好的web管理软件。我一看到，就知道这是我一直想要的页面化管理方式。
-复制了后台管理界面，按照自己想要的方式写了一版。
-
-![EulerOS](https://img.shields.io/badge/LINUX-EulerOS-blue?style=for-the-badge&logo=EulerOS)
-![Debian](https://img.shields.io/badge/LINUX-Debian-blue?style=for-the-badge&logo=Debian)
-![Ubuntu](https://img.shields.io/badge/LINUX-Ubuntu-blue?style=for-the-badge&logo=Ubuntu)
-![Fedora](https://img.shields.io/badge/LINUX-Fedora-blue?style=for-the-badge&logo=Fedora)
-![CentOS](https://img.shields.io/badge/LINUX-CentOS-blue?style=for-the-badge&logo=CentOS)
-
-
-[![Wiki](https://img.shields.io/badge/MW-Wiki-red?style=for-the-badge&logo=wiki)](https://github.com/midoks/mdserver-web/wiki)
-[![jsdelivr](https://data.jsdelivr.com/v1/package/gh/midoks/mdserver-web/badge)](https://www.jsdelivr.com/package/gh/midoks/mdserver-web)
-
-* SSH终端工具
-* 面板收藏功能
-* 网站备份功能
-* 插件方式管理
-
-基本上可以使用,后续会继续优化!欢迎提供意见！
+以下是原作者readme中的补充信息：
 
 - 吹水组 - https://t.me/mdserver_web
 - 交流论坛 - https://bbs.midoks.icu
@@ -98,10 +51,6 @@ Talk is cheap, show me the code.  -- linus
 
 - [兼容性测试报告](/compatibility.md)
 - [常用命令说明](/cmd.md) [ mw default ] [ mw dev ]
-
-### 特别赞助
-
-- [虚位以待](https://bbs.midoks.icu)
 
 ### 主要插件介绍
 
