@@ -38,40 +38,8 @@ bash <(curl --insecure -fsSL https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@mas
 ```
 wget --no-check-certificate -O uninstall.sh https://cdn.jsdelivr.net/gh/AndyXeCM/PowerLinux@master/scripts/uninstall.sh && bash uninstall.sh
 ```
-## 插件开发与扩展
 
-插件开发文档仍在完善中，如有疑问欢迎提交 Issue。
-
-- 插件文档：https://github.com/midoks/mdserver-web/wiki/插件开发
-***
-
-本项目采用 Apache 开源授权许可证，完整的授权说明已放置在 [LICENSE](https://github.com/midoks/mdserver-web/blob/master/LICENSE) 文件中。
-***
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-<p></p>
-  
-以下是原作者readme
-<p align="center">
-  <img alt="logo" src="https://cdn.jsdelivr.net/gh/midoks/mdserver-web@latest/route/static/logo.png" height="140" />
-  <h3 align="center">mdserver-web</h3>
-  <p align="center">一款简单Linux面板服务</p>
-  <p align="center">强烈推荐系统:debian</p>
-</p>
-
-* SSH终端工具
-* 面板收藏功能
-* 网站备份功能
-* 插件方式管理
-
-基本上可以使用,后续会继续优化!欢迎提供意见！
+以下是原作者readme中的补充信息：
 
 - 吹水组 - https://t.me/mdserver_web
 - 交流论坛 - https://bbs.midoks.icu
