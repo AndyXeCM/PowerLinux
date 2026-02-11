@@ -41,6 +41,21 @@ def _parse_range(range_key):
     start_time = end_time - seconds
     return start_time, end_time
 
+def _to_float(value, default=0.0):
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _to_num_or_none(value):
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
 
 def _build_series(start_time, end_time):
     load_data = sys.getLoadAverageByDB(start_time, end_time)
@@ -57,14 +72,14 @@ def _build_series(start_time, end_time):
     series = {
         'load': {
             'labels': [item['addtime'] for item in load_data],
-            'one': [item['one'] for item in load_data],
-            'five': [item['five'] for item in load_data],
-            'fifteen': [item['fifteen'] for item in load_data],
+            'one': [_to_float(item.get('one')) for item in load_data],
+            'five': [_to_float(item.get('five')) for item in load_data],
+            'fifteen': [_to_float(item.get('fifteen')) for item in load_data],
         },
         'cpu': {
             'labels': [item['addtime'] for item in cpu_data],
-            'cpu': [item['pro'] for item in cpu_data],
-            'mem': [item['mem'] for item in cpu_data],
+            'cpu': [_to_float(item.get('pro')) for item in cpu_data],
+            'mem': [_to_float(item.get('mem')) for item in cpu_data],
         },
         'disk': {
             'labels': [item['addtime'] for item in disk_data],
@@ -92,15 +107,21 @@ def _should_collect_sample(load_data, cpu_data, disk_data, net_data):
 def _safe_latest(data, key):
     if not data:
         return None
-    return data[-1].get(key)
+    return _to_num_or_none(data[-1].get(key))
 
 
 def _safe_peak(data, key, extra=None):
     if not data:
         return None
     if extra:
-        return max(extra(item) for item in data)
-    return max(item.get(key) for item in data)
+        values = [extra(item) for item in data]
+    else:
+        values = [_to_num_or_none(item.get(key)) for item in data]
+
+    values = [v for v in values if v is not None]
+    if not values:
+        return None
+    return max(values)
 
 
 @blueprint.route('/api/overview', endpoint='api_overview', methods=['GET'])
@@ -150,11 +171,13 @@ def api_overview():
 
     events = []
     if cpu_data:
-        top_cpu = max(cpu_data, key=lambda item: item['pro'])
-        events.append({'title': f"CPU 峰值 {round(top_cpu['pro'], 2)}%", 'time': top_cpu['addtime']})
+        top_cpu = max(cpu_data, key=lambda item: _to_float(item.get('pro')))
+        top_cpu_val = round(_to_float(top_cpu.get('pro')), 2)
+        events.append({'title': f"CPU 峰值 {top_cpu_val}%", 'time': top_cpu['addtime']})
     if cpu_data:
-        top_mem = max(cpu_data, key=lambda item: item['mem'])
-        events.append({'title': f"内存峰值 {round(top_mem['mem'], 2)}%", 'time': top_mem['addtime']})
+        top_mem = max(cpu_data, key=lambda item: _to_float(item.get('mem')))
+        top_mem_val = round(_to_float(top_mem.get('mem')), 2)
+        events.append({'title': f"内存峰值 {top_mem_val}%", 'time': top_mem['addtime']})
     if net_data:
         top_net = max(net_data, key=lambda item: max(float(item.get('up', 0)), float(item.get('down', 0))))
         events.append({'title': f"网络峰值 {round((max(float(top_net.get('up', 0)), float(top_net.get('down', 0))) * 8) / 1024, 2)} Mbps", 'time': top_net['addtime']})
