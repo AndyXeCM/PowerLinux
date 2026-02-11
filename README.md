@@ -2,9 +2,10 @@
 
 # PowerLinux v2.0
 
-轻量易用的下一代Linux控制面板
+#### 轻量易用的下一代Linux控制面板
 <p></p>
-<img width="2796" height="3022" alt="image" src="https://github.com/user-attachments/assets/9b23df4c-47a2-4f9f-a107-0ecafcd5cc70" />
+<img width="2788" height="3022" alt="image" src="https://github.com/user-attachments/assets/495759ae-3987-408f-ab23-f33a75defca5" />
+
 <p></p>
 欢迎各位积极完善，提交pull request!
 <p></p>
