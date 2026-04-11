@@ -49,12 +49,7 @@ Install_lib()
 
 	echo "" >> $serverPath/php/$version/etc/php.ini
 	echo "[opcache]" >> $serverPath/php/$version/etc/php.ini
-
-	if [ "$version" == "85" ];then
-		echo "no zend_extension"
-	else
-		echo "zend_extension=${LIBNAME}.so" >> $serverPath/php/$version/etc/php.ini
-	fi
+	echo "zend_extension=${LIBNAME}.so" >> $serverPath/php/$version/etc/php.ini
 	echo "opcache.enable=1" >> $serverPath/php/$version/etc/php.ini
 	echo "opcache.memory_consumption=128" >> $serverPath/php/$version/etc/php.ini
 	echo "opcache.interned_strings_buffer=8" >> $serverPath/php/$version/etc/php.ini

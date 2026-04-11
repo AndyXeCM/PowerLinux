@@ -33,7 +33,6 @@ zypper install -y pv
 zypper install -y bc
 zypper install -y bzip2
 
-
 zypper install -y libzip libzip-devel
 zypper install -y unrar rar
 zypper install -y libmemcached libmemcached-devel
@@ -41,7 +40,6 @@ zypper install -y libmemcached libmemcached-devel
 zypper install -y icu libicu-devel
 zypper install -y sqlite3 sqlite3-devel
 zypper install -y oniguruma-devel
-zypper install -y libzstd-devel
 
 # zypper install -y libmcrypt libmcrypt-devel
 # zypper install -y protobuf

@@ -331,7 +331,7 @@ function getDiskInfo() {
                 } 
             }
            
-            dBody = '<li class="col-xs-6 col-sm-3 col-md-3 col-lg-2 mtb20 circle-box mw-stat-item diskbox">' +
+            dBody = '<li class="circle-box text-center mw-stat-item diskbox mtb20">' +
                 '<h3 class="c5 f15">' + rdata[i].path + '</h3>' +
                 '<div class="mw-stat-progress mw-disk-progress">' +
                 '<mdui-linear-progress max="100" value="' + usagePercent + '" style="--mdui-color-primary: ' + LoadColor + ';"></mdui-linear-progress>' +
@@ -924,29 +924,60 @@ function formatVipRemain(seconds) {
 
 function showVipInfo() {
     var expireAt = new Date('2038-01-19T03:14:07+08:00').getTime();
-    var content = '<div class="pd20" style="line-height:1.9;">' +
-        '<div style="font-size:18px;font-weight:600;color:#20a53a;">PowerLinux Pro Max · 永久尊享</div>' +
-        '<div style="margin-top:8px;color:#666;">您已经是永久VIP，感谢长期支持。</div>' +
-        '<hr style="margin:12px 0;">' +
-        '<div><b>会员到期时间：</b>2038年1月19日03:14:07</div>' +
-        '<div><b>剩余时长：</b><span id="vipRemainTime">计算中...</span></div>' +
-        '<hr style="margin:12px 0;">' +
-        '<div><b>会员权益</b></div>' +
-        '<ul style="margin:8px 0 0 18px;padding:0;">' +
-        '<li>无限期面板更新（优先体验新版能力）</li>' +
-        '<li>高级监控与可视化页面持续增强</li>' +
-        '<li>社区身份标识与优先反馈通道</li>' +
-        '<li>长期稳定版本与性能优化补丁</li>' +
-        '</ul>' +
-        '<div style="margin-top:10px;color:#999;font-size:12px;">提示：剩余时长将实时刷新显示。</div>' +
+    function renderBenefit(icon, title, desc) {
+        return '<div class="mw-vip-modal__benefit">' +
+            '<span class="material-icons mw-vip-modal__benefit-icon">' + icon + '</span>' +
+            '<div class="mw-vip-modal__benefit-content">' +
+                '<div class="mw-vip-modal__benefit-title">' + title + '</div>' +
+                '<div class="mw-vip-modal__benefit-desc">' + desc + '</div>' +
+            '</div>' +
         '</div>';
+    }
+
+    var content = '<div class="mw-vip-modal">' +
+        '<div class="mw-vip-modal__glow mw-vip-modal__glow--a"></div>' +
+        '<div class="mw-vip-modal__glow mw-vip-modal__glow--b"></div>' +
+        '<div class="mw-vip-modal__hero">' +
+            '<div class="mw-vip-modal__eyebrow">PRO MAX</div>' +
+            '<div class="mw-vip-modal__title">PowerLinux Pro Max</div>' +
+            '<div class="mw-vip-modal__subtitle">永久尊享 · 新版会员中心</div>' +
+        '</div>' +
+        '<div class="mw-vip-modal__summary">' +
+            '<div class="mw-vip-modal__status-label">会员状态</div>' +
+            '<div class="mw-vip-modal__status-pill">永久VIP</div>' +
+            '<div class="mw-vip-modal__status-note">感谢长期支持，以下权益持续开放。</div>' +
+        '</div>' +
+        '<div class="mw-vip-modal__metrics">' +
+            '<div class="mw-vip-modal__metric">' +
+                '<span class="mw-vip-modal__metric-label">会员到期时间</span>' +
+                '<strong>2038年1月19日03:14:07</strong>' +
+            '</div>' +
+            '<div class="mw-vip-modal__metric">' +
+                '<span class="mw-vip-modal__metric-label">剩余时长</span>' +
+                '<strong id="vipRemainTime">计算中...</strong>' +
+            '</div>' +
+        '</div>' +
+        '<div class="mw-vip-modal__benefits">' +
+            renderBenefit('rocket_launch', '新版能力优先体验', '持续优先体验新的视觉和功能改进。') +
+            renderBenefit('query_stats', '高级监控与可视化', '更完整的状态展示、监控和趋势能力。') +
+            renderBenefit('verified', '社区身份标识', '在面板中展示更醒目的专属身份。') +
+            renderBenefit('update', '稳定更新与补丁', '优先获得更稳的版本和性能优化。') +
+        '</div>' +
+        '<div class="mw-vip-modal__footer">' +
+            '<div class="mw-vip-modal__footer-tip">提示：剩余时长将实时刷新显示。</div>' +
+            '<div class="mw-vip-modal__credit">Designed by AoodyConcorde.</div>' +
+        '</div>' +
+    '</div>';
 
     layer.open({
         type: 1,
-        title: 'Pro Max会员信息',
-        area: ['520px', '430px'],
+        title: false,
         closeBtn: 1,
-        icon: 1,
+        area: ['720px', 'auto'],
+        skin: 'mw-vip-layer',
+        shade: [0.55, '#0f172a'],
+        shadeClose: true,
+        anim: 2,
         content: content,
         success: function () {
             if (__vipCountdownTimer) {

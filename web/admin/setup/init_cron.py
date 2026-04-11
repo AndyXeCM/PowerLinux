@@ -45,7 +45,7 @@ def init_acme_cron():
         'name': name,
         'type': 'day-n',
         'week': "",
-        'where1': "15",
+        'where1': "7",
         'hour': 4,
         'minute': 15,
         'save': "",

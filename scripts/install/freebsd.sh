@@ -66,7 +66,6 @@ pkg install -y bzip2
 pkg install -y bzip2-devel
 pkg install -y numactl
 pkg install -y sshpass
-pkg install -y libzstd-devel
 
 # curl https://sh.rustup.rs -sSf | sh
 pkg install -y rust

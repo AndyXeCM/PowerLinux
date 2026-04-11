@@ -1,8 +1,21 @@
 //判断磁盘数量超出宽度
 function isDiskWidth(){
-    var comlist_width = $("#comlist").width();
-    var body_width = $(".file-box").width();
-    $("#comlist").css({"width":(body_width-520)+"px","height":"34px","overflow":"auto"});
+    $("#comlist").css({
+        "width": "auto",
+        "flex": "1 1 auto",
+        "display": "flex",
+        "flex-wrap": "wrap",
+        "align-items": "center",
+        "gap": "8px",
+        "min-width": "180px",
+        "max-width": "100%",
+        "height": "auto",
+        "overflow": "visible"
+    });
+}
+
+function syncFileToolbarLayout(){
+    isDiskWidth();
 }
 
 //打开回收站
@@ -583,10 +596,10 @@ function getFiles(Path) {
                 <tbody id="filesBody" class="list-list">'+body+'</tbody>\
             </table>';
             $("#fileCon").removeClass("fileList").html(tablehtml);
-            $("#tipTools").width($("#fileCon").width());
+            syncFileToolbarLayout();
         } else {
             $("#fileCon").addClass("fileList").html(body);
-            $("#tipTools").width($("#fileCon").width());
+            syncFileToolbarLayout();
         }
         $("#DirPathPlace input").val(rdata.path);
         var BarTools = '<div class="btn-group">\
@@ -755,25 +768,20 @@ function showSeclect(){
 
 //滚动条事件
 $(window).scroll(function () {
-    if($(window).scrollTop() > 16){
-        $("#tipTools").css({"position":"fixed","top":"0","left":"195px","box-shadow":"0 1px 10px 3px #ccc"});
+    var toolbar = $("#tipTools");
+    if (!toolbar.length) {
+        return;
+    }
+
+    if ($(window).scrollTop() > 16){
+        toolbar.css({"box-shadow":"0 18px 42px rgba(15, 23, 42, 0.16)"});
     }else{
-        $("#tipTools").css({"position":"absolute","top":"0","left":"0","box-shadow":"none"});
+        toolbar.css({"box-shadow":"none"});
     }
 });
-$("#tipTools").width($(".file-box").width());
-$("#PathPlaceBtn").width($(".file-box").width()-700);
-$("#DirPathPlace input").width($(".file-box").width()-700);
-if($(window).width()<1160){
-    $("#PathPlaceBtn").width(290);
-}
+syncFileToolbarLayout();
 window.onresize = function(){
-    $("#tipTools").width($(".file-box").width()-30);
-    $("#PathPlaceBtn").width($(".file-box").width()-700);
-    $("#DirPathPlace input").width($(".file-box").width()-700);
-    if($(window).width()<1160){
-        $("#PathPlaceBtn,#DirPathPlace input").width(290);
-    }
+    syncFileToolbarLayout();
     pathLeft();
     isDiskWidth();
 }
@@ -1858,7 +1866,7 @@ function pathPlaceBtn(path){
         }
     }
     
-    html = '<div style="width:1200px;height:26px"><ul>'+html+'</ul></div>';
+    html = '<div style="width:100%;height:26px;overflow:hidden;position:relative"><ul>'+html+'</ul></div>';
     $("#PathPlaceBtn").html(html);
     $("#PathPlaceBtn ul li a").click(function(e){
         var go_path = $(this).attr("title");
