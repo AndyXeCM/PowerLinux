@@ -169,7 +169,7 @@ mw_status()
     else
         echo -e "\033[31mmw not running\033[0m"
     fi
-
+    
     isStart=$(ps aux |grep 'panel_task.py'|grep -v grep|awk '{print $2}')
     if [ "$isStart" != '' ];then
         echo -e "\033[32mmw-task (pid $isStart) already running\033[0m"
@@ -401,7 +401,7 @@ mw_update_dev()
     mw_common_proxy
     echo "bash <(curl -fsSL "${HTTP_PREFIX}raw.githubusercontent.com/midoks/mdserver-web/dev/scripts/update_dev.sh")"
     bash <(curl -fsSL "${HTTP_PREFIX}raw.githubusercontent.com/midoks/mdserver-web/dev/scripts/update_dev.sh")
-
+    
     cd ${PANEL_DIR}
 }
 

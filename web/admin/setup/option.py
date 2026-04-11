@@ -14,7 +14,7 @@ import core.mw as mw
 import thisdb
 
 def init_option():
-    thisdb.setOption('title', 'PowerLinux Pro Max')
+    thisdb.setOption('title', 'PowerLinux 3')
     thisdb.setOption('recycle_bin', 'open')
     thisdb.setOption('template', 'default')
 

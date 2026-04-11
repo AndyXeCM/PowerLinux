@@ -165,7 +165,7 @@ function getSList(isdisplay) {
                 }
                 
                 if (plugin.status == true) {
-                    state = '<span style="color:#20a53a" class="glyphicon glyphicon-play"></span>'
+                    state = '<span style="color:#35a37b" class="glyphicon glyphicon-play"></span>'
                 } else {
                     state = '<span style="color:red" class="glyphicon glyphicon-pause"></span>'
                 }
@@ -408,24 +408,45 @@ function indexListHtml(callback){
                 version_info = version_info.substring(0, version_info.length - 1);
             }
 
-            if (plugin.status == true) {
-                    state = '<span style="color:#20a53a" class="glyphicon glyphicon-play"></span>'
+            var versionLabel = plugin.setup_version;
+            if (!versionLabel) {
+                if (Array.isArray(plugin.versions) && plugin.versions.length > 0) {
+                    versionLabel = plugin.versions[0];
+                } else if (plugin.versions) {
+                    versionLabel = plugin.versions;
                 } else {
-                    state = '<span style="color:red" class="glyphicon glyphicon-pause"></span>'
+                    versionLabel = '未安装';
+                }
+            }
+            var softVersion = plugin.setup_version || versionLabel;
+            var pluginSummary = plugin.ps ? plugin.ps : '点击进入软件设置页';
+            var stateText = '已停止';
+            var stateClass = 'mw-soft-home-state--off';
+            if (plugin.status == true) {
+                stateText = '运行中';
+                stateClass = 'mw-soft-home-state--ok';
             }
 
-            var name = plugin.title + ' ' + plugin.setup_version + '  ';
-            var data_id = plugin.name + '-' + plugin.setup_version;
-            if (plugin.coexist){
-                name = plugin.title + '  ';
-                data_id = plugin.name + '-' + plugin.versions;
+            var data_id = plugin.name + '-' + softVersion;
+            if (plugin.coexist) {
+                data_id = plugin.name + '-' + (Array.isArray(plugin.versions) ? plugin.versions.join('-') : plugin.versions);
             }
 
-            con += '<div class="col-sm-3 col-md-3 col-lg-3" data-id="' + data_id + '">\
-                <span class="spanmove"></span>\
-                <div onclick="softMain(\'' + plugin.name + '\',\'' + plugin.title + '\',\'' + plugin.setup_version + '\')">\
-                <div class="image"><img bk-src="/static/img/loading.gif" src="/plugins/file?name=' + plugin.name + '&f=ico.png" style="max-width:48px;"></div>\
-                <div class="sname">' +  name + state + '</div>\
+            con += '<div class="col-sm-3 col-md-3 col-lg-3 mw-soft-home-item" data-id="' + data_id + '">\
+                <span class="spanmove" aria-hidden="true"></span>\
+                <div class="mw-soft-home-card" onclick="softMain(\'' + plugin.name + '\',\'' + plugin.title + '\',\'' + softVersion + '\')">\
+                    <div class="mw-soft-home-top">\
+                        <div class="mw-soft-home-icon"><img bk-src="/static/img/loading.gif" src="/plugins/file?name=' + plugin.name + '&f=ico.png" alt=""></div>\
+                        <div class="mw-soft-home-copy">\
+                            <div class="mw-soft-home-title">' + escapeHtml(plugin.title) + '</div>\
+                            <div class="mw-soft-home-meta">' + escapeHtml(versionLabel) + '</div>\
+                            <div class="mw-soft-home-desc">' + escapeHtml(pluginSummary) + '</div>\
+                        </div>\
+                    </div>\
+                    <div class="mw-soft-home-footer">\
+                        <span class="mw-soft-home-state ' + stateClass + '">' + stateText + '</span>\
+                        <span class="mw-soft-home-hint">管理入口</span>\
+                    </div>\
                 </div>\
             </div>';
 
@@ -454,15 +475,15 @@ function indexListHtml(callback){
 function indexSoft() {
     indexListHtml(function(){
         if ($("#indexsoft > div[data-id]").length > 1) {
-            $("#indexsoft").dragsort({
-                dragSelector: ".spanmove",
-                dragBetween: true,
-                dragEnd: saveOrder,
+            $("#indexsoft").dragsort({ 
+                dragSelector: ".spanmove", 
+                dragBetween: true, 
+                dragEnd: saveOrder, 
                 placeHolderTemplate: "<div class='col-sm-3 col-md-3 col-lg-3 dashed-border'></div>"
             });
         }
     });
-
+    
     function saveOrder() {
         var data = $("#indexsoft > div").map(function() { return $(this).attr("data-id"); }).get();
         tmp = [];

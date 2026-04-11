@@ -123,8 +123,8 @@ Install_openresty()
 
 	    if [ ! -d ${openrestyDir}/libressl-${libresslVersion} ];then
 			cd ${openrestyDir} &&  tar -zxvf libressl-${libresslVersion}.tar.gz
-	    fi
-
+		fi
+	    
 	    OPTIONS="${OPTIONS} --with-cc-opt=-I${openrestyDir}/libressl-${libresslVersion}/libressl/build/include"
 	    OPTIONS="${OPTIONS} --with-cc-opt=-I${openrestyDir}/libressl-${libresslVersion}/libressl/build/lib"
 	fi

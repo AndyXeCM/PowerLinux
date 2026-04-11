@@ -1,3 +1,25 @@
+var MW_STAT_SUCCESS = '#35a37b';
+var MW_STAT_SUCCESS_SOFT = '#81c784';
+var MW_STAT_WARNING = '#d48d3a';
+var MW_STAT_DANGER = '#d85c53';
+
+function getStatColor(value) {
+    var num = parseFloat(value);
+    if (isNaN(num)) {
+        num = 0;
+    }
+    if (num <= 75) {
+        return MW_STAT_SUCCESS_SOFT;
+    }
+    if (num <= 90) {
+        return MW_STAT_WARNING;
+    }
+    if (num <= 95) {
+        return MW_STAT_DANGER;
+    }
+    return MW_STAT_DANGER;
+}
+
 //获取负载
 function getLoad(data) {
     $("#Load").text("获取中..");
@@ -11,16 +33,16 @@ function getLoad(data) {
     Occupy = Math.round((Average / data.max) * 100);
     if (Occupy > 100) Occupy = 100;
     if (Occupy <= 30) {
-        LoadColor = '#20a53a';
+        LoadColor = MW_STAT_SUCCESS_SOFT;
         AverageText = '运行流畅';
     } else if (Occupy <= 70) {
-        LoadColor = '#6ea520';
+        LoadColor = MW_STAT_SUCCESS;
         AverageText = '运行正常';
     } else if (Occupy <= 90) {
-        LoadColor = '#ff9900';
+        LoadColor = MW_STAT_WARNING;
         AverageText = '运行缓慢';
     } else {
-        LoadColor = '#dd2f00';
+        LoadColor = MW_STAT_DANGER;
         AverageText = '运行堵塞';
     }
     index.find('.mask').css({ "color": LoadColor });
@@ -310,7 +332,7 @@ function getDiskInfo() {
         var dBody;
         for (var i = 0; i < rdata.length; i++) {
             var usagePercent = parseInt(rdata[i].size[3].replace('%', ''));
-            var LoadColor = setcolor(usagePercent, false, 75, 90, 95);
+            var LoadColor = getStatColor(usagePercent);
 
             //判断inode信息是否存在
             var inodes = '';
@@ -331,13 +353,15 @@ function getDiskInfo() {
                 } 
             }
            
+            var diskLabel = rdata[i].path == '/' ? '根分区' : rdata[i].path;
             dBody = '<li class="circle-box text-center mw-stat-item diskbox mtb20">' +
-                '<h3 class="c5 f15">' + rdata[i].path + '</h3>' +
+                '<h3 class="c5 f15">' + escapeHtml(diskLabel) + '</h3>' +
+                '<div class="mw-stat-subtitle">分区占用与 Inode 状态</div>' +
                 '<div class="mw-stat-progress mw-disk-progress">' +
                 '<mdui-linear-progress max="100" value="' + usagePercent + '" style="--mdui-color-primary: ' + LoadColor + ';"></mdui-linear-progress>' +
                 '</div>' +
                 '<div class="mw-stat-value mask" style="color:' + LoadColor + '"' + inodes + '><span>' + usagePercent + '</span>%</div>' +
-                '<div class="mw-stat-footer">' + rdata[i].size[1] + '/' + rdata[i].size[0] + '</div>' +
+                '<h4 class="c5 f15 mw-stat-foot">' + escapeHtml(rdata[i].size[1] + '/' + rdata[i].size[0]) + '</h4>' +
                 '</li>'
             $("#systemInfoList").append(dBody);
         }
@@ -433,13 +457,13 @@ function setcolor(pre, s, s1, s2, s3) {
     }
     var LoadColor;
     if (value <= s1) {
-        LoadColor = '#20a53a';
+        LoadColor = MW_STAT_SUCCESS_SOFT;
     } else if (value <= s2) {
-        LoadColor = '#6ea520';
+        LoadColor = MW_STAT_SUCCESS;
     } else if (value <= s3) {
-        LoadColor = '#ff9900';
+        LoadColor = MW_STAT_WARNING;
     } else {
-        LoadColor = '#dd2f00';
+        LoadColor = MW_STAT_DANGER;
     }
     if (s == false) {
         return LoadColor;
@@ -924,60 +948,29 @@ function formatVipRemain(seconds) {
 
 function showVipInfo() {
     var expireAt = new Date('2038-01-19T03:14:07+08:00').getTime();
-    function renderBenefit(icon, title, desc) {
-        return '<div class="mw-vip-modal__benefit">' +
-            '<span class="material-icons mw-vip-modal__benefit-icon">' + icon + '</span>' +
-            '<div class="mw-vip-modal__benefit-content">' +
-                '<div class="mw-vip-modal__benefit-title">' + title + '</div>' +
-                '<div class="mw-vip-modal__benefit-desc">' + desc + '</div>' +
-            '</div>' +
+    var content = '<div class="pd20" style="line-height:1.9;">' +
+        '<div style="font-size:18px;font-weight:600;color:' + MW_STAT_SUCCESS + ';">PowerLinux 3 · 永久尊享</div>' +
+        '<div style="margin-top:8px;color:#666;">您已经是永久VIP，感谢长期支持。</div>' +
+        '<hr style="margin:12px 0;">' +
+        '<div><b>会员到期时间：</b>2038年1月19日03:14:07</div>' +
+        '<div><b>剩余时长：</b><span id="vipRemainTime">计算中...</span></div>' +
+        '<hr style="margin:12px 0;">' +
+        '<div><b>会员权益</b></div>' +
+        '<ul style="margin:8px 0 0 18px;padding:0;">' +
+        '<li>无限期面板更新（优先体验新版能力）</li>' +
+        '<li>高级监控与可视化页面持续增强</li>' +
+        '<li>社区身份标识与优先反馈通道</li>' +
+        '<li>长期稳定版本与性能优化补丁</li>' +
+        '</ul>' +
+        '<div style="margin-top:10px;color:#999;font-size:12px;">提示：剩余时长将实时刷新显示。</div>' +
         '</div>';
-    }
-
-    var content = '<div class="mw-vip-modal">' +
-        '<div class="mw-vip-modal__glow mw-vip-modal__glow--a"></div>' +
-        '<div class="mw-vip-modal__glow mw-vip-modal__glow--b"></div>' +
-        '<div class="mw-vip-modal__hero">' +
-            '<div class="mw-vip-modal__eyebrow">PRO MAX</div>' +
-            '<div class="mw-vip-modal__title">PowerLinux Pro Max</div>' +
-            '<div class="mw-vip-modal__subtitle">永久尊享 · 新版会员中心</div>' +
-        '</div>' +
-        '<div class="mw-vip-modal__summary">' +
-            '<div class="mw-vip-modal__status-label">会员状态</div>' +
-            '<div class="mw-vip-modal__status-pill">永久VIP</div>' +
-            '<div class="mw-vip-modal__status-note">感谢长期支持，以下权益持续开放。</div>' +
-        '</div>' +
-        '<div class="mw-vip-modal__metrics">' +
-            '<div class="mw-vip-modal__metric">' +
-                '<span class="mw-vip-modal__metric-label">会员到期时间</span>' +
-                '<strong>2038年1月19日03:14:07</strong>' +
-            '</div>' +
-            '<div class="mw-vip-modal__metric">' +
-                '<span class="mw-vip-modal__metric-label">剩余时长</span>' +
-                '<strong id="vipRemainTime">计算中...</strong>' +
-            '</div>' +
-        '</div>' +
-        '<div class="mw-vip-modal__benefits">' +
-            renderBenefit('rocket_launch', '新版能力优先体验', '持续优先体验新的视觉和功能改进。') +
-            renderBenefit('query_stats', '高级监控与可视化', '更完整的状态展示、监控和趋势能力。') +
-            renderBenefit('verified', '社区身份标识', '在面板中展示更醒目的专属身份。') +
-            renderBenefit('update', '稳定更新与补丁', '优先获得更稳的版本和性能优化。') +
-        '</div>' +
-        '<div class="mw-vip-modal__footer">' +
-            '<div class="mw-vip-modal__footer-tip">提示：剩余时长将实时刷新显示。</div>' +
-            '<div class="mw-vip-modal__credit">Designed by AoodyConcorde.</div>' +
-        '</div>' +
-    '</div>';
 
     layer.open({
         type: 1,
-        title: false,
+        title: 'PowerLinux 3 会员信息',
+        area: ['520px', '430px'],
         closeBtn: 1,
-        area: ['720px', 'auto'],
-        skin: 'mw-vip-layer',
-        shade: [0.55, '#0f172a'],
-        shadeClose: true,
-        anim: 2,
+        icon: 1,
         content: content,
         success: function () {
             if (__vipCountdownTimer) {
@@ -1126,7 +1119,7 @@ function pluginInit(){
             content:"\
         <div class='rec-install'>\
             <div class='important-title'>\
-                <p><span class='glyphicon glyphicon-alert' style='color: #f39c12; margin-right: 10px;'></span>推荐以下一键套件，或在<a href='javascript:jump()' style='color:#20a53a'>软件管理</a>按需选择。</p>\
+                <p><span class='glyphicon glyphicon-alert' style='color: #f39c12; margin-right: 10px;'></span>推荐以下一键套件，或在<a href='javascript:jump()' style='color:#35a37b'>软件管理</a>按需选择。</p>\
                 <!-- <button style='margin-top: 8px;height: 30px;' type='button' class='btn btn-sm btn-default no-show-rec-btn'>不再显示推荐</button> -->\
             </div>\
             <div class='rec-box'>\
@@ -1668,7 +1661,7 @@ var index = {
                         $.each(list, function (index, item) {
 
                             if (typeof data[item] != 'undefined'){
-                                _tips += '<span style="display: inline-block;width: 10px;height: 10px;"></span>&nbsp;&nbsp;<span style="' + (item.indexOf('time') > -1 ? ('color:' + ((data[item] > 100 && data[item] < 1000) ? '#ff9900' : (data[item] >= 1000 ? 'red' : '#20a53a'))) : '') + '">' + options[item] + '：' + data[item] + (item.indexOf('time') > -1 ? ' ms' : ' 次/秒') + '</span><br />';
+                                _tips += '<span style="display: inline-block;width: 10px;height: 10px;"></span>&nbsp;&nbsp;<span style="' + (item.indexOf('time') > -1 ? ('color:' + ((data[item] > 100 && data[item] < 1000) ? '#ff9900' : (data[item] >= 1000 ? 'red' : MW_STAT_SUCCESS))) : '') + '">' + options[item] + '：' + data[item] + (item.indexOf('time') > -1 ? ' ms' : ' 次/秒') + '</span><br />';
                             }
                         })
                         return _tips;
