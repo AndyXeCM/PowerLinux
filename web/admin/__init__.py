@@ -150,8 +150,8 @@ def inject_global_variables():
     data = utils_config.getGlobalVar()
     g_config = {
         'version': app_ver,
-        'title' : 'PowerLinux Pro Max',
-        'ip' : '127.0.0.1'
+        'title' : data['title'],
+        'ip' : data['ip']
     }
     return dict(config=g_config, data=data)
 

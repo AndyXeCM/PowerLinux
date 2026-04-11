@@ -15,6 +15,13 @@ import core.mw as mw
 import thisdb
 
 
+def _normalize_title(title):
+    title = str(title or '').strip()
+    if title in ('PowerLinux Pro Max', 'Powerlinux Pro Max', ''):
+        return 'PowerLinux 3'
+    return title
+
+
 def _sanitize_server_ip(value):
     if not value:
         return ''
@@ -62,7 +69,10 @@ def getGlobalVar():
     获取全局变量
     '''
     data = {}
-    data['title'] = thisdb.getOption('title', default='PowerLinux Pro Max')
+    stored_title = thisdb.getOption('title', default='PowerLinux 3')
+    data['title'] = _normalize_title(stored_title)
+    if data['title'] != stored_title:
+        thisdb.setOption('title', data['title'])
     server_ip = thisdb.getOption('server_ip', default='127.0.0.1')
     server_ip = _sanitize_server_ip(server_ip)
     if server_ip == '':
