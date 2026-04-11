@@ -32,12 +32,12 @@
                     <div class="mw-file-search">
                         <form target="hid" class="mw-file-search-form">
                             <div class="mw-file-search-field">
-                                <input type="text" id="search_file" class="ser-text mw-file-search-input" placeholder="搜索文件/目录" autocomplete="false" />
+                                <input type="text" id="search_file" class="mw-file-search-input" placeholder="搜索文件/目录" autocomplete="off" />
                                 <button type="button" class="mw-file-search-btn mw-icon-button" onclick='searchFile(1)' aria-label="搜索">
                                     <span class="material-icons">search</span>
                                 </button>
                             </div>
-                            <div class="file_search" draggable="false">
+                            <div class="mw-file-search-scope" draggable="false">
                                 <label for="search_file">包含子目录</label>
                                 <div id="search_all" class="file_search_checked"></div>
                             </div>

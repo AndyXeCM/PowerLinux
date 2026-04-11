@@ -331,17 +331,8 @@ function getDiskInfo() {
                 } 
             }
            
-            dBody = '<li class="mw-stat-item diskbox">' +
-                '<div class="mw-stat-top">' +
-                    '<div class="mw-stat-label">' +
-                        '<span class="material-icons mw-stat-icon">storage</span>' +
-                        '<div>' +
-                            '<h3 class="c5 f15">' + rdata[i].path + '</h3>' +
-                            '<p class="mw-stat-copy">分区占用与 Inode 状态</p>' +
-                        '</div>' +
-                    '</div>' +
-                    '<span class="mw-stat-chip">磁盘</span>' +
-                '</div>' +
+            dBody = '<li class="circle-box text-center mw-stat-item diskbox mtb20">' +
+                '<h3 class="c5 f15">' + rdata[i].path + '</h3>' +
                 '<div class="mw-stat-progress mw-disk-progress">' +
                 '<mdui-linear-progress max="100" value="' + usagePercent + '" style="--mdui-color-primary: ' + LoadColor + ';"></mdui-linear-progress>' +
                 '</div>' +
@@ -933,47 +924,60 @@ function formatVipRemain(seconds) {
 
 function showVipInfo() {
     var expireAt = new Date('2038-01-19T03:14:07+08:00').getTime();
-    var content = '' +
-        '<div class="mw-vip-modal">' +
-            '<section class="mw-vip-hero">' +
-                '<div class="mw-vip-hero-mark"><span class="material-icons">workspace_premium</span></div>' +
-                '<div class="mw-vip-hero-copy">' +
-                    '<div class="mw-vip-kicker">会员中心</div>' +
-                    '<h2 class="mw-vip-title">PowerLinux Pro Max</h2>' +
-                    '<p class="mw-vip-subtitle">永久尊享 · 持续更新 · 优先支持</p>' +
-                '</div>' +
-                '<span class="mw-vip-badge">永久有效</span>' +
-            '</section>' +
-            '<section class="mw-vip-grid">' +
-                '<article class="mw-vip-card">' +
-                    '<div class="mw-vip-card-label">会员到期时间</div>' +
-                    '<div class="mw-vip-card-value">2038年1月19日03:14:07</div>' +
-                '</article>' +
-                '<article class="mw-vip-card">' +
-                    '<div class="mw-vip-card-label">剩余时长</div>' +
-                    '<div class="mw-vip-card-value"><span id="vipRemainTime">计算中...</span></div>' +
-                '</article>' +
-            '</section>' +
-            '<section class="mw-vip-benefits">' +
-                '<div class="mw-vip-section-title">会员权益</div>' +
-                '<div class="mw-vip-section-copy">更稳定的版本节奏，更直接的优先支持，更清晰的身份标识。</div>' +
-                '<ul class="mw-vip-benefit-list">' +
-                    '<li><span class="material-icons">check_circle</span><span>无限期面板更新，优先体验新版能力</span></li>' +
-                    '<li><span class="material-icons">check_circle</span><span>高级监控与可视化页面持续增强</span></li>' +
-                    '<li><span class="material-icons">check_circle</span><span>社区身份标识与优先反馈通道</span></li>' +
-                    '<li><span class="material-icons">check_circle</span><span>长期稳定版本与性能优化补丁</span></li>' +
-                '</ul>' +
-            '</section>' +
-            '<div class="mw-vip-footnote">提示：剩余时长将实时刷新显示。</div>' +
+    function renderBenefit(icon, title, desc) {
+        return '<div class="mw-vip-modal__benefit">' +
+            '<span class="material-icons mw-vip-modal__benefit-icon">' + icon + '</span>' +
+            '<div class="mw-vip-modal__benefit-content">' +
+                '<div class="mw-vip-modal__benefit-title">' + title + '</div>' +
+                '<div class="mw-vip-modal__benefit-desc">' + desc + '</div>' +
+            '</div>' +
         '</div>';
+    }
+
+    var content = '<div class="mw-vip-modal">' +
+        '<div class="mw-vip-modal__glow mw-vip-modal__glow--a"></div>' +
+        '<div class="mw-vip-modal__glow mw-vip-modal__glow--b"></div>' +
+        '<div class="mw-vip-modal__hero">' +
+            '<div class="mw-vip-modal__eyebrow">PRO MAX</div>' +
+            '<div class="mw-vip-modal__title">PowerLinux Pro Max</div>' +
+            '<div class="mw-vip-modal__subtitle">永久尊享 · 新版会员中心</div>' +
+        '</div>' +
+        '<div class="mw-vip-modal__summary">' +
+            '<div class="mw-vip-modal__status-label">会员状态</div>' +
+            '<div class="mw-vip-modal__status-pill">永久VIP</div>' +
+            '<div class="mw-vip-modal__status-note">感谢长期支持，以下权益持续开放。</div>' +
+        '</div>' +
+        '<div class="mw-vip-modal__metrics">' +
+            '<div class="mw-vip-modal__metric">' +
+                '<span class="mw-vip-modal__metric-label">会员到期时间</span>' +
+                '<strong>2038年1月19日03:14:07</strong>' +
+            '</div>' +
+            '<div class="mw-vip-modal__metric">' +
+                '<span class="mw-vip-modal__metric-label">剩余时长</span>' +
+                '<strong id="vipRemainTime">计算中...</strong>' +
+            '</div>' +
+        '</div>' +
+        '<div class="mw-vip-modal__benefits">' +
+            renderBenefit('rocket_launch', '新版能力优先体验', '持续优先体验新的视觉和功能改进。') +
+            renderBenefit('query_stats', '高级监控与可视化', '更完整的状态展示、监控和趋势能力。') +
+            renderBenefit('verified', '社区身份标识', '在面板中展示更醒目的专属身份。') +
+            renderBenefit('update', '稳定更新与补丁', '优先获得更稳的版本和性能优化。') +
+        '</div>' +
+        '<div class="mw-vip-modal__footer">' +
+            '<div class="mw-vip-modal__footer-tip">提示：剩余时长将实时刷新显示。</div>' +
+            '<div class="mw-vip-modal__credit">Designed by AoodyConcorde.</div>' +
+        '</div>' +
+    '</div>';
 
     layer.open({
         type: 1,
         title: false,
-        area: ['680px', '560px'],
         closeBtn: 1,
-        shadeClose: true,
+        area: ['720px', 'auto'],
         skin: 'mw-vip-layer',
+        shade: [0.55, '#0f172a'],
+        shadeClose: true,
+        anim: 2,
         content: content,
         success: function () {
             if (__vipCountdownTimer) {

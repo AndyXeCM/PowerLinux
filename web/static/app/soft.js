@@ -211,7 +211,8 @@ function getSList(isdisplay) {
         });
 
         loadImage();
-    },'json').fail(function() {
+        },'json');
+    }).fail(function() {
         if (loadT) {
             layer.close(loadT);
         }
