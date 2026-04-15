@@ -1,0 +1,186 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="main-content mw-dashboard mw-observe-page">
+    <mdui-card class="mw-card mw-page-header mw-observe-hero">
+        <div class="mw-page-left">
+            <div class="mw-page-title">服务器监控中枢</div>
+            <div class="mw-page-sub">从趋势、事件与容量三条线观察系统运行状态</div>
+        </div>
+        <div class="mw-page-actions mw-observe-hero-actions">
+            <mdui-button variant="outlined" onclick="location.reload()">刷新视图</mdui-button>
+            <mdui-button variant="text" href="/" class="mw-link-button">返回首页</mdui-button>
+        </div>
+    </mdui-card>
+
+    <div class="mw-dashboard-body mw-observe-shell">
+        <aside class="mw-observe-aside">
+            <mdui-card class="mw-card mw-observe-panel">
+                <div class="mw-observe-panel-header">
+                    <div>
+                        <div class="mw-observe-panel-title">关键指标</div>
+                        <div class="mw-observe-panel-subtitle">实时追踪资源消耗与瓶颈</div>
+                    </div>
+                    <div class="mw-observe-quick-range">
+                        <span>时间跨度</span>
+                        <div class="mw-observe-quick-range-actions">
+                            <button type="button" class="mw-observe-chip" data-range="1h">近 1 小时</button>
+                            <button type="button" class="mw-observe-chip is-active" data-range="24h">近 24 小时</button>
+                            <button type="button" class="mw-observe-chip" data-range="7d">近 7 天</button>
+                            <button type="button" class="mw-observe-chip" data-range="30d">近 30 天</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="mw-observe-kpi-list">
+                    <div class="mw-observe-kpi" data-kpi="cpu">
+                        <span class="material-icons mw-observe-kpi-icon">developer_board</span>
+                        <div>
+                            <div class="mw-observe-kpi-title">CPU 使用率</div>
+                            <div class="mw-observe-kpi-value" data-metric="cpu_latest">--</div>
+                            <div class="mw-observe-kpi-desc">峰值 --</div>
+                        </div>
+                        <div class="mw-observe-kpi-meter"><span style="width: 0%"></span></div>
+                    </div>
+                    <div class="mw-observe-kpi" data-kpi="mem">
+                        <span class="material-icons mw-observe-kpi-icon">memory</span>
+                        <div>
+                            <div class="mw-observe-kpi-title">内存使用率</div>
+                            <div class="mw-observe-kpi-value" data-metric="mem_latest">--</div>
+                            <div class="mw-observe-kpi-desc">峰值 --</div>
+                        </div>
+                        <div class="mw-observe-kpi-meter"><span style="width: 0%"></span></div>
+                    </div>
+                    <div class="mw-observe-kpi" data-kpi="net">
+                        <span class="material-icons mw-observe-kpi-icon">swap_vert</span>
+                        <div>
+                            <div class="mw-observe-kpi-title">网络吞吐</div>
+                            <div class="mw-observe-kpi-value" data-metric="net_latest">--</div>
+                            <div class="mw-observe-kpi-desc">峰值 --</div>
+                        </div>
+                        <div class="mw-observe-kpi-meter"><span style="width: 0%"></span></div>
+                    </div>
+                    <div class="mw-observe-kpi" data-kpi="disk">
+                        <span class="material-icons mw-observe-kpi-icon">storage</span>
+                        <div>
+                            <div class="mw-observe-kpi-title">磁盘 IO</div>
+                            <div class="mw-observe-kpi-value" data-metric="disk_latest">--</div>
+                            <div class="mw-observe-kpi-desc">峰值 --</div>
+                        </div>
+                        <div class="mw-observe-kpi-meter"><span style="width: 0%"></span></div>
+                    </div>
+                </div>
+            </mdui-card>
+
+            <mdui-card class="mw-card mw-observe-panel">
+                <div class="mw-observe-panel-header">
+                    <div>
+                        <div class="mw-observe-panel-title">监控策略</div>
+                        <div class="mw-observe-panel-subtitle">控制采集开关与保留周期</div>
+                    </div>
+                </div>
+                <div class="mw-observe-settings-grid">
+                    <div class="mw-observe-settings-item">
+                        <div class="mw-observe-settings-label">开启监控</div>
+                        <div id="openJK" class="mw-observe-switch"></div>
+                    </div>
+                    <div class="mw-observe-settings-item">
+                        <div class="mw-observe-settings-label">保存天数</div>
+                        <div class="mw-observe-settings-field">
+                            <input class="bt-input-text" id="save_day" value="" type="number">
+                            <mdui-button variant="outlined" onclick="setControl('save_day',true);">保存</mdui-button>
+                        </div>
+                    </div>
+                    <div class="mw-observe-settings-item">
+                        <div class="mw-observe-settings-label">仅统计外网</div>
+                        <div id="statAll" class="mw-observe-switch"></div>
+                    </div>
+                    <div class="mw-observe-settings-item is-action">
+                        <mdui-button variant="outlined" onclick="closeControl()">清空记录</mdui-button>
+                    </div>
+                </div>
+            </mdui-card>
+
+            <mdui-card class="mw-card mw-observe-panel">
+                <div class="mw-observe-panel-header">
+                    <div>
+                        <div class="mw-observe-panel-title">运行事件</div>
+                        <div class="mw-observe-panel-subtitle">来自监控数据的峰值提示</div>
+                    </div>
+                </div>
+                <ul class="mw-observe-event-list" id="observeEvents"></ul>
+            </mdui-card>
+        </aside>
+
+        <section class="mw-observe-main">
+            <div class="mw-observe-main-header">
+                <div>
+                    <div class="mw-observe-main-title">趋势图表</div>
+                    <div class="mw-observe-main-subtitle">展示资源随时间变化的详细曲线</div>
+                </div>
+            </div>
+            <div class="mw-observe-charts">
+                <mdui-card class="mw-card mw-observe-chart-card mw-observe-span">
+                    <div class="mw-observe-chart-header">
+                        <div>
+                            <div class="mw-observe-chart-title">系统负载趋势</div>
+                            <div class="mw-observe-chart-subtitle">1 / 5 / 15 分钟负载随时间变化</div>
+                        </div>
+                    </div>
+                    <div class="mw-observe-chart-body">
+                        <div id="getloadview" class="mw-chart mw-observe-chart"></div>
+                    </div>
+                </mdui-card>
+
+                <mdui-card class="mw-card mw-observe-chart-card">
+                    <div class="mw-observe-chart-header">
+                        <div>
+                            <div class="mw-observe-chart-title">CPU 使用率</div>
+                            <div class="mw-observe-chart-subtitle">用户态 / 内核态占比趋势</div>
+                        </div>
+                    </div>
+                    <div class="mw-observe-chart-body">
+                        <div id="cupview" class="mw-chart mw-observe-chart"></div>
+                    </div>
+                </mdui-card>
+
+                <mdui-card class="mw-card mw-observe-chart-card">
+                    <div class="mw-observe-chart-header">
+                        <div>
+                            <div class="mw-observe-chart-title">内存占用分布</div>
+                            <div class="mw-observe-chart-subtitle">应用 / 缓冲 / 缓存走势</div>
+                        </div>
+                    </div>
+                    <div class="mw-observe-chart-body">
+                        <div id="memview" class="mw-chart mw-observe-chart"></div>
+                    </div>
+                </mdui-card>
+
+                <mdui-card class="mw-card mw-observe-chart-card">
+                    <div class="mw-observe-chart-header">
+                        <div>
+                            <div class="mw-observe-chart-title">磁盘 IO 速率</div>
+                            <div class="mw-observe-chart-subtitle">读取 / 写入吞吐与延迟变化</div>
+                        </div>
+                    </div>
+                    <div class="mw-observe-chart-body">
+                        <div id="diskview" class="mw-chart mw-observe-chart"></div>
+                    </div>
+                </mdui-card>
+
+                <mdui-card class="mw-card mw-observe-chart-card">
+                    <div class="mw-observe-chart-header">
+                        <div>
+                            <div class="mw-observe-chart-title">网络 IO 变化</div>
+                            <div class="mw-observe-chart-subtitle">流入 / 流出带宽随时间变化</div>
+                        </div>
+                    </div>
+                    <div class="mw-observe-chart-body">
+                        <div id="network" class="mw-chart mw-observe-chart"></div>
+                    </div>
+                </mdui-card>
+            </div>
+        </section>
+    </div>
+</div>
+<script src="/static/app/monitor_observe.js?v={{config.version}}"></script>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="main-content mw-dashboard mw-soft-page">
+	<mdui-card class="mw-card mw-page-header">
+		<div class="mw-page-left">
+			<div class="mw-page-title">软件管理</div>
+			<div class="mw-page-sub">浏览插件、安装/卸载、切换首页展示状态，软件中心与面板功能保持统一。</div>
+		</div>
+		<div class="mw-page-actions">
+			<span class="mw-version">支持分类切换和关键词搜索</span>
+			<mdui-button variant="filled" onclick="importPluginOpen()" class="mw-link-button">添加插件</mdui-button>
+		</div>
+	</mdui-card>
+	<div class="mw-dashboard-body">
+		<mdui-card class="mw-card">
+			<div class="mw-card-header">
+				<div>
+					<div class="mw-card-title">筛选与搜索</div>
+					<div class="mw-page-sub">按分类浏览插件，支持关键词搜索和安装包导入。</div>
+				</div>
+				<div class="mw-page-actions">
+					<span class="mw-version">插件分类 / 搜索 / 导入</span>
+				</div>
+			</div>
+			<div class="mw-card-content">
+				<div class="pos-box bgw mtb15 mw-card">
+					<div class="position f14 c9 pull-left">
+						<a class="plr10 c4" href="/">首页</a>/<span class="plr10 c4">软件管理</span>
+					</div>
+					<div class="search pull-right">
+						<form target="_self" onsubmit='getSList();return false;'>
+							<input type="text" id="SearchValue" class="ser-text pull-left" placeholder="搜索" autocomplete="false" />
+							<button type="button" class="ser-sub pull-left" onclick='getSList()'></button>
+						</form>
+					</div>
+				</div>
+				<div class="menu-sub softtype"></div>
+				<div class="mw-soft-upload-line">
+					<input type="file" style="display:none;" accept=".zip,.tar.gz" id="update_zip" multiple="multiple">
+					<div id="updata_pro_info"></div>
+				</div>
+			</div>
+		</mdui-card>
+
+		<mdui-card class="mw-card">
+			<div class="mw-card-header">
+				<div>
+					<div class="mw-card-title">软件列表</div>
+					<div class="mw-page-sub">软件状态、首页展示和安装操作都在这里统一管理。</div>
+				</div>
+				<div class="mw-page-actions">
+					<span class="mw-version">安装 / 设置 / 卸载</span>
+				</div>
+			</div>
+			<div class="mw-card-content">
+				<div class="divtable pd15 relative">
+					<table class="table table-hover mw-soft-table" width="100%" cellspacing="0" cellpadding="0" border="0">
+						<thead>
+							<tr>
+								<th width="185">软件名称</th>
+								<th>说明</th>
+								<th width="40">位置</th>
+								<th width="40">状态</th>
+								<th width="64">首页显示</th>
+								<th style="text-align: right;" width="120">操作</th>
+							</tr>
+						</thead>
+						<tbody id="softList"></tbody>
+					</table>
+					<div class="dataTables_paginate paging_bootstrap pagination">
+						<ul id="softPage" class="page"></ul>
+					</div>
+				</div>
+			</div>
+		</mdui-card>
+	</div>
+</div>
+
+<script type="text/javascript" src="/static/js/jquery.dragsort-0.5.2.min.js?v={{config.version}}"></script>
+<script type="text/javascript" src="/static/laydate/laydate.js?v={{config.version}}"></script>
+<script type="text/javascript" src="/static/app/soft.js?v={{config.version}}"></script>
+<script>
+getSList();
+</script>
+{% endblock %}

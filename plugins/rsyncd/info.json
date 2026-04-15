@@ -1,0 +1,16 @@
+{
+	"sort":2,
+	"title":"rsyncd",
+	"tip":"soft",
+	"name":"rsyncd",
+	"type":"软件",
+	"ps":"rsyncd同步助手",
+	"versions":"2.0",
+	"shell":"install.sh",
+	"checks":"server/rsyncd",
+	"path": "server/rsyncd",
+	"author":"samba",
+	"home":"https://rsync.samba.org/",
+	"date":"2019-03-05",
+	"pid":"4"
+}

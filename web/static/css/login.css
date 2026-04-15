@@ -1,0 +1,143 @@
+body.mw-login {
+    background-color: var(--mw-bg, #f6f6fa);
+    background-image: var(--mw-app-background-overlay, linear-gradient(180deg, rgba(246, 246, 250, 0.78) 0%, rgba(246, 246, 250, 0.94) 100%)), var(--mw-app-background-image, none);
+    background-size: auto, cover;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
+    background-attachment: fixed, fixed;
+    font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    color: var(--mw-text, #1f1f1f);
+}
+
+input {
+    -webkit-appearance: none;
+}
+
+.mw-login-layout {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+}
+
+.mw-login-card {
+    width: min(420px, 100%);
+    background: color-mix(in srgb, var(--mw-surface, #ffffff) 88%, transparent);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18);
+    border: 1px solid color-mix(in srgb, var(--mw-border, #e5e7eb) 70%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    backdrop-filter: blur(14px);
+}
+
+.mw-login-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+}
+
+.mw-login-brand .material-icons {
+    font-size: 36px;
+    color: var(--mw-primary, #6750a4);
+}
+
+.mw-login-brand h1 {
+    font-size: 22px;
+    margin: 0;
+}
+
+.mw-login-brand p {
+    margin: 0;
+    color: var(--mw-muted, #64748b);
+    font-size: 13px;
+}
+
+.mw-login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mw-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--mw-muted, #64748b);
+}
+
+.mw-input {
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid var(--mw-border, #e2e8f0);
+    padding: 12px 14px;
+    font-size: 14px;
+    background: var(--mw-surface, #ffffff);
+    color: var(--mw-text, #1f1f1f);
+    transition: border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.mw-input:focus {
+    border-color: var(--mw-primary, #6750a4);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--mw-primary, #6750a4) 18%, transparent);
+    outline: none;
+}
+
+.mw-error {
+    min-height: 18px;
+    color: #ef4444;
+    font-size: 12px;
+}
+
+.mw-login-submit {
+    width: 100%;
+    --mdui-color-primary: var(--mw-primary, #6750a4);
+}
+
+.mw-login-link {
+    align-self: flex-end;
+    color: var(--mw-primary, #6750a4);
+}
+
+.mw-captcha-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mw-captcha-row img {
+    border-radius: 8px;
+    border: 1px solid var(--mw-border, #e2e8f0);
+}
+
+.Validform_checktip {
+    color: var(--mw-muted, #94a3b8);
+    font-size: 12px;
+}
+
+body.mw-login .mw-login-submit::part(button) {
+    border-radius: 14px;
+}
+
+body.mw-login mdui-button.mw-login-submit::part(button),
+body.mw-login mdui-button.mw-login-link::part(button) {
+    --mdui-color-primary: var(--mw-primary, #6750a4);
+}
+
+@media (max-width: 640px) {
+    .mw-login-card {
+        padding: 24px;
+    }
+
+    .mw-captcha-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
