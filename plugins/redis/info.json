@@ -1,0 +1,17 @@
+{
+	"sort":4,
+	"ps": "一个高性能的KV数据库",
+	"name": "redis",
+	"title": "Redis",
+	"shell": "install.sh",
+	"versions":["4.0.14","5.0.14","6.0.20","6.2.16","7.0.15","7.2.9", "7.4.7", "8.0.5", "8.2.3"],
+	"tip": "soft",
+	"checks": "server/redis",
+	"path": "server/redis",
+	"display": 1,
+	"author": "redis",
+	"date": "2017-04-01",
+	"home": "https://redis.io",
+	"type": 0,
+	"pid": "2"
+}

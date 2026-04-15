@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{data['title']}}</title>
+<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon" />
+<script type="text/javascript">
+(function () {
+    function hexToRgbTriplet(color) {
+        if (!color) {
+            return null;
+        }
+
+        var value = String(color).trim().replace(/^#/, '');
+        if (value.length === 3) {
+            value = value.split('').map(function (ch) {
+                return ch + ch;
+            }).join('');
+        }
+
+        if (value.length !== 6) {
+            return null;
+        }
+
+        var red = parseInt(value.slice(0, 2), 16);
+        var green = parseInt(value.slice(2, 4), 16);
+        var blue = parseInt(value.slice(4, 6), 16);
+        if (isNaN(red) || isNaN(green) || isNaN(blue)) {
+            return null;
+        }
+
+        return red + ', ' + green + ', ' + blue;
+    }
+
+    try {
+        var root = document.documentElement;
+        var mode = window.localStorage.getItem('mw-theme-mode');
+        if (mode !== 'light' && mode !== 'dark' && mode !== 'auto') {
+            mode = 'auto';
+        }
+        root.classList.remove('mdui-theme-light', 'mdui-theme-dark', 'mdui-theme-auto');
+        root.classList.add('mdui-theme-' + mode);
+
+        var color = window.localStorage.getItem('mw-color-scheme');
+        if (color) {
+            root.style.setProperty('--mw-theme-primary', color);
+            var colorRgb = hexToRgbTriplet(color);
+            if (colorRgb) {
+                root.style.setProperty('--mw-theme-primary-rgb', colorRgb);
+            }
+        }
+
+        var background = window.localStorage.getItem('mw-theme-background');
+        if (background) {
+            root.style.setProperty('--mw-app-background-image', background);
+        }
+
+        var backgroundMode = window.localStorage.getItem('mw-theme-background-mode');
+        if (backgroundMode !== 'plain') {
+            backgroundMode = 'default';
+        }
+        if (backgroundMode === 'plain') {
+            root.style.setProperty('--mw-app-background-overlay', 'none');
+        } else {
+            root.style.removeProperty('--mw-app-background-overlay');
+        }
+    } catch (error) {}
+})();
+</script>
+<link href="/static/css/material-icons.css?v={{config.version}}" rel="stylesheet">
+<link href="/static/vendor/mdui/mdui.css?v={{config.version}}" rel="stylesheet">
+<link href="/static/bootstrap-3.3.5/css/bootstrap.min.css?v={{config.version}}" rel="stylesheet">
+<link href="/static/css/site.css?v={{config.version}}" rel="stylesheet">
+<link href="/static/css/mdui2-theme.css?v={{config.version}}" rel="stylesheet">
+<link href="/static/codemirror/lib/codemirror.css?v={{config.version}}" rel="stylesheet">
+<script src="/static/language/Simplified_Chinese/lan.js?v={{config.version}}"></script>
+<!--[if lte IE 9]>
+	<script src="/static/js/requestAnimationFrame.js"></script>
+<![endif]-->
+
+
+{% for menu in data['hook_menu'] %}
+{% if menu['css_path'] and data['hook_tag'] == menu['name'] %}
+<!-- 加载插件css -->
+<link href="/plugins/file?name={{menu['name']}}&v={{config.version}}&f={{menu['css_path']}}" rel="stylesheet" />
+{% endif %}
+{% endfor %}
+
+<!-- 全局静态HOOK -->
+{% for menu in data['hook_global_static'] %}
+{% if menu['css_path'] %}
+<link href="/plugins/file?name={{menu['name']}}&v={{config.version}}&f={{menu['css_path']}}" rel="stylesheet" />
+{% endif %}
+{% endfor %}
+</head>
+
+<body class="mw-theme">
+    <div class="mw-shell">
+        <div class="mw-main">
+            <header class="mw-topbar mw-topbar-glass">
+                <div class="mw-topbar-card">
+                    <div class="mw-topbar-left">
+                        <div class="mw-topbar-brand">
+                            <div class="mw-topbar-title">{{data['title']}}</div>
+                            <div class="mw-topbar-sub">{{data['ip']}}</div>
+                        </div>
+                    </div>
+                    <div class="mw-topbar-center">
+                        <nav class="mw-topbar-nav" aria-label="主导航">
+                            <a id="memuA" class="mw-topbar-item" href="/" title="首页" aria-label="首页">
+                                <span class="material-icons">dashboard</span>
+                            </a>
+                            <a id="memuAsite" class="mw-topbar-item" href="/site/index" title="网站" aria-label="网站">
+                                <span class="material-icons">language</span>
+                            </a>
+                            <a id="memuAfirewall" class="mw-topbar-item" href="/firewall/index" title="安全" aria-label="安全">
+                                <span class="material-icons">shield</span>
+                            </a>
+                            <a id="memuAfiles" class="mw-topbar-item" href="/files/index" title="文件" aria-label="文件">
+                                <span class="material-icons">folder</span>
+                            </a>
+                            <a id="memuAlogs" class="mw-topbar-item" href="/logs/index" title="日志" aria-label="日志">
+                                <span class="material-icons">article</span>
+                            </a>
+                            <a id="memuAmonitor" class="mw-topbar-item" href="/monitor/index" title="监控" aria-label="监控">
+                                <span class="material-icons">show_chart</span>
+                            </a>
+                            <a id="memuAcrontab" class="mw-topbar-item" href="/crontab/index" title="计划任务" aria-label="计划任务">
+                                <span class="material-icons">schedule</span>
+                            </a>
+                            {% for menu in data['hook_menu'] %}
+                            <a id="memuAplugins_{{menu['name']}}" class="mw-topbar-item" href="/plugins/menu?tag={{menu['name']}}" title="{{menu['title']}}" aria-label="{{menu['title']}}">
+                                <span class="material-icons">extension</span>
+                            </a>
+                            {% endfor %}
+                            <a id="memuAsoft" class="mw-topbar-item" href="/soft/index" title="软件管理" aria-label="软件管理">
+                                <span class="material-icons">apps</span>
+                            </a>
+                            <a id="memuAsetting" class="mw-topbar-item" href="/setting/index" title="面板设置" aria-label="面板设置">
+                                <span class="material-icons">settings</span>
+                            </a>
+                            <button class="mw-topbar-item" type="button" title="APP应用管理" aria-label="APP应用管理" onclick="if (window.appPage) { appPage(); } else { window.location.href = '/setting/index'; }">
+                                <span class="material-icons">key</span>
+                            </button>
+                            <button class="mw-topbar-item" onclick="bindPanel(0,'b')" aria-label="添加面板" type="button">
+                                <span class="material-icons">add</span>
+                            </button>
+                        </nav>
+                    </div>
+                    <div class="mw-topbar-right">
+                        <div class="mw-topbar-actions">
+                            <button id="task" class="mw-icon-button" onclick="messageBox();" aria-label="任务通知">
+                                <span class="material-icons">notifications</span>
+                            </button>
+                            <button class="mw-icon-button" id="signout" aria-label="退出">
+                                <span class="material-icons">logout</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="mw-content">
+                <button style="display: none;" id="mw_copys" class="mw_copy" data-clipboard-text=""></button>
+            <link rel="stylesheet" href="/static/build/xterm.css?v={{config.version}}">
+            <link rel="stylesheet" href="/static/build/addons/fullscreen/fullscreen.css?v={{config.version}}">
+            <script src="/static/js/jquery-1.10.2.min.js"></script>
+            <script src="/static/js/jquery.cookie-1.4.1.min.js"></script>
+            <script src="/static/js/bootstrap.min.js"></script>
+            <script src="/static/layer/layer.js"></script>
+            <script src="/static/js/jquery.fly.min.js"></script>
+            <script src="/static/js/clipboard.min.js"></script>
+            <script src="/static/build/xterm.js"></script>
+            <script src="/static/build/addons/attach/attach.js"></script>
+            <script src="/static/build/addons/fit/fit.js"></script>
+            <script src="/static/build/addons/fullscreen/fullscreen.js"></script>
+            <script src="/static/js/socket.io.min.js"></script>
+            <script src="/static/build/addons/winptyCompat/winptyCompat.js"></script>
+            <script src="/static/js/term-websocketio.js"></script>
+            <script src="/static/app/upload.js?v={{config.version}}"></script>
+            <script src="/static/app/public.js?v={{config.version}}"></script>
+            <script src="/static/js/echarts.min.js"></script>
+            <!-- <script src="//cdn.jsdelivr.net/gh/midoks/mdserver-web@latest/route/static/js/echarts.min.js"></script> -->
+            <!-- <script src="//unpkg.com/echarts@5.4.3/dist/echarts.min.js"></script> -->
+            
+            <script src="/static/js/jquery.dragsort-0.5.2.min.js"></script>
+            <script src="/static/js/jquery-qrcode-0.18.0.min.js?v={{config.version}}"></script>
+            <script src="/static/js/xm-select.js"></script>
+            <script src="/static/app/app.js?v={{config.version}}"></script>
+            
+            {% block content %}{% endblock %}
+            </div>
+            <footer class="mw-footer">
+                <mdui-card class="mw-card mw-footer-card">
+                    <div class="mw-footer-content">{{data['footer_text']}}</div>
+                </mdui-card>
+            </footer>
+        </div>
+    </div>
+    <mdui-dialog id="panel-ad-dialog" headline="【AD】求恰饭">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <td style="text-align: center;">商家</td>
+                    <td style="text-align: center;">优惠码</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <a target="_blank" href="https://digitalvirt.com/aff.php?aff=154">
+                            <img src="https://digitalvirt.com/templates/BlueWhite/img/logo-dark.svg"/>
+                        </a>
+                    </td>
+                    <td>PowerLinux</td>
+                </tr>
+            </tbody>
+        </table>
+    </mdui-dialog>
+</body>
+
+<script type="text/javascript">
+
+(function ($) {
+    $.getUrlParam = function (name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+})(jQuery);
+
+function showAd(){
+    var dialog = document.getElementById('panel-ad-dialog');
+    if (dialog) {
+        dialog.open = true;
+    }
+}
+
+$('.panel_ad_list_mode').click(function(){
+    showAd();
+});
+
+
+var thisPath = window.location.pathname.trim()+window.location.search;
+if (thisPath.indexOf('?')>-1){
+    var tag = $.getUrlParam('tag');
+    if(tag != undefined){
+        $('#memuAplugins_'+tag).addClass('is-active');
+    }
+} else{
+    if(thisPath != '/'){
+        var pathArr = thisPath.substring(1).split('/');
+        $('#memuA'+pathArr[0]).addClass('is-active');
+    } else{
+        $('#memuA').addClass('is-active');
+    }
+}
+</script>
+<script src="/static/vendor/mdui/mdui.global.js?v={{config.version}}"></script>
+<script src="/static/app/theme.js?v={{config.version}}"></script>
+<script type="text/javascript">
+    if (window.MWTheme && typeof window.MWTheme.init === 'function') {
+        window.MWTheme.init();
+    }
+</script>
+<script src="/static/codemirror/lib/codemirror.js?v={{config.version}}"></script>
+<script src="/static/codemirror/addon/edit/editAll.js?v={{config.version}}"></script>
+<script src="/static/codemirror/mode/modeAll.js?v={{config.version}}"></script>
+<script src="/static/codemirror/addon/dialog/dialog.js?v={{config.version}}"></script>
+<script src="/static/codemirror/addon/search/search.js?v={{config.version}}"></script>
+<script src="/static/codemirror/addon/scroll/annotatescrollbar.js?v={{config.version}}"></script>
+<script src="/static/laydate/laydate.js?v={{config.version}}"></script>
+
+{% for menu in data['hook_menu'] %}
+{% if menu['js_path'] and data['hook_tag'] == menu['name'] %}
+<script src="/plugins/file?name={{menu['name']}}&f={{menu['js_path']}}&v={{config.version}}"></script>
+{% endif %}
+{% endfor %}
+
+<!-- 全局静态HOOK -->
+{% for menu in data['hook_global_static'] %}
+{% if menu['js_path'] %}
+<script src="/plugins/file?name={{menu['name']}}&f={{menu['js_path']}}&v={{config.version}}"></script>
+{% endif %}
+{% endfor %}
+
+
+<!-- 统计一下用户量,让我的开发更有激情 -->
+<script type="text/javascript">
+$(document).ready(function(){
+    setTimeout(function(){
+        $.getScript('https://www.googletagmanager.com/gtag/js?id=G-FC74BB2RGD', function(){
+            console.log("load google ad!");
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-FC74BB2RGD');
+        });
+    },3000);
+});
+
+</script>
+
+<!-- Google tag (gtag.js) -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-FC74BB2RGD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-FC74BB2RGD');
+</script> -->
+
+</html>

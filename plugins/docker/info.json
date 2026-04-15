@@ -1,0 +1,19 @@
+{
+	"sort": 1000,
+	"ps": "Docker是一个开源的应用容器引擎",
+	"name": "docker",
+	"title": "Docker",
+	"shell": "install.sh",
+	"versions":["1.0"],
+	"updates":["1.0"],
+	"tip": "soft",
+	"checks": "server/docker",
+	"path": "server/docker",
+	"display": 1,
+	"author": "Zend",
+	"date": "2017-04-01",
+	"home": "https://docker.io",
+	"doc1":"https://docker-py.readthedocs.io/",
+	"type": 0,
+	"pid": "4"
+}

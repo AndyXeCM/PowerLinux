@@ -1,0 +1,132 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="main-content mw-dashboard">
+    <mdui-card class="mw-card mw-page-header">
+        <div class="mw-page-left">
+            <div class="mw-page-title">文件管理</div>
+            <div class="mw-page-sub" id="dir_info"></div>
+        </div>
+        <div class="mw-page-actions">
+            <mdui-button variant="text" href="/" class="mw-link-button">返回首页</mdui-button>
+        </div>
+    </mdui-card>
+
+    <mdui-card class="mw-card mw-file-card file-box">
+        <div class="mw-card-content">
+            <div id="tipTools" class="mw-file-toolbar">
+                <div class="mw-file-toolbar-row mw-file-toolbar-primary">
+                    <div class="mw-file-path">
+                        <button id="backBtn" class="backBtn mw-file-icon-btn mw-icon-button" title="返回上一级" onClick="backDir()">
+                            <span class="material-icons">arrow_back</span>
+                        </button>
+                        <button class="backBtn refreshBtn mw-file-icon-btn mw-icon-button" title="刷新目录">
+                            <span class="material-icons">refresh</span>
+                        </button>
+                        <div class="mw-file-path-field">
+                            <span class="mw-file-path-label">当前位置</span>
+                            <span id='DirPathPlace' class="mw-file-path-input"><input id="fileInputPath" type="text" aria-label="路径"></span>
+                        </div>
+                        <span id='PathPlaceBtn' class="mw-file-path-actions"></span>
+                    </div>
+                    <div class="mw-file-search">
+                        <form target="hid" class="mw-file-search-form">
+                            <div class="mw-file-search-field">
+                                <input type="text" id="search_file" class="mw-file-search-input" placeholder="搜索文件/目录" autocomplete="off" />
+                                <button type="button" class="mw-file-search-btn mw-icon-button" onclick='searchFile(1)' aria-label="搜索">
+                                    <span class="material-icons">search</span>
+                                </button>
+                            </div>
+                            <div class="mw-file-search-scope" draggable="false">
+                                <label for="search_file">包含子目录</label>
+                                <div id="search_all" class="file_search_checked"></div>
+                            </div>
+                        </form>
+                        <iframe name='hid' id="hid" style="display:none"></iframe>
+                    </div>
+                </div>
+                <div class="mw-file-toolbar-row mw-file-toolbar-secondary">
+                    <div class="mw-file-actions">
+                        <mdui-button variant="outlined" class="mw-file-btn" onclick="uploadFiles()">上传</mdui-button>
+                        <mdui-button variant="outlined" class="mw-file-btn" onclick="downloadFile()" title="远程下载">远程下载</mdui-button>
+                        <span id='BarTools' class="mw-file-tool-items"></span>
+                        <span id='Batch' class="mw-file-batch"></span>
+                        <span id='comlist' class="comlist mw-file-breadcrumbs"></span>
+                    </div>
+                    <div class="mw-file-view-toggle">
+                        <button id="set_icon" type="button" class="mw-file-icon-btn mw-icon-button" aria-label="图标视图">
+                            <span class="material-icons">grid_view</span>
+                        </button>
+                        <button id="set_list" type="button" class="mw-file-icon-btn mw-icon-button active" aria-label="列表视图">
+                            <span class="material-icons">list</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- 文件展示 -->
+            <div class="divtable mw-file-table" id="fileCon"></div>
+            <div class="dataTables_paginate paging_bootstrap pagination mw-file-pagination">
+                <ul id="filePage" class="page"></ul>
+            </div>
+        </div>
+    </mdui-card>
+</div>
+<ul id="rmenu" class="dropdown-menu mw-file-context-menu" style="display:none">
+    <li onclick="javascript:batch(1);"><a style="cursor: pointer;">复制</a></li>
+    <li onclick="javascript:batch(2);"><a style="cursor: pointer;">剪切</a></li>
+    <li onclick="javascript:batch(3);"><a style="cursor: pointer;">权限</a></li>
+    <li onclick="javascript:batch(5);"><a style="cursor: pointer;">压缩</a></li>
+    <li onclick="javascript:batch(4);"><a style="cursor: pointer;">删除</a></li>
+</ul>
+
+<script src="/static/app/files.js?v={{config.version}}"></script>
+<script src="/static/js/jquery-ui.min.js?v={{config.version}}"></script>
+<script src="/static/js/jquery.contextify.min.js?v={{config.version}}"></script>
+<script type="text/javascript">
+
+
+$("#search_file").focus().keyup(function(e){
+    if(e.keyCode == 13) searchFile(1);
+});
+
+
+setTimeout(function() {
+    getDisk();
+}, 500);
+
+
+var xPath = getCookie('open_dir_path');
+setTimeout(function() {
+    getFiles((xPath != undefined ? xPath : '/www/wwwroot'));
+}, 800);
+
+pathPlaceBtn((xPath != undefined ? xPath : '/www/wwwroot'));
+setCookie('uploadSize', 1024 * 1024 * 1024);
+if (getCookie('rank') == undefined || getCookie('rank') == null) {
+    setCookie('rank', 'a');
+}
+
+$("#set_icon").click(function() {
+    setCookie('rank', 'b');
+    $(this).addClass("active");
+    $("#set_list").removeClass("active");
+    getFiles(getCookie('open_dir_path'));
+});
+
+$("#set_list").click(function() {
+    setCookie('rank', 'a');
+    $(this).addClass("active");
+    $("#set_icon").removeClass("active");
+    getFiles(getCookie('open_dir_path'));
+})
+
+$(".refreshBtn").click(function() {
+    getFiles(getCookie('open_dir_path'));
+})
+
+
+$('#search_all').click(function(){
+    $(this).toggleClass('active');
+});
+</script>
+{% endblock %}

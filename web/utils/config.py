@@ -1,0 +1,128 @@
+# coding:utf-8
+
+# ---------------------------------------------------------------------------------
+# MW-Linux面板
+# ---------------------------------------------------------------------------------
+# copyright (c) 2018-∞(https://github.com/midoks/mdserver-web) All rights reserved.
+# ---------------------------------------------------------------------------------
+# Author: midoks <midoks@163.com>
+# ---------------------------------------------------------------------------------
+
+import os
+import re
+
+import core.mw as mw
+import thisdb
+
+
+def _normalize_title(title):
+    title = str(title or '').strip()
+    if title in ('PowerLinux Pro Max', 'Powerlinux Pro Max', ''):
+        return 'PowerLinux 3'
+    return title
+
+
+def _sanitize_server_ip(value):
+    if not value:
+        return ''
+    value = str(value).strip()
+    lower_value = value.lower()
+    if '<html' in lower_value or '<body' in lower_value or '502 bad gateway' in lower_value:
+        return ''
+
+    if re.match(r'^\d{1,3}(?:\.\d{1,3}){3}$', value):
+        return value
+    if re.match(r'^[0-9a-fA-F:]+$', value):
+        return value
+    if re.match(r'^[a-zA-Z0-9_.-]+$', value):
+        return value
+    return ''
+
+
+def getUnauthStatus(
+    code= '0'
+):
+    code = str(code)
+    data = {}
+    data['code'] = code
+    if code == '0':
+        data['text'] = "默认-安全入口错误提示"
+    elif code == '400':
+        data['text'] = "400-客户端请求错误"
+    elif code == '401':
+        data['text'] = "401-未授权访问"
+    elif code == '403':
+        data['text'] = "403-拒绝访问"
+    elif code == '404':
+        data['text'] = "404-页面不存在"
+    elif code == '408':
+        data['text'] = "408-客户端超时"
+    elif code == '416':
+        data['text'] = "416-无效的请求"
+    else:
+        data['code'] = '0'
+        data['text'] = "默认-安全入口错误提示"
+    return data
+
+def getGlobalVar():
+    '''
+    获取全局变量
+    '''
+    data = {}
+    stored_title = thisdb.getOption('title', default='PowerLinux 3')
+    data['title'] = _normalize_title(stored_title)
+    if data['title'] != stored_title:
+        thisdb.setOption('title', data['title'])
+    server_ip = thisdb.getOption('server_ip', default='127.0.0.1')
+    server_ip = _sanitize_server_ip(server_ip)
+    if server_ip == '':
+        local_ip = _sanitize_server_ip(mw.getLocalIp())
+        if local_ip == '':
+            local_ip = '127.0.0.1'
+        server_ip = local_ip
+        thisdb.setOption('server_ip', server_ip)
+    data['ip'] = server_ip
+
+    data['site_path'] = thisdb.getOption('site_path', default=mw.getFatherDir()+'/wwwroot')
+    data['backup_path'] = thisdb.getOption('backup_path', default=mw.getFatherDir()+'/backup')
+    data['admin_path'] = '/'+thisdb.getOption('admin_path', default='')
+    data['debug'] = thisdb.getOption('debug', default='close')
+    data['admin_close'] = thisdb.getOption('admin_close', default='no')
+    data['site_count'] = thisdb.getSitesCount()
+    data['port'] = mw.getHostPort()
+
+    __file = mw.getCommonFile()
+    if os.path.exists(__file['ipv6']):
+        data['ipv6'] = 'checked'
+    else:
+        data['ipv6'] = ''
+
+    # 获取ROOT用户名
+    data['username'] = mw.M('users').where("id=?", (1,)).getField('name')
+
+    # 获取未认证状态信息
+    unauthorized_status = thisdb.getOption('unauthorized_status', default='0')
+    data['unauthorized_status'] = getUnauthStatus(code=unauthorized_status)
+    data['basic_auth'] = thisdb.getOptionByJson('basic_auth', default={'open':False})
+    data['two_step_verification'] = thisdb.getOptionByJson('two_step_verification', default={'open':False})
+
+    # 服务器时间
+    sformat = 'date +"%Y-%m-%d %H:%M:%S %Z %z"'
+    data['systemdate'] = mw.execShell(sformat)[0].strip()
+
+
+    data['hook_menu'] = thisdb.getOptionByJson('hook_menu',type='hook',default=[])
+    data['hook_global_static'] = thisdb.getOptionByJson('hook_global_static',type='hook',default=[])
+    data['hook_database'] = thisdb.getOptionByJson('hook_database',type='hook',default=[])
+
+
+    # 邮件通知设置
+    data['notify_email'] = thisdb.getOptionByJson('notify_email', default={'open':False}, type='notify')
+    data['notify_tgbot'] = thisdb.getOptionByJson('notify_tgbot', default={'open':False}, type='notify')
+    
+    data['panel_api'] = thisdb.getOptionByJson('panel_api', default={'open':False})
+    data['panel_ssl'] = thisdb.getOptionByJson('panel_ssl', default={'open':False})
+    data['panel_domain'] = thisdb.getOption('panel_domain', default='')
+    data['footer_text'] = thisdb.getOption('footer_text', default='PowerPanel 2026')
+    
+    return data
