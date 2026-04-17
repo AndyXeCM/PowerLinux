@@ -84,7 +84,8 @@ fi
 
 OPTIONS='--without-iconv'
 if [ $sysName == 'Darwin' ]; then
-	OPTIONS="${OPTIONS} --with-freetype-dir=${serverPath}/lib/freetype"
+	cd ${rootPath}/plugins/php/lib && /bin/bash freetype_old.sh
+	OPTIONS="${OPTIONS} --with-freetype-dir=${serverPath}/lib/freetype_old"
 fi
 
 IS_64BIT=`getconf LONG_BIT`
