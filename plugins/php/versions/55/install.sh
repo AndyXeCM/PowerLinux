@@ -59,7 +59,7 @@ fi
 
 OPTIONS='--without-iconv'
 if [ $sysName == 'Darwin' ]; then
-	OPTIONS="${OPTIONS} --with-freetype-dir=${serverPath}/lib/freetype"
+	OPTIONS="${OPTIONS} --with-freetype-dir=${serverPath}/lib/freetype_old"
 else
 	OPTIONS="${OPTIONS} --with-readline"
 fi

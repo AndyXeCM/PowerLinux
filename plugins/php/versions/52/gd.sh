@@ -80,10 +80,19 @@ Install_lib()
 		cd $sourcePath/php${version}/ext/${LIBNAME}
 		
 		$serverPath/php/$version/bin/phpize
+		FREETYPE_DIR=${serverPath}/lib/freetype_old
+		if [ ! -d "$FREETYPE_DIR" ] && command -v pkg-config >/dev/null 2>&1; then
+			if pkg-config --exists freetype2; then
+				SYS_FREETYPE_DIR=`pkg-config --variable=prefix freetype2 2>/dev/null`
+				if [ -n "$SYS_FREETYPE_DIR" ]; then
+					FREETYPE_DIR="$SYS_FREETYPE_DIR"
+				fi
+			fi
+		fi
 		./configure --with-php-config=$serverPath/php/$version/bin/php-config \
 		--with-gd \
 		--with-jpeg-dir=/usr/lib \
-		--with-freetype-dir=${serverPath}/lib/freetype_old \
+		--with-freetype-dir=${FREETYPE_DIR} \
 		--enable-gd-native-ttf
 
 		make clean && make && make install && make clean

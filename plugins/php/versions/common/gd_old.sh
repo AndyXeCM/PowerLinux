@@ -79,10 +79,18 @@ Install_lib()
 			OPTIONS="$OPTIONS --with-xpm-dir"
 		fi
 
-		find_ft2=`pkg-config --list-all | grep freetype2`
-		if [ "$find_ft2" == "" ];then
-			OPTIONS="$OPTIONS --with-freetype-dir=${serverPath}/lib/freetype_old"
+		# Old PHP GD must receive an explicit freetype path, otherwise it
+		# is built without freetype support and CAPTCHA images stop working.
+		FREETYPE_DIR=${serverPath}/lib/freetype_old
+		if [ ! -d "$FREETYPE_DIR" ] && command -v pkg-config >/dev/null 2>&1; then
+			if pkg-config --exists freetype2; then
+				SYS_FREETYPE_DIR=`pkg-config --variable=prefix freetype2 2>/dev/null`
+				if [ -n "$SYS_FREETYPE_DIR" ]; then
+					FREETYPE_DIR="$SYS_FREETYPE_DIR"
+				fi
+			fi
 		fi
+		OPTIONS="$OPTIONS --with-freetype-dir=${FREETYPE_DIR}"
 		
 
 		#--with-xpm
