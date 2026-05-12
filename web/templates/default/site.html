@@ -5,10 +5,10 @@
 	<mdui-card class="mw-card mw-page-header">
 		<div class="mw-page-left">
 			<div class="mw-page-title">网站管理</div>
-			<div class="mw-page-sub">统一查看、搜索和批量操作站点，默认页、分类和 PHP 命令行版本都集中在这里。</div>
+			<div class="mw-page-sub">统一查看、搜索和批量操作站点，默认页、分类、PHP 命令行版本和 Go 项目都集中在这里。</div>
 		</div>
 		<div class="mw-page-actions">
-			<span class="mw-version">站点列表 / 默认页 / 分类 / PHP</span>
+			<span class="mw-version">站点列表 / 默认页 / 分类 / PHP / Go</span>
 			<mdui-button variant="filled" onclick="webAdd(0)" class="mw-link-button">添加站点</mdui-button>
 		</div>
 	</mdui-card>
@@ -59,17 +59,18 @@
 
 				<div class="divtable mtb10">
 					<div class="tablescroll">
-						<table class="table table-hover mw-site-table" style="min-width: 900px;border: 0 none;">
-							<thead id="webBodyHeader">
-								<tr>
-									<th width="30"><input type="checkbox" onclick="checkSelect();" id="setBox"></th>
-									<th width="150" onclick="listOrder('name','site',this)" style="cursor: pointer;">域名<span class="glyphicon glyphicon-stop" style="margin-left:5px;color:#bbb"></span></th>
-									<th style="cursor: pointer;" width="98">网站状态</th>
-									<th width="58">备份</th>
-									<th width="26%">网站目录</th>
-									<th onclick="listOrder('edate','site',this)" style="cursor: pointer;" width="86">
-										到期日期<span class="glyphicon glyphicon-stop" style="margin-left:5px;color:#bbb"></span>
-									</th>
+							<table class="table table-hover mw-site-table" style="min-width: 980px;border: 0 none;">
+								<thead id="webBodyHeader">
+									<tr>
+										<th width="30"><input type="checkbox" onclick="checkSelect();" id="setBox"></th>
+										<th width="150" onclick="listOrder('name','site',this)" style="cursor: pointer;">域名<span class="glyphicon glyphicon-stop" style="margin-left:5px;color:#bbb"></span></th>
+										<th style="cursor: pointer;" width="98">网站状态</th>
+										<th width="76">项目类型</th>
+										<th width="58">备份</th>
+										<th width="26%">网站目录</th>
+										<th onclick="listOrder('edate','site',this)" style="cursor: pointer;" width="86">
+											到期日期<span class="glyphicon glyphicon-stop" style="margin-left:5px;color:#bbb"></span>
+										</th>
 									<th>备注</th>
 									<th width='130' class='text-right'>操作</th>
 								</tr>

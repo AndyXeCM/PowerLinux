@@ -37,6 +37,9 @@ def list():
     order = request.form.get('order', '').strip()
 
     info = thisdb.getSitesList(page=int(p),size=int(limit),type_id=int(type_id), search=search,order=order)
+    project_api = MwSites.instance()
+    for site in info['list']:
+        site.update(project_api.getSiteProjectInfo(site['name']))
 
     data = {}
     data['data'] = info['list']
@@ -224,6 +227,42 @@ def set_ps():
     ps = request.form.get('ps', '')
     return MwSites.instance().setPs(site_id, ps)
 
+# 获取Go项目配置
+@blueprint.route('/get_go_project', endpoint='get_go_project',methods=['POST'])
+@panel_login_required
+def get_go_project():
+    site_name = request.form.get('siteName', '')
+    return MwSites.instance().getGoProject(site_name)
+
+# 设置Go项目配置
+@blueprint.route('/set_go_project', endpoint='set_go_project',methods=['POST'])
+@panel_login_required
+def set_go_project():
+    site_name = request.form.get('siteName', '')
+    port = request.form.get('port', '')
+    return MwSites.instance().setGoProject(site_name, port)
+
+# 启动Go项目
+@blueprint.route('/start_go_project', endpoint='start_go_project',methods=['POST'])
+@panel_login_required
+def start_go_project():
+    site_name = request.form.get('siteName', '')
+    return MwSites.instance().startGoProject(site_name)
+
+# 停止Go项目
+@blueprint.route('/stop_go_project', endpoint='stop_go_project',methods=['POST'])
+@panel_login_required
+def stop_go_project():
+    site_name = request.form.get('siteName', '')
+    return MwSites.instance().stopGoProject(site_name)
+
+# 重启Go项目
+@blueprint.route('/restart_go_project', endpoint='restart_go_project',methods=['POST'])
+@panel_login_required
+def restart_go_project():
+    site_name = request.form.get('siteName', '')
+    return MwSites.instance().restartGoProject(site_name)
+
 # 站点绑定域名
 @blueprint.route('/get_domain', endpoint='get_domain',methods=['POST'])
 @panel_login_required
@@ -343,6 +382,5 @@ def get_default_site():
 def set_default_site():
     name = request.form.get('name', '')
     return MwSites.instance().setDefaultSite(name)
-
 
 

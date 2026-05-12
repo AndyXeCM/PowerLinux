@@ -20,6 +20,15 @@ function getDate(a) {
 	return y + "-" + (m < 10 ? ('0' + m) : m) + "-" + (d < 10 ? ('0' + d) : d);
 }
 
+function escapeGoHTML(text) {
+	return String(text || '')
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;');
+}
+
 /**
  * 取回网站数据列表
  * @param {Number} page   当前页
@@ -55,9 +64,22 @@ function getDate(a) {
 		$("#webBody").html(body);
 		var list = data.data;
 		for (var i = 0; i < list.length; i++) {
+			var projectType = list[i].project_type || 'php';
+			var projectTypeName = list[i].project_type_name || 'PHP项目';
+			var projectStatus = list[i].project_status;
+			if (projectStatus == 'true') {
+				projectStatus = true;
+			}
+			if (projectStatus == 'false') {
+				projectStatus = false;
+			}
 			//当前站点状态
 			if (list[i].status == '正在运行' || list[i].status == '1') {
-				var status = "<a href='javascript:;' title='停用这个站点' onclick=\"webStop(" + list[i].id + ",'" + list[i].name + "')\" class='btn-defsult'><span style='color:rgb(92, 184, 92)'>运行中</span><span style='color:rgb(92, 184, 92)' class='glyphicon glyphicon-play'></span></a>";
+				if (projectType == 'go' && projectStatus === false) {
+					var status = "<a href='javascript:;' title='启动这个Go项目' onclick=\"startGoProject('" + list[i].name + "')\" class='btn-defsult'><span style='color:#f39c12'>Go项目异常</span><span style='color:#f39c12' class='glyphicon glyphicon-warning-sign'></span></a>";
+				} else {
+					var status = "<a href='javascript:;' title='停用这个站点' onclick=\"webStop(" + list[i].id + ",'" + list[i].name + "')\" class='btn-defsult'><span style='color:rgb(92, 184, 92)'>运行中</span><span style='color:rgb(92, 184, 92)' class='glyphicon glyphicon-play'></span></a>";
+				}
 			} else {
 				var status = "<a href='javascript:;' title='启用这个站点' onclick=\"webStart(" + list[i].id + ",'" + list[i].name + "')\" class='btn-defsult'><span style='color:red'>已停止</span><span style='color:rgb(255, 0, 0);' class='glyphicon glyphicon-pause'></span></a>";
 			}
@@ -80,16 +102,21 @@ function getDate(a) {
 				shortpath = list[i].path.substring(0, 30) + "...";
 			}
 			var idname = list[i].name.replace(/\./g,'_');
+			var goAction = '';
+			if (projectType == 'go') {
+				goAction = "<a href='javascript:;' class='btlink' onclick=\"goProject('" + list[i].name + "')\" title='Go项目管理'>Go管理</a> | ";
+			}
 			
 			body = "<tr><td><input type='checkbox' name='id' title='"+list[i].name+"' onclick='checkSelect();' value='" + list[i].id + "'></td>\
-					<td><a class='btlink webtips' href='javascript:;' onclick=\"webEdit(" + list[i].id + ",'" + list[i].name + "','" + list[i].edate + "','" + list[i].add_time + "')\" title='"+list[i].name+"'>" + shortwebname + "</td>\
+					<td><a class='btlink webtips' href='javascript:;' onclick=\"webEdit(" + list[i].id + ",'" + list[i].name + "','" + list[i].edate + "','" + list[i].add_time + "','" + projectType + "')\" title='"+list[i].name+"'>" + shortwebname + "</td>\
 					<td>" + status + "</td>\
+					<td><span class='label " + (projectType == 'go' ? 'label-warning' : 'label-default') + "'>" + projectTypeName + "</span></td>\
 					<td>" + backup + "</td>\
 					<td><a class='btlink' title='打开目录"+list[i].path+"' href=\"javascript:openPath('"+data.data[i].path+"');\">" + shortpath + "</a></td>\
 					<td><a class='btlink setTimes' id='site_"+list[i].id+"' data-ids='"+list[i].id+"'>" + web_end_time + "</a></td>\
 					<td><a class='btlinkbed' href='javascript:;' data-id='"+list[i].id+"'>" + list[i].ps + "</a></td>\
 					<td style='text-align:right; color:#bbb'>\
-					<a href='javascript:;' class='btlink' onclick=\"webEdit(" + list[i].id + ",'" + list[i].name + "','" +list[i].edate + "','" + list[i].add_time + "')\">设置</a>\
+					"+goAction+"<a href='javascript:;' class='btlink' onclick=\"webEdit(" + list[i].id + ",'" + list[i].name + "','" +list[i].edate + "','" + list[i].add_time + "','" + projectType + "')\">设置</a>\
                         | <a href='javascript:;' class='btlink' onclick=\"webDelete('" + list[i].id + "','" + list[i].name + "')\" title='删除站点'>删除</a>\
 					</td></tr>"
 			
@@ -122,7 +149,7 @@ function getDate(a) {
             });
 		}
 		if(body.length < 10){
-			body = "<tr><td colspan='9' style='text-align: center;'>当前没有站点数据</td></tr>";
+			body = "<tr><td colspan='10' style='text-align: center;'>当前没有站点数据</td></tr>";
 			$("#webBody").html(body);
 		}
 		//输出数据列表
@@ -234,14 +261,15 @@ function webAddPage(type) {
 	
 	$.post('/site/get_php_version',function(data){
 		var rdata = data.data;
-	
 		var defaultPath = $("#defaultPath").html();
-		var php_version = "<div class='line'><span class='tname'>"+lan.site.php_ver+"</span><select class='bt-input-text' name='version' id='c_k3' style='width:100px'>";
+		var php_version = "<div class='line php-project'><span class='tname'>"+lan.site.php_ver+"</span><select class='bt-input-text' name='version' id='c_k3' style='width:100px'>";
 		for (var i=rdata.length-1;i>=0;i--) {
             php_version += "<option value='"+rdata[i].version+"'>"+rdata[i].name+"</option>";
         }
 
         var www = syncPost('/site/get_root_dir');
+		var project_type = "<div class='line'><span class='tname'>项目类型</span><div class='info-r c4'><select class='bt-input-text' name='project_type' id='projectType' style='width:120px'><option value='php'>PHP项目</option><option value='go'>Go项目</option></select></div></div>";
+		var go_port = "<div class='line go-project' style='display:none;'><span class='tname'>监听端口</span><div class='info-r c4'><input id='goPort' class='bt-input-text mr5' type='text' name='go_port' value='8080' placeholder='8080' style='width:120px' /><span style='color:#999'>Go 项目会自动构建并反代到该端口</span></div></div>";
 
 		php_version += "</select><span id='php_w' style='color:red;margin-left: 10px;'></span></div>";
 		layer.open({
@@ -272,6 +300,8 @@ function webAddPage(type) {
                 	<span class='glyphicon glyphicon-folder-open cursor' onclick='changePath(\"inputPath\")'></span>\
                 </div>\
                 </div>\
+				"+project_type+"\
+				"+go_port+"\
 				"+php_version+"\
                 <div class='bt-form-submit-btn'>\
 					<button type='button' class='btn btn-danger btn-sm btn-title' onclick='layer.closeAll()'>取消</button>\
@@ -296,9 +326,33 @@ function webAddPage(type) {
 					$(".placeholder").show();
 				}  
 			});
-			
+
+			function toggleProjectFields(){
+				var isGo = $('#projectType').val() == 'go';
+				if (isGo) {
+					$('.go-project').show();
+					$('.php-project').hide();
+					$('#php_w').text('Go 项目会自动构建并反代到本地端口');
+				} else {
+					$('.go-project').hide();
+					$('.php-project').show();
+					if($("select[name='version']").val() == '52'){
+						$('#php_w').text('PHP5.2在您的站点有漏洞时有跨站风险，请尽量使用PHP5.3以上版本!');
+					}else{
+						$('#php_w').text('');
+					}
+				}
+			}
+
+			$("#projectType").change(function(){
+				toggleProjectFields();
+			});
+
 			//验证PHP版本
 			$("select[name='version']").change(function(){
+				if($("select[name='project_type']").val() == 'go'){
+					return;
+				}
 				if($(this).val() == '52'){
 					var msgerr = 'PHP5.2在您的站点有漏洞时有跨站风险，请尽量使用PHP5.3以上版本!';
 					$('#php_w').text(msgerr);
@@ -306,6 +360,10 @@ function webAddPage(type) {
 					$('#php_w').text('');
 				}
 			})
+
+			$('#goPort').on('input', function() {
+				$(this).val($(this).val().replace(/[^\d]/g, ''));
+			});
 
 			$('#mainDomain').on('input', function() {
 				var array;
@@ -342,6 +400,7 @@ function webAddPage(type) {
 			//获取当前时间时间戳，截取后6位
 			var timestamp = new Date().getTime().toString();
 			var dtpw = timestamp.substring(7);
+			toggleProjectFields();
 		});
 	}, 'json');
 }
@@ -1024,7 +1083,13 @@ function setIndexList(id){
 
 
 /* 站点修改 */
-function webEdit(id,website,endTime,addtime){
+function webEdit(id,website,endTime,addtime,projectType){
+	projectType = projectType || 'php';
+	var isGo = projectType == 'go';
+	var domainClass = isGo ? '' : 'bgw';
+	var goClass = isGo ? 'bgw' : '';
+	var phpMenu = isGo ? '' : "<p onclick=\"phpVersion('"+website+"')\">PHP版本</p>";
+	var goMenu = isGo ? "<p class='"+goClass+"' onclick=\"goProject('"+website+"')\">Go项目管理</p>" : '';
 	// 暂时关闭 - 子目录绑定
 	// <p onclick='dirBinding("+id+")'>子目录绑定</p>\
 	layer.open({
@@ -1035,15 +1100,16 @@ function webEdit(id,website,endTime,addtime){
 		shift: 0,
 		content: "<div class='bt-form'>\
 			<div class='bt-w-menu pull-left'>\
-				<p class='bgw' onclick=\"domainEdit(" + id + ",'" + website + "')\">域名管理</p>\
+				<p class='"+domainClass+"' onclick=\"domainEdit(" + id + ",'" + website + "')\">域名管理</p>\
 				<p onclick='dirBinding("+id+")'>子目录绑定</p>\
 				<p onclick='webPathEdit("+id+")'>网站目录</p>\
 				<p onclick='limitNet("+id+")'>流量限制</p>\
 				<p onclick=\"rewrite('"+website+"')\">伪静态</p>\
 				<p onclick='setIndexEdit("+id+")'>默认文档</p>\
 				<p onclick=\"configFile('"+website+"')\">配置文件</p>\
+				"+goMenu+"\
+				"+phpMenu+"\
 				<p onclick=\"setSSL("+id+",'"+website+"')\">SSL</p>\
-				<p onclick=\"phpVersion('"+website+"')\">PHP版本</p>\
 				<p onclick=\"to301('"+website+"')\">重定向</p>\
 				<p onclick=\"toProxy('"+website+"')\">反向代理</p>\
 				<p id='site_"+id+"' onclick=\"security('"+id+"','"+website+"')\">防盗链</p>\
@@ -1053,32 +1119,137 @@ function webEdit(id,website,endTime,addtime){
 			<div id='webedit-con' class='bt-w-con webedit-con pd15' style='height: 100%;overflow: scroll;'></div>\
 		</div>",
 		success:function(){
-			//域名输入提示
-			var placeholder = "<div class='placeholder'>每行填写一个域名，默认为80端口<br>泛解析添加方法 *.domain.com<br>如另加端口格式为 www.domain.com:88</div>";
-			$('#newdomain').after(placeholder);
-			$(".placeholder").click(function(){
-				$(this).hide();
-				$('#newdomain').focus();
-			});
-
-			$('#newdomain').focus(function() {
-			    $(".placeholder").hide();
-			});
-			
-			$('#newdomain').blur(function() {
-				if($(this).val().length == 0){
-					$(".placeholder").show();
-				}  
-			});
-
 			//切换
 			$(".bt-w-menu p").click(function(){
 				$(this).addClass("bgw").siblings().removeClass("bgw");
 			});
 
-			domainEdit(id,website);
+			if (isGo) {
+				goProject(website);
+			} else {
+				domainEdit(id,website);
+			}
 		}
 	});	
+}
+
+function refreshGoProjectPanel(siteName){
+	var panel = $("#webedit-con").find(".go-project-panel");
+	if(panel.length > 0 && panel.attr("data-site") == siteName){
+		goProject(siteName);
+	}
+}
+
+function goProject(siteName){
+	var loadT = layer.msg('正在获取Go项目配置...', {icon:16,time:0,shade: [0.3, '#000']});
+	$.post('/site/get_go_project',{siteName:siteName},function(rdata){
+		layer.close(loadT);
+		if(!rdata.status){
+			layer.msg(rdata.msg,{icon:2});
+			return;
+		}
+
+		var project = rdata.data || {};
+		var statusText = project.project_status ? '运行中' : '已停止';
+		var statusColor = project.project_status ? 'rgb(92, 184, 92)' : 'red';
+		var logText = project.log && project.log != '' ? project.log : '当前没有日志.';
+		var actionBtn = project.project_status
+			? "<button type='button' class='btn btn-warning btn-sm mr5' onclick=\"stopGoProject('"+siteName+"')\">停止</button>"
+			: "<button type='button' class='btn btn-success btn-sm mr5' onclick=\"startGoProject('"+siteName+"')\">启动</button>";
+		var body = "<div class='go-project-panel c5' data-site='"+siteName+"'>\
+			<div class='line'>\
+				<span class='tname'>运行状态</span>\
+				<div class='info-r' style='padding-top:6px'>\
+					<span style='color:"+statusColor+";font-weight:600'>"+escapeGoHTML(statusText)+"</span>\
+					<span class='ml10 c9'>PID: "+escapeGoHTML(project.project_pid || '-')+"</span>\
+					<span class='ml10 c9'>二进制: "+escapeGoHTML(project.project_bin || '-')+"</span>\
+				</div>\
+			</div>\
+			<div class='line'>\
+				<span class='tname'>监听端口</span>\
+				<div class='info-r'>\
+					<input id='goPort' class='bt-input-text mr5' type='text' name='go_port' value='"+escapeGoHTML(project.project_port || '8080')+"' placeholder='8080' style='width:120px' />\
+					<button type='button' class='btn btn-success btn-sm mr5' onclick=\"setGoProject('"+siteName+"')\">保存端口</button>\
+					"+actionBtn+"\
+					<button type='button' class='btn btn-primary btn-sm mr5' onclick=\"restartGoProject('"+siteName+"')\">重启</button>\
+				</div>\
+			</div>\
+			<div class='line'>\
+				<span class='tname'>项目目录</span>\
+				<div class='info-r c9' style='padding-top:6px'>"+escapeGoHTML(project.path || '-')+"</div>\
+			</div>\
+			<div class='line'>\
+				<span class='tname'>运行日志</span>\
+				<div class='info-r'>\
+					<textarea id='goLog' class='bt-input-text' style='height:320px;width:100%;line-height:18px;padding:5px'>"+escapeGoHTML(logText)+"</textarea>\
+				</div>\
+			</div>\
+			<ul class='help-info-text c7 ptb10'>\
+				<li>Go 项目会由网站面板自动构建并通过 OpenResty 反代到本地端口。</li>\
+				<li>修改监听端口后，会自动更新站点反向代理配置。</li>\
+			</ul>\
+		</div>";
+		$("#webedit-con").html(body);
+		$('#goPort').on('input', function() {
+			$(this).val($(this).val().replace(/[^\d]/g, ''));
+		});
+	},'json');
+}
+
+function setGoProject(siteName){
+	var port = $('#goPort').val();
+	if(port == '' || !/^\d+$/.test(port)){
+		layer.msg('请输入合法的Go项目端口',{icon:2});
+		return;
+	}
+	var loadT = layer.msg('正在保存Go项目配置...', {icon:16,time:0,shade: [0.3, '#000']});
+	$.post('/site/set_go_project',{siteName:siteName,port:port},function(rdata){
+		layer.close(loadT);
+		layer.msg(rdata.msg,{icon:rdata.status?1:2});
+		if(rdata.status){
+			getWeb(1);
+			refreshGoProjectPanel(siteName);
+		}
+	},'json');
+}
+
+function startGoProject(siteName){
+	var loadT = layer.msg('正在启动Go项目...', {icon:16,time:0,shade: [0.3, '#000']});
+	$.post('/site/start_go_project',{siteName:siteName},function(rdata){
+		layer.close(loadT);
+		layer.msg(rdata.msg,{icon:rdata.status?1:2});
+		if(rdata.status){
+			getWeb(1);
+			refreshGoProjectPanel(siteName);
+		}
+	},'json');
+}
+
+function stopGoProject(siteName){
+	layer.confirm('确定要停止这个Go项目吗？',{icon:3,closeBtn:2},function(index){
+		layer.close(index);
+		var loadT = layer.msg('正在停止Go项目...', {icon:16,time:0,shade: [0.3, '#000']});
+		$.post('/site/stop_go_project',{siteName:siteName},function(rdata){
+			layer.close(loadT);
+			layer.msg(rdata.msg,{icon:rdata.status?1:2});
+			if(rdata.status){
+				getWeb(1);
+				refreshGoProjectPanel(siteName);
+			}
+		},'json');
+	});
+}
+
+function restartGoProject(siteName){
+	var loadT = layer.msg('正在重启Go项目...', {icon:16,time:0,shade: [0.3, '#000']});
+	$.post('/site/restart_go_project',{siteName:siteName},function(rdata){
+		layer.close(loadT);
+		layer.msg(rdata.msg,{icon:rdata.status?1:2});
+		if(rdata.status){
+			getWeb(1);
+			refreshGoProjectPanel(siteName);
+		}
+	},'json');
 }
 
 //取网站日志pluginLogs

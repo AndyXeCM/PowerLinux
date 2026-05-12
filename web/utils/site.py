@@ -15,6 +15,7 @@ import json
 import time
 import threading
 import multiprocessing
+import shlex
 
 import core.mw as mw
 import thisdb
@@ -55,6 +56,10 @@ class sites(object):
         self.proxyPath = proxy = self.setupPath + '/nginx/proxy'
         if not os.path.exists(proxy):
             mw.execShell("mkdir -p " + proxy + " && chmod -R 755 " + proxy)
+
+        self.goPath = go = self.setupPath + '/go'
+        if not os.path.exists(go):
+            mw.execShell("mkdir -p " + go + " && chmod -R 755 " + go)
 
         # ssl conf
         self.sslDir = self.setupPath + '/ssl'
@@ -149,6 +154,18 @@ class sites(object):
     def getIndexConf(self):
         return mw.getServerDir() + '/openresty/nginx/conf/nginx.conf'
 
+    def buildGoConfContent(self, site_name, site_path, site_port, go_port):
+        source_tpl = self.getNgxTplDir() + '/nginx_go.conf'
+        content = mw.readFile(source_tpl)
+
+        content = content.replace('{$PORT}', site_port)
+        content = content.replace('{$SERVER_NAME}', site_name)
+        content = content.replace('{$ROOT_DIR}', site_path)
+        content = content.replace('{$GO_PORT}', str(go_port))
+        content = content.replace('{$OR_REWRITE}', self.rewritePath)
+        content = content.replace('{$LOGPATH}', mw.getLogsDir())
+        return content
+
 
     # 路径处理
     def getPath(self, path):
@@ -168,7 +185,7 @@ class sites(object):
             return path
         return ''
 
-    def createRootDir(self, path):
+    def createRootDir(self, path, project_type='php'):
         autoInit = False
         if not os.path.exists(path):
             autoInit = True
@@ -177,8 +194,298 @@ class sites(object):
             mw.execShell('chown -R www:www ' + path)
 
         if autoInit:
-            mw.writeFile(path + '/index.html', 'Work has started!!!')
+            if project_type == 'go':
+                mw.writeFile(path + '/README.md', '# Go project\n\nThis project is managed from the website panel.\n')
+            else:
+                mw.writeFile(path + '/index.html', 'Work has started!!!')
             mw.execShell('chmod -R 755 ' + path)
+
+    def getGoSiteDir(self, site_name):
+        return self.goPath + '/' + site_name
+
+    def getGoConfigPath(self, site_name):
+        return self.getGoSiteDir(site_name) + '/config.json'
+
+    def getGoStartPath(self, site_name):
+        return self.getGoSiteDir(site_name) + '/start.sh'
+
+    def getGoPidPath(self, site_name):
+        return self.getGoSiteDir(site_name) + '/site.pid'
+
+    def getGoLogPath(self, site_name):
+        return self.getGoSiteDir(site_name) + '/site.log'
+
+    def getGoBinName(self, site_name):
+        bin_name = re.sub(r'[^0-9A-Za-z_]+', '_', site_name).strip('_').lower()
+        if bin_name == '':
+            bin_name = 'go_app'
+        if len(bin_name) > 32:
+            bin_name = bin_name[0:32]
+        return bin_name
+
+    def isGoProject(self, site_name):
+        return os.path.exists(self.getGoConfigPath(site_name))
+
+    def getGoConfig(self, site_name):
+        path = self.getGoConfigPath(site_name)
+        if not os.path.exists(path):
+            return {}
+        content = mw.readFile(path)
+        if not content:
+            return {}
+        try:
+            return json.loads(content)
+        except:
+            return {}
+
+    def saveGoConfig(self, site_name, data):
+        site_dir = self.getGoSiteDir(site_name)
+        if not os.path.exists(site_dir):
+            os.makedirs(site_dir)
+        mw.writeFile(self.getGoConfigPath(site_name), json.dumps(data, ensure_ascii=False, indent=2))
+
+    def writeGoStartScript(self, site_name, site_path, go_port):
+        bin_name = self.getGoBinName(site_name)
+        site_dir = self.getGoSiteDir(site_name)
+        if not os.path.exists(site_dir):
+            os.makedirs(site_dir)
+
+        # The script builds the project and then replaces the shell with the
+        # compiled binary so the saved PID belongs to the real application.
+        script = """#!/bin/bash
+set -e
+cd {site_path}
+export GO_PORT={go_port}
+export GO_SITE_NAME={site_name}
+go build -o {bin_name}
+exec ./{bin_name}
+""".format(
+            site_path=shlex.quote(site_path),
+            go_port=shlex.quote(str(go_port)),
+            site_name=shlex.quote(site_name),
+            bin_name=shlex.quote(bin_name),
+        )
+        mw.writeFile(self.getGoStartPath(site_name), script)
+        mw.execShell('chmod 755 ' + self.getGoStartPath(site_name))
+        return bin_name
+
+    def prepareGoStarterFiles(self, site_name, site_path, go_port):
+        if not os.path.exists(site_path):
+            return False
+
+        has_go_file = False
+        for filename in os.listdir(site_path):
+            if filename.endswith('.go') or filename == 'go.mod':
+                has_go_file = True
+                break
+
+        if has_go_file:
+            return False
+
+        module_name = re.sub(r'[^0-9A-Za-z_]+', '_', site_name).strip('_').lower()
+        if module_name == '':
+            module_name = 'go_app'
+
+        go_main = """package main
+
+import (
+    "fmt"
+    "log"
+    "net/http"
+    "os"
+)
+
+func main() {
+    port := os.Getenv("GO_PORT")
+    if port == "" {
+        port = "%(go_port)s"
+    }
+
+    siteName := os.Getenv("GO_SITE_NAME")
+    if siteName == "" {
+        siteName = "%(site_name)s"
+    }
+
+    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        fmt.Fprintf(w, "Go project %%s is running on port %%s\\n", siteName, port)
+    })
+
+    log.Fatal(http.ListenAndServe("127.0.0.1:"+port, nil))
+}
+""" % {
+            'go_port': str(go_port),
+            'site_name': site_name,
+        }
+
+        go_mod = """module %(module_name)s
+
+go 1.20
+""" % {'module_name': module_name}
+
+        mw.writeFile(site_path + '/main.go', go_main)
+        mw.writeFile(site_path + '/go.mod', go_mod)
+        return True
+
+    def getSiteProjectInfo(self, site_name):
+        info = thisdb.getSitesByName(site_name)
+        if not info:
+            return {
+                'project_type': 'php',
+                'project_type_name': 'PHP项目',
+                'project_status': False,
+                'project_port': '',
+            }
+
+        if self.isGoProject(site_name):
+            project = self.getGoConfig(site_name)
+            pid = ''
+            status = False
+            pid_file = self.getGoPidPath(site_name)
+            if os.path.exists(pid_file):
+                pid = mw.readFile(pid_file).strip()
+                if pid and pid.isdigit():
+                    ps = mw.execShell('ps -p ' + pid + ' -o pid=')[0].strip()
+                    status = ps != ''
+            return {
+                'project_type': 'go',
+                'project_type_name': 'Go项目',
+                'project_status': status,
+                'project_port': project.get('port', ''),
+                'project_bin': project.get('bin', self.getGoBinName(site_name)),
+                'project_pid': pid,
+            }
+
+        return {
+            'project_type': 'php',
+            'project_type_name': 'PHP项目',
+            'project_status': str(info['status']) == '1',
+            'project_port': '',
+        }
+
+    def getGoProject(self, site_name):
+        info = thisdb.getSitesByName(site_name)
+        if not info:
+            return mw.returnData(False, '站点不存在!')
+
+        if not self.isGoProject(site_name):
+            return mw.returnData(False, '当前站点不是Go项目!')
+
+        project = self.getSiteProjectInfo(site_name)
+        project['path'] = info['path']
+        project['log'] = ''
+        log_path = self.getGoLogPath(site_name)
+        if os.path.exists(log_path):
+            project['log'] = mw.getLastLine(log_path, 200)
+        return mw.returnData(True, 'OK', project)
+
+    def setGoProject(self, site_name, port):
+        info = thisdb.getSitesByName(site_name)
+        if not info:
+            return mw.returnData(False, '站点不存在!')
+
+        if port == '':
+            return mw.returnData(False, 'Go项目端口不能为空!')
+
+        if not mw.checkPort(port):
+            return mw.returnData(False, '端口范围不合法!')
+
+        site_path = info['path']
+        if not os.path.exists(site_path):
+            return mw.returnData(False, '站点目录不存在!')
+
+        project = self.getGoConfig(site_name)
+        old_port = project.get('port', '')
+        was_running = self.getSiteProjectInfo(site_name).get('project_status', False)
+
+        self.prepareGoStarterFiles(site_name, site_path, port)
+        bin_name = self.writeGoStartScript(site_name, site_path, port)
+        self.saveGoConfig(site_name, {
+            'type': 'go',
+            'port': str(port),
+            'bin': bin_name,
+        })
+
+        host_conf = self.getHostConf(site_name)
+        if os.path.exists(host_conf):
+            conf = mw.readFile(host_conf)
+            if conf and old_port != '':
+                conf = conf.replace('proxy_pass http://127.0.0.1:' + str(old_port), 'proxy_pass http://127.0.0.1:' + str(port))
+                mw.writeFile(host_conf, conf)
+
+        if was_running:
+            restart_ret = self.restartGoProject(site_name)
+            if not restart_ret['status']:
+                return restart_ret
+
+        return mw.returnData(True, 'Go项目配置已保存!')
+
+    def startGoProject(self, site_name):
+        if not self.isGoProject(site_name):
+            return mw.returnData(True, '当前不是Go项目!')
+
+        info = thisdb.getSitesByName(site_name)
+        if not info:
+            return mw.returnData(False, '站点不存在!')
+
+        project = self.getGoConfig(site_name)
+        go_port = project.get('port', '8080')
+        site_path = info['path']
+        if not os.path.exists(site_path):
+            return mw.returnData(False, '站点目录不存在!')
+
+        if not mw.execShell('which go')[0].strip():
+            return mw.returnData(False, '未检测到Go命令，请先安装Go语言环境!')
+
+        self.prepareGoStarterFiles(site_name, site_path, go_port)
+        start_file = self.getGoStartPath(site_name)
+        bin_name = self.writeGoStartScript(site_name, site_path, go_port)
+        self.saveGoConfig(site_name, {
+            'type': 'go',
+            'port': str(go_port),
+            'bin': bin_name,
+        })
+
+        log_file = self.getGoLogPath(site_name)
+        pid_file = self.getGoPidPath(site_name)
+        if not os.path.exists(self.getGoSiteDir(site_name)):
+            os.makedirs(self.getGoSiteDir(site_name))
+
+        mw.execShell("nohup bash {start_file} > {log_file} 2>&1 & echo $! > {pid_file}".format(
+            start_file=shlex.quote(start_file),
+            log_file=shlex.quote(log_file),
+            pid_file=shlex.quote(pid_file),
+        ))
+
+        for _ in range(15):
+            time.sleep(1)
+            project_info = self.getSiteProjectInfo(site_name)
+            if project_info['project_type'] == 'go' and project_info['project_status']:
+                return mw.returnData(True, 'Go项目启动成功!')
+
+        return mw.returnData(False, 'Go项目启动失败，请检查日志!')
+
+    def stopGoProject(self, site_name):
+        if not self.isGoProject(site_name):
+            return mw.returnData(True, '当前不是Go项目!')
+
+        pid_file = self.getGoPidPath(site_name)
+        if not os.path.exists(pid_file):
+            return mw.returnData(True, 'Go项目已停止!')
+
+        pid = mw.readFile(pid_file).strip()
+        if pid != '' and pid.isdigit():
+            mw.execShell('kill ' + pid)
+            time.sleep(0.5)
+            if mw.execShell('ps -p ' + pid + ' -o pid=')[0].strip() != '':
+                mw.execShell('kill -9 ' + pid)
+
+        if os.path.exists(pid_file):
+            os.remove(pid_file)
+        return mw.returnData(True, 'Go项目已停止!')
+
+    def restartGoProject(self, site_name):
+        self.stopGoProject(site_name)
+        return self.startGoProject(site_name)
 
     def add(self, site_info, port, ps, path, version):
         site_root_dir = mw.getWwwDir()
@@ -191,6 +498,13 @@ class sites(object):
         self.sitePath = self.toPunycodePath(self.getPath(path.replace(' ', '')))
         self.sitePort = port.strip().replace(' ', '')
         self.phpVersion = version
+        self.projectType = site_info.get('project_type', 'php').strip().lower()
+        self.goPort = site_info.get('go_port', '').strip()
+
+        if self.projectType == 'go' and self.goPort == '':
+            self.goPort = '8080'
+        if self.projectType == 'go' and not mw.checkPort(self.goPort):
+            return mw.returnData(False, 'Go项目端口范围不合法!')
 
         if thisdb.isSitesExist(self.siteName):
             return mw.returnData(False, '您添加的站点[%s]已存在!' % self.siteName)
@@ -199,7 +513,14 @@ class sites(object):
         if site_id < 1:
             return mw.returnData(False, '添加失败!') 
 
-        self.createRootDir(self.sitePath)
+        self.createRootDir(self.sitePath, self.projectType)
+        if self.projectType == 'go':
+            self.prepareGoStarterFiles(self.siteName, self.sitePath, self.goPort)
+            self.saveGoConfig(self.siteName, {
+                'type': 'go',
+                'port': str(self.goPort),
+                'bin': self.getGoBinName(self.siteName),
+            })
         self.nginxAddConf()
 
         # 主域名配置
@@ -209,12 +530,18 @@ class sites(object):
             self.addDomain(site_id, self.siteName, domain)
 
         mw.restartWeb()
+        if self.projectType == 'go':
+            go_run = self.startGoProject(self.siteName)
+            if not go_run['status']:
+                mw.writeLog('网站管理', 'Go项目[{0}]自动启动失败: {1}'.format(self.siteName, go_run['msg']))
 
         self.runHook('site_cb', 'add')
         return mw.returnData(True, '添加成功')
 
     def stop(self, site_id):
         site_info = thisdb.getSitesById(site_id)
+        if self.isGoProject(site_info['name']):
+            self.stopGoProject(site_info['name'])
 
         path = self.setupPath + '/stop'
         if not os.path.exists(path):
@@ -259,6 +586,8 @@ class sites(object):
         msg = mw.getInfo('网站[{1}]已被启用!', (site_info['name'],))
         mw.writeLog('网站管理', msg)
         mw.restartWeb()
+        if self.isGoProject(site_info['name']):
+            self.startGoProject(site_info['name'])
         return mw.returnData(True, '站点已启用!')
 
     def nginxAddDomainFilter(self, site_id, site_name, domain, port):
@@ -385,10 +714,16 @@ class sites(object):
         proxyDir = self.setupPath + '/nginx/proxy/' + webname
         if os.path.exists(proxyDir):
             mw.execShell('rm -rf ' + proxyDir)
+        # Go项目目录
+        goDir = self.getGoSiteDir(webname)
+        if os.path.exists(goDir):
+            mw.execShell('rm -rf ' + goDir)
 
     def delete(self, site_id, path):
         info = thisdb.getSitesById(site_id)
         webname = info['name']
+        if self.isGoProject(webname):
+            self.stopGoProject(webname)
         self.deleteALlLogs(webname)
 
         if path == '1':
@@ -429,22 +764,27 @@ class sites(object):
         return mw.returnData(True, '站点【%s】删除成功!' % webname)
 
     def nginxAddConf(self):
-
-        source_tpl = self.getNgxTplDir() + '/nginx.conf'
         vhost_file = self.getHostConf(self.siteName)
-        content = mw.readFile(source_tpl)
+        if getattr(self, 'projectType', 'php') == 'go':
+            go_port = getattr(self, 'goPort', '')
+            if go_port == '':
+                go_port = self.getGoConfig(self.siteName).get('port', '8080')
+            content = self.buildGoConfContent(self.siteName, self.sitePath, self.sitePort, go_port)
+        else:
+            source_tpl = self.getNgxTplDir() + '/nginx.conf'
+            content = mw.readFile(source_tpl)
 
-        content = content.replace('{$PORT}', self.sitePort)
-        content = content.replace('{$SERVER_NAME}', self.siteName)
-        content = content.replace('{$ROOT_DIR}', self.sitePath)
-        content = content.replace('{$PHP_DIR}', self.setupPath + '/php')
-        content = content.replace('{$PHPVER}', self.phpVersion)
-        content = content.replace('{$OR_REWRITE}', self.rewritePath)
-        # content = content.replace('{$OR_REDIRECT}', self.redirectPath)
-        # content = content.replace('{$OR_PROXY}', self.proxyPath)
+            content = content.replace('{$PORT}', self.sitePort)
+            content = content.replace('{$SERVER_NAME}', self.siteName)
+            content = content.replace('{$ROOT_DIR}', self.sitePath)
+            content = content.replace('{$PHP_DIR}', self.setupPath + '/php')
+            content = content.replace('{$PHPVER}', self.phpVersion)
+            content = content.replace('{$OR_REWRITE}', self.rewritePath)
+            # content = content.replace('{$OR_REDIRECT}', self.redirectPath)
+            # content = content.replace('{$OR_PROXY}', self.proxyPath)
 
-        logsPath = mw.getLogsDir()
-        content = content.replace('{$LOGPATH}', logsPath)
+            logsPath = mw.getLogsDir()
+            content = content.replace('{$LOGPATH}', logsPath)
         mw.writeFile(vhost_file, content)
 
         # 和反代配置冲突 && 默认伪静态为空
