@@ -175,7 +175,7 @@ def do_login():
 
     username = request.form.get('username', '').strip()
     password = request.form.get('password', '').strip()
-    code = request.form.get('code', '').strip()
+    code = request.form.get('code', '').strip().lower()
 
     login_cache_count = 5
     login_cache_limit = cache.get('login_cache_limit')
